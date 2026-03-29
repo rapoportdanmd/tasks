@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>משימות מחלקה</title>
+  <style>
+    :root {
+      --bg: #f4efe5;
+      --panel: #fffdf8;
+      --panel-strong: #ffffff;
+      --text: #1d2a2f;
+      --muted: #6b7280;
+      --border: #ddd4c6;
+      --primary: #0f766e;
+      --primary-soft: #d9f3ef;
+      --accent: #c2410c;
+      --accent-soft: #ffedd5;
+      --danger: #b91c1c;
+      --danger-soft: #fee2e2;
+      --shadow: 0 18px 40px rgba(29, 42, 47, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Heebo", "Assistant", "Noto Sans Hebrew", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.10), transparent 34%),
+        radial-gradient(circle at top right, rgba(194, 65, 12, 0.12), transparent 26%),
+        linear-gradient(180deg, #f7f2e9 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 28px 20px 14px;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.94), rgba(17, 94, 89, 0.92));
+      color: white;
+      border-radius: 28px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -70px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-copy p {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.86);
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-mark {
+      position: relative;
+      z-index: 1;
+      font-size: 3rem;
+      line-height: 1;
+      padding-top: 4px;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      background: rgba(255, 253, 248, 0.92);
+      border: 1px solid rgba(221, 212, 198, 0.85);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel-header {
+      padding: 18px 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .panel-header h2 {
+      font-size: 1.15rem;
+    }
+
+    .panel-header p {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .form-body,
+    .team-body,
+    .filters-body,
+    .stats-body,
+    .list-body {
+      padding: 18px 20px 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      background: var(--panel-strong);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--text);
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.13);
+      transform: translateY(-1px);
+    }
+
+    .field-note {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .chip-btn {
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.16s, box-shadow 0.16s, opacity 0.16s, background 0.16s;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover,
+    .chip-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+      padding: 12px 20px;
+      box-shadow: 0 12px 24px rgba(15, 118, 110, 0.22);
+      font-weight: 700;
+    }
+
+    .secondary-btn {
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--primary);
+      padding: 10px 16px;
+      font-weight: 700;
+    }
+
+    .danger-btn {
+      background: transparent;
+      color: var(--danger);
+      padding: 8px 12px;
+      border: 1px solid rgba(185, 28, 28, 0.18);
+    }
+
+    .muted-inline {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .status-filters,
+    .category-filters,
+    .team-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn,
+    .team-tag {
+      padding: 8px 14px;
+      background: #f4f1eb;
+      border: 1px solid #e1d8ca;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .chip-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: rgba(15, 118, 110, 0.28);
+      box-shadow: 0 10px 20px rgba(15, 118, 110, 0.12);
+    }
+
+    .filters-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .filters-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat-box {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(250, 246, 238, 0.95));
+      border: 1px solid rgba(221, 212, 198, 0.75);
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+
+    .stat-box span {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .stat-box.total strong {
+      color: #0f172a;
+    }
+
+    .stat-box.progress strong {
+      color: #b45309;
+    }
+
+    .stat-box.approval strong {
+      color: #2563eb;
+    }
+
+    .stat-box.done strong {
+      color: #15803d;
+    }
+
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .task-count {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .task-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(221, 212, 198, 0.86);
+      border-right: 5px solid #d4d4d8;
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+    }
+
+    .task-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 32px rgba(29, 42, 47, 0.09);
+    }
+
+    .task-card.in_progress {
+      border-right-color: #f59e0b;
+    }
+
+    .task-card.done_not_approved {
+      border-right-color: #3b82f6;
+    }
+
+    .task-card.done {
+      border-right-color: #22c55e;
+    }
+
+    .task-card.done .task-title,
+    .task-card.done .task-desc {
+      opacity: 0.78;
+    }
+
+    .task-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .task-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .task-desc {
+      color: #475569;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .task-meta,
+    .task-selects {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      background: #f6f2ea;
+      border: 1px solid #e6dece;
+      color: #475569;
+    }
+
+    .badge.category {
+      background: var(--accent-soft);
+      border-color: rgba(194, 65, 12, 0.14);
+      color: var(--accent);
+    }
+
+    .badge.assignee {
+      background: var(--primary-soft);
+      border-color: rgba(15, 118, 110, 0.12);
+      color: var(--primary);
+    }
+
+    .badge.unassigned {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .task-time {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .task-selects {
+      justify-content: space-between;
+    }
+
+    .mini-select {
+      min-width: 190px;
+      flex: 1;
+    }
+
+    .inline-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
+    }
+
+    .inline-controls .field {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 54px 18px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 18px;
+      border: 1px dashed rgba(148, 163, 184, 0.45);
+    }
+
+    .empty strong {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .helper-banner {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .team-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .team-form input {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .team-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding-inline: 14px 10px;
+    }
+
+    .team-tag button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--danger);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 920px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        padding-inline: 12px;
+      }
+
+      .hero {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .container {
+        padding: 14px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .task-top,
+      .list-head,
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>ניהול משימות מחלקתי</h1>
+        <p>מעקב נוח אחרי משימות מטופלים, קטגוריות קבועות מראש, שיוך למתמחים וסינון מהיר בעברית.</p>
+      </div>
+      <div class="hero-mark" aria-hidden="true">🏥</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>הוספת משימה חדשה</h2>
+            <p>לכל משימה חייבת להיות קטגוריה אחת, ואפשר לשייך אותה למתמחה.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="input-patient">שם מטופל</label>
+              <input type="text" id="input-patient" maxlength="80" placeholder="למשל: כהן דוד" />
+            </div>
+            <div class="field">
+              <label for="input-category">קטגוריה</label>
+              <select id="input-category"></select>
+            </div>
+            <div class="field full">
+              <label for="input-desc">תיאור המשימה</label>
+              <textarea id="input-desc" maxlength="400" placeholder="מה צריך לבצע, למי צריך לעדכן, ומה הדחיפות?"></textarea>
+            </div>
+            <div class="field">
+              <label for="input-assignee">שיוך למתמחה</label>
+              <select id="input-assignee"></select>
+              <div class="field-note">לא חובה. אפשר להשאיר ללא שיוך.</div>
+            </div>
+          </div>
+          <div class="actions">
+            <div class="muted-inline" id="form-hint">הטופס נשמר מול השרת המקומי של המחלקה.</div>
+            <button class="primary-btn" type="button" onclick="addTask()">הוספת משימה</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>צוות מתמחים</h2>
+            <p>מכאן מנהלים את רשימת האנשים שאפשר לשייך אליהם משימות.</p>
+          </div>
+        </div>
+        <div class="team-body">
+          <div class="team-form">
+            <input type="text" id="input-team-member" maxlength="60" placeholder="שם מתמחה / איש צוות" />
+            <button class="secondary-btn" type="button" onclick="addTeamMember()">הוספה לצוות</button>
+          </div>
+          <div class="team-tags" id="team-tags"></div>
+          <div class="helper-banner">מחיקת איש צוות תסיר את השיוך מהמשימות שלו, אבל תשאיר את המשימות עצמן.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>תמונת מצב</h2>
+          <p>ספירה חיה של מצב המשימות במחלקה.</p>
+        </div>
+      </div>
+      <div class="stats-body">
+        <div class="stats-grid">
+          <div class="stat-box total">
+            <strong id="count-total">0</strong>
+            <span>סה"כ משימות</span>
+          </div>
+          <div class="stat-box progress">
+            <strong id="count-in-progress">0</strong>
+            <span>בטיפול</span>
+          </div>
+          <div class="stat-box approval">
+            <strong id="count-not-approved">0</strong>
+            <span>בוצע, ממתין לאישור</span>
+          </div>
+          <div class="stat-box done">
+            <strong id="count-done">0</strong>
+            <span>סגור</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>סינון משימות</h2>
+          <p>אפשר לסנן גם לפי סטטוס, גם לפי קטגוריה, וגם לפי מתמחה משויך.</p>
+        </div>
+      </div>
+      <div class="filters-body">
+        <div class="filters-stack">
+          <div>
+            <div class="filters-label">סטטוס</div>
+            <div class="status-filters" id="status-filters"></div>
+          </div>
+          <div>
+            <div class="filters-label">קטגוריה</div>
+            <div class="category-filters" id="category-filters"></div>
+          </div>
+          <div>
+            <div class="filters-label">מתמחה משויך</div>
+            <select id="assignee-filter" onchange="setAssigneeFilter(this.value)"></select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="list-body">
+        <div class="list-head">
+          <div>
+            <h2>רשימת משימות</h2>
+            <div class="task-count" id="visible-count">0 משימות מוצגות</div>
+          </div>
+          <div class="muted-inline">רענון אוטומטי כל 15 שניות</div>
+        </div>
+        <div class="task-list" id="task-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STATUS_META = {
+      all: 'הכל',
+      in_progress: 'בטיפול',
+      done_not_approved: 'בוצע, ממתין לאישור',
+      done: 'סגור'
+    };
+
+    let categories = [];
+    let teamMembers = [];
+    let allTasks = [];
+    let currentStatusFilter = 'all';
+    let currentCategoryFilter = 'all';
+    let currentAssigneeFilter = 'all';
+
+    async function init() {
+      await loadMeta();
+      await fetchTasks();
+      bindKeyboardShortcuts();
+      setInterval(fetchTasks, 15000);
+    }
+
+    async function loadMeta() {
+      const res = await fetch('/api/meta');
+      const data = await res.json();
+      categories = Array.isArray(data.categories) ? data.categories : [];
+      teamMembers = Array.isArray(data.teamMembers) ? data.teamMembers : [];
+      renderCategoryInputs();
+      renderTeamInputs();
+      renderFilterControls();
+    }
+
+    async function fetchTasks() {
+      const res = await fetch('/api/tasks');
+      allTasks = await res.json();
+      renderStats();
+      renderTasks();
+    }
+
+    function renderCategoryInputs() {
+      const categorySelect = document.getElementById('input-category');
+      categorySelect.innerHTML = `
+        <option value="">בחירת קטגוריה</option>
+        ${categories.map((category) => `<option value="${escAttr(category)}">${escHtml(category)}</option>`).join('')}
+      `;
+    }
+
+    function renderTeamInputs() {
+      const assigneeSelect = document.getElementById('input-assignee');
+      assigneeSelect.innerHTML = `
+        <option value="">ללא שיוך</option>
+        ${teamMembers.map((member) => `<option value="${member.id}">${escHtml(member.name)}</option>`).join('')}
+      `;
+
+      const validAssigneeFilters = new Set(['all', 'unassigned', ...teamMembers.map((member) => String(member.id))]);
+      if (!validAssigneeFilters.has(currentAssigneeFilter)) {
+        currentAssigneeFilter = 'all';
+      }
+
+      const assigneeFilter = document.getElementById('assignee-filter');
+      assigneeFilter.innerHTML = `
+        <option value="all">כל המתמחים</option>
+        <option value="unassigned">ללא שיוך</option>
+        ${teamMembers.map((member) => `<option value="${member.id}">${escHtml(member.name)}</option>`).join('')}
+      `;
+      assigneeFilter.value = currentAssigneeFilter;
+
+      const teamTags = document.getElementById('team-tags');
+      if (teamMembers.length === 0) {
+        teamTags.innerHTML = `<div class="muted-inline">עדיין לא נוספו אנשי צוות.</div>`;
+        return;
+      }
+
+      teamTags.innerHTML = teamMembers.map((member) => `
+        <div class="team-tag">
+          <span>${escHtml(member.name)}</span>
+          <button type="button" title="מחיקת איש צוות" onclick="deleteTeamMember(${member.id}, '${escJs(member.name)}')">×</button>
+        </div>
+      `).join('');
+    }
+
+    function renderFilterControls() {
+      const statusFilters = document.getElementById('status-filters');
+      statusFilters.innerHTML = Object.entries(STATUS_META).map(([key, label]) => `
+        <button
+          type="button"
+          class="chip-btn ${currentStatusFilter === key ? 'active' : ''}"
+          onclick="setStatusFilter('${key}')"
+        >
+          ${escHtml(label)}
+        </button>
+      `).join('');
+
+      const categoryFilters = document.getElementById('category-filters');
+      categoryFilters.innerHTML = `
+        <button
+          type="button"
+          class="chip-btn ${currentCategoryFilter === 'all' ? 'active' : ''}"
+          onclick="setCategoryFilter('all')"
+        >
+          כל הקטגוריות
+        </button>
+        ${categories.map((category) => `
+          <button
+            type="button"
+            class="chip-btn ${currentCategoryFilter === category ? 'active' : ''}"
+            onclick="setCategoryFilter('${escJs(category)}')"
+          >
+            ${escHtml(category)}
+          </button>
+        `).join('')}
+      `;
+    }
+
+    function renderStats() {
+      document.getElementById('count-total').textContent = allTasks.length;
+      document.getElementById('count-in-progress').textContent =
+        allTasks.filter((task) => task.status === 'in_progress').length;
+      document.getElementById('count-not-approved').textContent =
+        allTasks.filter((task) => task.status === 'done_not_approved').length;
+      document.getElementById('count-done').textContent =
+        allTasks.filter((task) => task.status === 'done').length;
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('task-list');
+      const filteredTasks = allTasks.filter((task) => {
+        const matchesStatus = currentStatusFilter === 'all' || task.status === currentStatusFilter;
+        const matchesCategory = currentCategoryFilter === 'all' || task.category === currentCategoryFilter;
+        const matchesAssignee =
+          currentAssigneeFilter === 'all' ||
+          (currentAssigneeFilter === 'unassigned' && !task.assignee_id) ||
+          String(task.assignee_id || '') === currentAssigneeFilter;
+
+        return matchesStatus && matchesCategory && matchesAssignee;
+      });
+
+      document.getElementById('visible-count').textContent = `${filteredTasks.length} משימות מוצגות`;
+
+      if (filteredTasks.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <strong>📋</strong>
+            אין כרגע משימות שתואמות לסינון שבחרת.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filteredTasks.map((task) => {
+        const updatedAt = new Date(task.updated_at).toLocaleString('he-IL', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        return `
+          <article class="task-card ${task.status}">
+            <div class="task-top">
+              <div>
+                <div class="task-title">${escHtml(task.patient_name)}</div>
+                <div class="task-desc">${escHtml(task.description)}</div>
+              </div>
+              <div class="task-time">עודכן: ${updatedAt}</div>
+            </div>
+            <div class="task-meta">
+              <span class="badge category">קטגוריה: ${escHtml(task.category)}</span>
+              <span class="badge ${task.assignee_name ? 'assignee' : 'unassigned'}">
+                ${task.assignee_name ? `שיוך: ${escHtml(task.assignee_name)}` : 'ללא שיוך'}
+              </span>
+            </div>
+            <div class="inline-controls">
+              <div class="field">
+                <label for="status-${task.id}">סטטוס</label>
+                <select id="status-${task.id}" class="mini-select" onchange="updateTask(${task.id}, { status: this.value })">
+                  <option value="in_progress" ${task.status === 'in_progress' ? 'selected' : ''}>בטיפול</option>
+                  <option value="done_not_approved" ${task.status === 'done_not_approved' ? 'selected' : ''}>בוצע, ממתין לאישור</option>
+                  <option value="done" ${task.status === 'done' ? 'selected' : ''}>סגור</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="category-${task.id}">קטגוריה</label>
+                <select id="category-${task.id}" class="mini-select" onchange="updateTask(${task.id}, { category: this.value })">
+                  ${categories.map((category) => `
+                    <option value="${escAttr(category)}" ${task.category === category ? 'selected' : ''}>${escHtml(category)}</option>
+                  `).join('')}
+                </select>
+              </div>
+              <div class="field">
+                <label for="assignee-${task.id}">שיוך</label>
+                <select id="assignee-${task.id}" class="mini-select" onchange="updateTask(${task.id}, { assignee_id: this.value })">
+                  <option value="">ללא שיוך</option>
+                  ${teamMembers.map((member) => `
+                    <option value="${member.id}" ${task.assignee_id === member.id ? 'selected' : ''}>${escHtml(member.name)}</option>
+                  `).join('')}
+                </select>
+              </div>
+              <button class="danger-btn" type="button" onclick="deleteTask(${task.id})">מחיקת משימה</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function setStatusFilter(filter) {
+      currentStatusFilter = filter;
+      renderFilterControls();
+      renderTasks();
+    }
+
+    function setCategoryFilter(filter) {
+      currentCategoryFilter = filter;
+      renderFilterControls();
+      renderTasks();
+    }
+
+    function setAssigneeFilter(filter) {
+      currentAssigneeFilter = filter;
+      renderTasks();
+    }
+
+    async function addTask() {
+      const patientEl = document.getElementById('input-patient');
+      const descEl = document.getElementById('input-desc');
+      const categoryEl = document.getElementById('input-category');
+      const assigneeEl = document.getElementById('input-assignee');
+
+      const patient = patientEl.value.trim();
+      const description = descEl.value.trim();
+      const category = categoryEl.value;
+      const assigneeId = assigneeEl.value;
+
+      if (!patient || !description || !category) {
+        alert('יש למלא שם מטופל, תיאור משימה וקטגוריה.');
+        return;
+      }
+
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_name: patient,
+          description,
+          category,
+          assignee_id: assigneeId
+        })
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'שמירת המשימה נכשלה.' }));
+        alert(error.error || 'שמירת המשימה נכשלה.');
+        return;
+      }
+
+      patientEl.value = '';
+      descEl.value = '';
+      categoryEl.value = '';
+      assigneeEl.value = '';
+      patientEl.focus();
+      await fetchTasks();
+    }
+
+    async function updateTask(id, payload) {
+      const normalizedPayload = { ...payload };
+      if (Object.prototype.hasOwnProperty.call(normalizedPayload, 'assignee_id') && normalizedPayload.assignee_id === '') {
+        normalizedPayload.assignee_id = null;
+      }
+
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(normalizedPayload)
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'עדכון המשימה נכשל.' }));
+        alert(error.error || 'עדכון המשימה נכשל.');
+      }
+
+      await fetchTasks();
+    }
+
+    async function deleteTask(id) {
+      if (!confirm('למחוק את המשימה?')) {
+        return;
+      }
+
+      await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      await fetchTasks();
+    }
+
+    async function addTeamMember() {
+      const input = document.getElementById('input-team-member');
+      const name = input.value.trim();
+      if (!name) {
+        alert('יש למלא שם איש צוות.');
+        return;
+      }
+
+      const res = await fetch('/api/team-members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'שמירת איש הצוות נכשלה.' }));
+        alert(error.error || 'שמירת איש הצוות נכשלה.');
+        return;
+      }
+
+      input.value = '';
+      await loadMeta();
+      await fetchTasks();
+    }
+
+    async function deleteTeamMember(id, name) {
+      if (!confirm(`להסיר את ${name} מהצוות?`)) {
+        return;
+      }
+
+      await fetch(`/api/team-members/${id}`, { method: 'DELETE' });
+
+      if (currentAssigneeFilter === String(id)) {
+        currentAssigneeFilter = 'all';
+      }
+
+      await loadMeta();
+      await fetchTasks();
+    }
+
+    function bindKeyboardShortcuts() {
+      document.getElementById('input-patient').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('input-desc').focus();
+        }
+      });
+
+      document.getElementById('input-desc').addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+          addTask();
+        }
+      });
+
+      document.getElementById('input-team-member').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          addTeamMember();
+        }
+      });
+    }
+
+    function escHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escAttr(value) {
+      return escHtml(value);
+    }
+
+    function escJs(value) {
+      return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

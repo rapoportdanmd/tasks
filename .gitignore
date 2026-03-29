@@ -1,0 +1,6 @@
+.DS_Store
+.codex/
+node_modules/
+patient-tasks-launch.log
+patient-tasks-launch.pid
+tasks.db
