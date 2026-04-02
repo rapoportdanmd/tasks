@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sefer-patient-tasks
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: DB_PATH
+        value: /var/data/tasks.db
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: SQLITE_BUSY_TIMEOUT_MS
+        value: "5000"
+      - key: APP_ACCESS_CODE
+        sync: false
+      - key: APP_ADMIN_USERNAME
+        sync: false
+      - key: APP_ADMIN_PASSWORD
+        sync: false
+      - key: APP_SESSION_SECRET
+        generateValue: true
+    disk:
+      name: sefer-data
+      mountPath: /var/data
+      sizeGB: 5
