@@ -33,6 +33,7 @@ const LEGACY_INFECTED_CATEGORY = 'רשימת חולים מזוהמים';
 const TASK_CATEGORIES = [
   'פרוצדורות',
   'מעבדות',
+  'קבלות',
   'הדמיות',
   'יעוצים',
   'פיזיותרפיה',
@@ -767,14 +768,15 @@ app.get('/api/tasks', (_req, res) => {
       CASE tasks.category
         WHEN 'פרוצדורות' THEN 1
         WHEN 'מעבדות' THEN 2
-        WHEN 'הדמיות' THEN 3
-        WHEN 'יעוצים' THEN 4
-        WHEN 'פיזיותרפיה' THEN 5
-        WHEN 'שיקום' THEN 6
-        WHEN 'שיחות' THEN 7
-        WHEN 'מכתבים' THEN 8
-        WHEN 'מעקבים' THEN 9
-        ELSE 10
+        WHEN 'קבלות' THEN 3
+        WHEN 'הדמיות' THEN 4
+        WHEN 'יעוצים' THEN 5
+        WHEN 'פיזיותרפיה' THEN 6
+        WHEN 'שיקום' THEN 7
+        WHEN 'שיחות' THEN 8
+        WHEN 'מכתבים' THEN 9
+        WHEN 'מעקבים' THEN 10
+        ELSE 11
       END,
       CASE tasks.status
         WHEN 'not_started' THEN 1
@@ -2203,7 +2205,8 @@ function ensureTasksTable() {
     taskTableSql.includes(`'שיקומיסט'`) ||
     taskTableSql.includes(`'פיזיותרפיה/שיקום'`) ||
     !taskTableSql.includes(`'יעוצים'`) ||
-    !taskTableSql.includes(`'שיקום'`)
+    !taskTableSql.includes(`'שיקום'`) ||
+    !taskTableSql.includes(`'קבלות'`)
   );
 
   if (!hasTaskDate || !hasSubcategory || !hasComment || !hasTaskTime || needsCategoryConstraintRefresh) {
