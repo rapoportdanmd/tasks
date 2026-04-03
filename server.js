@@ -99,6 +99,7 @@ const ON_CALL_CUTOFF_MINUTE = 0;
 const ADMISSIONS_NIGHT_SHIFT_START_HOUR = 18;
 const ADMISSIONS_NIGHT_SHIFT_END_HOUR = 5;
 const OPTIONAL_DESCRIPTION_CATEGORIES = [
+  'קבלות',
   'פיזיותרפיה',
   'שיקום',
   'מכתבים'
@@ -1640,10 +1641,6 @@ app.post('/api/er-patients/:id/move-to-admissions', (req, res) => {
   const transferContext = getAdmissionsTransferContext();
   const description = buildAdmissionsTaskDescription(entry);
   const comment = buildAdmissionsTaskComment(entry);
-
-  if (!description) {
-    return res.status(400).json({ error: 'Could not build an admissions task description.' });
-  }
 
   const insertTask = db.prepare(`
     INSERT INTO tasks (
@@ -4066,25 +4063,13 @@ function formatDateForStorage(dateInput = new Date()) {
 }
 
 function buildAdmissionsTaskDescription(entry) {
-  const ward = normalizeOptionalText(entry?.ward);
-  const comment = normalizeOptionalText(entry?.comment);
-
-  if (comment) {
-    return comment;
-  }
-
-  if (ward) {
-    return `קבלה - ${ward}`;
-  }
-
-  return 'קבלה';
+  return '';
 }
 
 function buildAdmissionsTaskComment(entry) {
   const details = [];
   const ward = normalizeOptionalText(entry?.ward);
   const idNumber = normalizeOptionalText(entry?.id_number);
-  const comment = normalizeOptionalText(entry?.comment);
 
   if (ward) {
     details.push(`אגף/מחלקה/ביה״ח: ${ward}`);
@@ -4092,10 +4077,6 @@ function buildAdmissionsTaskComment(entry) {
 
   if (idNumber) {
     details.push(`ת.ז: ${idNumber}`);
-  }
-
-  if (comment && comment !== buildAdmissionsTaskDescription(entry)) {
-    details.push(comment);
   }
 
   return details.length > 0 ? details.join(' | ') : null;
