@@ -96,6 +96,8 @@ const DAILY_ON_CALL_ROLE_MAP = Object.fromEntries(
 );
 const ON_CALL_CUTOFF_HOUR = 6;
 const ON_CALL_CUTOFF_MINUTE = 0;
+const ADMISSIONS_NIGHT_SHIFT_START_HOUR = 18;
+const ADMISSIONS_NIGHT_SHIFT_END_HOUR = 5;
 const OPTIONAL_DESCRIPTION_CATEGORIES = [
   'פיזיותרפיה',
   'שיקום',
@@ -1621,6 +1623,73 @@ app.patch('/api/er-patients/:id', (req, res) => {
 app.delete('/api/er-patients/:id', (req, res) => {
   db.prepare('DELETE FROM er_patients WHERE id = ?').run(req.params.id);
   sendMutationResponse(req, res, { ok: true });
+});
+
+app.post('/api/er-patients/:id/move-to-admissions', (req, res) => {
+  const editorName = getAuditActorName(req);
+  const entry = db.prepare('SELECT * FROM er_patients WHERE id = ?').get(req.params.id);
+
+  if (!entry) {
+    return res.status(404).json({ error: 'ER patient entry not found.' });
+  }
+
+  if (entry.status !== 'סגור') {
+    return res.status(400).json({ error: 'Only closed ER/consult entries can be moved to admissions.' });
+  }
+
+  const transferContext = getAdmissionsTransferContext();
+  const description = buildAdmissionsTaskDescription(entry);
+  const comment = buildAdmissionsTaskComment(entry);
+
+  if (!description) {
+    return res.status(400).json({ error: 'Could not build an admissions task description.' });
+  }
+
+  const insertTask = db.prepare(`
+    INSERT INTO tasks (
+      patient_name,
+      description,
+      comment,
+      category,
+      subcategory,
+      assignee_id,
+      task_date,
+      task_time,
+      high_priority,
+      status,
+      recurring_followup_id,
+      night_shift_anchor_date,
+      night_shift_moved_at,
+      updated_by_name
+    )
+    VALUES (?, ?, ?, ?, NULL, NULL, ?, NULL, 0, 'not_started', NULL, ?, ?, ?)
+  `);
+
+  const result = db.transaction(() => {
+    const insertResult = insertTask.run(
+      entry.patient_name,
+      description,
+      comment,
+      'קבלות',
+      transferContext.taskDate,
+      transferContext.nightShiftAnchorDate,
+      transferContext.nightShiftAnchorDate ? new Date().toISOString() : null,
+      editorName
+    );
+
+    db.prepare('DELETE FROM er_patients WHERE id = ?').run(entry.id);
+
+    return {
+      taskId: insertResult.lastInsertRowid,
+      removedErPatientId: entry.id
+    };
+  })();
+
+  sendMutationResponse(req, res, {
+    ok: true,
+    moved_from_er_patient_id: result.removedErPatientId,
+    task: getTaskById(result.taskId)
+  });
 });
 
 app.delete('/api/er-patients', (req, res) => {
@@ -3958,6 +4027,76 @@ function effectiveOnCallDate(now = new Date()) {
     : todayDate();
 }
 
+function getAdmissionsTransferContext(now = new Date()) {
+  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
+  const currentDate = formatDateForStorage(current);
+  const currentHour = current.getHours();
+
+  if (currentHour >= ADMISSIONS_NIGHT_SHIFT_START_HOUR) {
+    return {
+      taskDate: currentDate,
+      nightShiftAnchorDate: currentDate
+    };
+  }
+
+  if (currentHour < ADMISSIONS_NIGHT_SHIFT_END_HOUR) {
+    const previousDate = addDays(currentDate, -1);
+    return {
+      taskDate: previousDate,
+      nightShiftAnchorDate: previousDate
+    };
+  }
+
+  return {
+    taskDate: currentDate,
+    nightShiftAnchorDate: null
+  };
+}
+
 function isPastDate(value) {
   return typeof value === 'string' && value < todayDate();
+}
+
+function formatDateForStorage(dateInput = new Date()) {
+  const date = dateInput instanceof Date ? new Date(dateInput.getTime()) : new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function buildAdmissionsTaskDescription(entry) {
+  const ward = normalizeOptionalText(entry?.ward);
+  const comment = normalizeOptionalText(entry?.comment);
+
+  if (comment) {
+    return comment;
+  }
+
+  if (ward) {
+    return `קבלה - ${ward}`;
+  }
+
+  return 'קבלה';
+}
+
+function buildAdmissionsTaskComment(entry) {
+  const details = [];
+  const ward = normalizeOptionalText(entry?.ward);
+  const idNumber = normalizeOptionalText(entry?.id_number);
+  const comment = normalizeOptionalText(entry?.comment);
+
+  if (ward) {
+    details.push(`אגף/מחלקה/ביה״ח: ${ward}`);
+  }
+
+  if (idNumber) {
+    details.push(`ת.ז: ${idNumber}`);
+  }
+
+  if (comment && comment !== buildAdmissionsTaskDescription(entry)) {
+    details.push(comment);
+  }
+
+  return details.length > 0 ? details.join(' | ') : null;
 }

@@ -7826,8 +7826,8 @@
                 <button
                   type="button"
                   class="inline-note-action-btn"
-                  onclick="focusErPatientComment(${entry.id})"
-                >הוסף הערה</button>
+                  onclick="moveErPatientToAdmissions(${entry.id})"
+                >הוסף לקבלות</button>
               ` : ''}
             </div>
           </div>
@@ -8856,6 +8856,25 @@
       await patchErPatientInline(id, {
         comment: input.value.trim()
       }, 'עדכון ההערה נכשל.');
+    }
+
+    async function moveErPatientToAdmissions(id) {
+      const entry = erPatientEntries.find((item) => item.id === id);
+      if (!entry) {
+        return;
+      }
+
+      const res = await fetch(`/api/er-patients/${id}/move-to-admissions`, {
+        method: 'POST'
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'העברה לקבלות נכשלה.' }));
+        alert(error.error || 'העברה לקבלות נכשלה.');
+        return;
+      }
+
+      await reloadAll();
     }
 
     async function saveSurgeryPrepComment(id) {
