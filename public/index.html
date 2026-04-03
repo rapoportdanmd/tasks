@@ -2066,6 +2066,37 @@
       min-height: 18px;
     }
 
+    .inline-list-note-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .inline-list-note-row .inline-list-note {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .inline-note-action-btn {
+      flex: 0 0 auto;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      background: rgba(217, 243, 239, 0.72);
+      color: var(--teal-strong);
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .inline-note-action-btn:hover {
+      background: rgba(217, 243, 239, 0.94);
+      border-color: rgba(15, 118, 110, 0.34);
+    }
+
     .infected-notes {
       display: grid;
       gap: 5px;
@@ -3130,6 +3161,10 @@
 
     body.phone-layout .phone-patient-helper .patient-bar {
       margin-top: 0;
+    }
+
+    body.phone-layout .inline-note-action-btn {
+      display: none !important;
     }
 
     body.phone-layout #mobile-on-call-panel .panel-head {
@@ -7776,16 +7811,25 @@
                 >${escHtml(entry.status)}</button>
               ` : ''}
             </div>
-            ${renderInlineListComment({
-              id: entry.id,
-              value: entry.comment || '',
-              placeholder: 'הוסף הערה...',
-              focusHandler: 'focusErPatientComment',
-              saveHandler: 'saveErPatientComment',
-              inputIdPrefix: 'er-inline-comment',
-              revealOnHover: true,
-              hoverLabel: 'הערה'
-            })}
+            <div class="inline-list-note-row">
+              ${renderInlineListComment({
+                id: entry.id,
+                value: entry.comment || '',
+                placeholder: 'הוסף הערה...',
+                focusHandler: 'focusErPatientComment',
+                saveHandler: 'saveErPatientComment',
+                inputIdPrefix: 'er-inline-comment',
+                revealOnHover: true,
+                hoverLabel: 'הערה'
+              })}
+              ${entry.status === 'סגור' ? `
+                <button
+                  type="button"
+                  class="inline-note-action-btn"
+                  onclick="focusErPatientComment(${entry.id})"
+                >הוסף הערה</button>
+              ` : ''}
+            </div>
           </div>
           <div class="task-actions">
             <button type="button" class="icon-btn edit" title="ערוך" onclick="startEditingErPatientEntry(${entry.id})">${UI_ICONS.edit}</button>
