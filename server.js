@@ -4067,17 +4067,5 @@ function buildAdmissionsTaskDescription(entry) {
 }
 
 function buildAdmissionsTaskComment(entry) {
-  const details = [];
-  const ward = normalizeOptionalText(entry?.ward);
-  const idNumber = normalizeOptionalText(entry?.id_number);
-
-  if (ward) {
-    details.push(`אגף/מחלקה/ביה״ח: ${ward}`);
-  }
-
-  if (idNumber) {
-    details.push(`ת.ז: ${idNumber}`);
-  }
-
-  return details.length > 0 ? details.join(' | ') : null;
+  return null;
 }
