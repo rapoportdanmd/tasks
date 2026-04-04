@@ -1161,3 +1161,7 @@
 ## 2026-04-04 18:30 IDT
 
 - Moved the three red task-cleanup actions out of the `משימות` header and into a persistent footer row inside `סינון ותצוגה`, so they stay visible in that location even when the filter panel itself is folded.
+
+## 2026-04-04 18:49 IDT
+
+- Unified the overnight task-default clock on both frontend and backend to the department timezone (`Asia/Jerusalem`) so a form that defaults to `Night-Shift` now saves the task directly into `תורנות` instead of sometimes landing in regular `משימות` because the server was evaluating the rule in a different timezone.

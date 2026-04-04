@@ -4538,6 +4538,7 @@
     const TASK_NIGHT_SHIFT_START_MINUTES = (TASK_NIGHT_SHIFT_START_HOUR * 60);
     const TASK_NIGHT_SHIFT_MORNING_END_MINUTES = (TASK_NIGHT_SHIFT_MORNING_END_HOUR * 60);
     const TASK_PREVIOUS_DAY_SELECTION_END_MINUTES = (TASK_PREVIOUS_DAY_SELECTION_END_HOUR * 60);
+    const APP_TIME_ZONE = 'Asia/Jerusalem';
     const TASK_MOVE_ANIMATION_MS = 320;
     const STATUS_LABELS = {
       not_started: 'לא התחיל',
@@ -10579,12 +10580,33 @@
       }
     }
 
+    function getAppDateTimeParts(dateInput = new Date()) {
+      const date = dateInput instanceof Date ? new Date(dateInput.getTime()) : new Date(dateInput);
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: APP_TIME_ZONE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+      });
+      const parts = Object.fromEntries(
+        formatter
+          .formatToParts(date)
+          .filter((part) => part.type !== 'literal')
+          .map((part) => [part.type, part.value])
+      );
+
+      return {
+        dateString: `${parts.year}-${parts.month}-${parts.day}`,
+        hour: Number(parts.hour),
+        minute: Number(parts.minute)
+      };
+    }
+
     function getTodayString() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      return getAppDateTimeParts().dateString;
     }
 
     function addDaysString(dateString, daysToAdd) {
@@ -10598,17 +10620,17 @@
     }
 
     function isBeforeNightShiftCutoff() {
-      const now = new Date();
-      const cutoff = new Date(now);
-      cutoff.setHours(NIGHT_SHIFT_CUTOFF_HOUR, NIGHT_SHIFT_CUTOFF_MINUTE, 0, 0);
-      return now < cutoff;
+      const nowParts = getAppDateTimeParts();
+      const currentMinutes = (nowParts.hour * 60) + nowParts.minute;
+      const cutoffMinutes = (NIGHT_SHIFT_CUTOFF_HOUR * 60) + NIGHT_SHIFT_CUTOFF_MINUTE;
+      return currentMinutes < cutoffMinutes;
     }
 
     function isBeforeOnCallCutoff() {
-      const now = new Date();
-      const cutoff = new Date(now);
-      cutoff.setHours(ON_CALL_CUTOFF_HOUR, ON_CALL_CUTOFF_MINUTE, 0, 0);
-      return now < cutoff;
+      const nowParts = getAppDateTimeParts();
+      const currentMinutes = (nowParts.hour * 60) + nowParts.minute;
+      const cutoffMinutes = (ON_CALL_CUTOFF_HOUR * 60) + ON_CALL_CUTOFF_MINUTE;
+      return currentMinutes < cutoffMinutes;
     }
 
     function getEffectiveOnCallDate() {
@@ -10618,12 +10640,12 @@
     }
 
     function getCurrentHour() {
-      return new Date().getHours();
+      return getAppDateTimeParts().hour;
     }
 
     function getCurrentMinutesSinceMidnight() {
-      const now = new Date();
-      return (now.getHours() * 60) + now.getMinutes();
+      const nowParts = getAppDateTimeParts();
+      return (nowParts.hour * 60) + nowParts.minute;
     }
 
     function isWithinTaskPreviousDaySelectionWindow() {

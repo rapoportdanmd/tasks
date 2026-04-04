@@ -104,6 +104,7 @@ const TASK_PREVIOUS_DAY_SELECTION_END_HOUR = 6;
 const TASK_NIGHT_SHIFT_START_MINUTES = (TASK_NIGHT_SHIFT_START_HOUR * 60);
 const TASK_NIGHT_SHIFT_MORNING_END_MINUTES = (TASK_NIGHT_SHIFT_MORNING_END_HOUR * 60);
 const TASK_PREVIOUS_DAY_SELECTION_END_MINUTES = (TASK_PREVIOUS_DAY_SELECTION_END_HOUR * 60);
+const APP_TIME_ZONE = 'Asia/Jerusalem';
 const OPTIONAL_DESCRIPTION_CATEGORIES = [
   'קבלות',
   'פיזיותרפיה',
@@ -4082,27 +4083,48 @@ function normalizeAssigneeId(value) {
   return parsed;
 }
 
+function getAppDateTimeParts(dateInput = new Date()) {
+  const date = dateInput instanceof Date ? new Date(dateInput.getTime()) : new Date(dateInput);
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: APP_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  });
+  const parts = Object.fromEntries(
+    formatter
+      .formatToParts(date)
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value])
+  );
+
+  return {
+    dateString: `${parts.year}-${parts.month}-${parts.day}`,
+    hour: Number(parts.hour),
+    minute: Number(parts.minute)
+  };
+}
+
 function todayDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getAppDateTimeParts().dateString;
 }
 
 function effectiveOnCallDate(now = new Date()) {
-  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
-  const cutoff = new Date(current);
-  cutoff.setHours(ON_CALL_CUTOFF_HOUR, ON_CALL_CUTOFF_MINUTE, 0, 0);
-  return current < cutoff
-    ? addDays(todayDate(), -1)
-    : todayDate();
+  const currentParts = getAppDateTimeParts(now);
+  const currentMinutes = (currentParts.hour * 60) + currentParts.minute;
+  const cutoffMinutes = (ON_CALL_CUTOFF_HOUR * 60) + ON_CALL_CUTOFF_MINUTE;
+  return currentMinutes < cutoffMinutes
+    ? addDays(currentParts.dateString, -1)
+    : currentParts.dateString;
 }
 
 function getAdmissionsTransferContext(now = new Date()) {
-  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
-  const currentDate = formatDateForStorage(current);
-  const currentHour = current.getHours();
+  const currentParts = getAppDateTimeParts(now);
+  const currentDate = currentParts.dateString;
+  const currentHour = currentParts.hour;
 
   if (currentHour >= ADMISSIONS_NIGHT_SHIFT_START_HOUR) {
     return {
@@ -4126,9 +4148,9 @@ function getAdmissionsTransferContext(now = new Date()) {
 }
 
 function getNewTaskCreationContext(now = new Date()) {
-  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
-  const currentDate = formatDateForStorage(current);
-  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
+  const currentParts = getAppDateTimeParts(now);
+  const currentDate = currentParts.dateString;
+  const currentMinutes = (currentParts.hour * 60) + currentParts.minute;
 
   if (currentMinutes <= TASK_NIGHT_SHIFT_MORNING_END_MINUTES) {
     const previousDate = addDays(currentDate, -1);
@@ -4152,9 +4174,9 @@ function getNewTaskCreationContext(now = new Date()) {
 }
 
 function getDefaultNightShiftAnchorDateForTask(taskDate, now = new Date()) {
-  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
-  const currentDate = formatDateForStorage(current);
-  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
+  const currentParts = getAppDateTimeParts(now);
+  const currentDate = currentParts.dateString;
+  const currentMinutes = (currentParts.hour * 60) + currentParts.minute;
   const previousDate = addDays(currentDate, -1);
 
   if (currentMinutes >= TASK_NIGHT_SHIFT_START_MINUTES && taskDate === currentDate) {
@@ -4177,10 +4199,10 @@ function canAssignNewTaskDate(value, now = new Date()) {
     return true;
   }
 
-  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
-  const currentDate = formatDateForStorage(current);
+  const currentParts = getAppDateTimeParts(now);
+  const currentDate = currentParts.dateString;
   const previousDate = addDays(currentDate, -1);
-  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
+  const currentMinutes = (currentParts.hour * 60) + currentParts.minute;
   return currentMinutes <= TASK_PREVIOUS_DAY_SELECTION_END_MINUTES && value === previousDate;
 }
 
@@ -4189,11 +4211,7 @@ function isPastDate(value) {
 }
 
 function formatDateForStorage(dateInput = new Date()) {
-  const date = dateInput instanceof Date ? new Date(dateInput.getTime()) : new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getAppDateTimeParts(dateInput).dateString;
 }
 
 function buildAdmissionsTaskDescription(entry) {
