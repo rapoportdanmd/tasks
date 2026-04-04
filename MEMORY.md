@@ -1046,3 +1046,7 @@
 
 - Fixed the top-left visual leak on `סינון ותצוגה` by insetting its accent line so the rounded filter card stays clean even while its overflow remains visible for dropdowns.
 - Added the standard fold/unfold button to `סינון ותצוגה` and set that panel to start collapsed by default through the shared collapse-state system.
+
+## 2026-04-04 14:56 IDT
+
+- Refined the `סינון ותצוגה` top accent again so it visually matches the other panel headers while still staying clipped just inside the rounded card edge.

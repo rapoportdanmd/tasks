@@ -670,8 +670,11 @@
     }
 
     [data-layout-id="filters-panel"]::before {
-      inset: 0 16px auto 16px;
-      border-radius: 999px;
+      inset: 0 1px auto 1px;
+      border-top-left-radius: calc(var(--radius) - 1px);
+      border-top-right-radius: calc(var(--radius) - 1px);
+      border-bottom-left-radius: 999px;
+      border-bottom-right-radius: 999px;
     }
 
     [data-layout-id="filters-panel"] .panel-body {
