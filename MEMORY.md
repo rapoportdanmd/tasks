@@ -1015,3 +1015,9 @@
 - Expanded the desktop patient filter so date filtering can be widened for one patient across multiple dates or all dates, while still defaulting to the current day.
 - Added a patient-date chip row that appears only when a patient filter is active, with one-click toggles for specific dates plus `כל התאריכים`.
 - Wired the task and night-shift filtering logic to respect either the default single date, a chosen set of dates, or the new all-dates mode without changing the phone layout.
+
+## 2026-04-04 07:27 IDT
+
+- Reworked the new patient multi-date filtering so the visible desktop layout stays unchanged: the extra date chip row was removed again and the behavior moved into the existing date control.
+- The desktop filter date button now opens a custom calendar popover that marks task dates in orange, allows selecting multiple dates for a filtered patient, and includes an in-calendar `כל התאריכים` action.
+- Kept the default behavior anchored to the current day, while leaving the phone layout unchanged.

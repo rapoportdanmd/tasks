@@ -1105,6 +1105,10 @@
       cursor: pointer;
     }
 
+    .filter-date-control {
+      outline: none;
+    }
+
     .date-display {
       width: 100%;
       min-height: 38px;
@@ -1141,6 +1145,182 @@
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .filter-date-control[aria-expanded="true"] .date-display {
+      border-color: var(--teal);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .filter-date-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 300px;
+      max-width: min(340px, calc(100vw - 32px));
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 252, 247, 0.98);
+      border: 1px solid rgba(220, 212, 199, 0.92);
+      box-shadow: 0 24px 50px rgba(15, 23, 42, 0.16);
+      display: grid;
+      gap: 10px;
+      backdrop-filter: blur(16px);
+      cursor: default;
+      z-index: 28;
+    }
+
+    .filter-date-popover-head {
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-date-month-label {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .filter-date-nav-btn,
+    .filter-date-meta-btn {
+      min-height: 32px;
+      border: 1px solid rgba(172, 160, 143, 0.34);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+    }
+
+    .filter-date-nav-btn:hover,
+    .filter-date-nav-btn:focus-visible,
+    .filter-date-meta-btn:hover,
+    .filter-date-meta-btn:focus-visible {
+      background: rgba(15, 118, 110, 0.08);
+      border-color: rgba(15, 118, 110, 0.24);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .filter-date-nav-btn {
+      width: 34px;
+      padding: 0;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .filter-date-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-date-meta-btn {
+      min-width: 86px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--muted-strong);
+    }
+
+    .filter-date-meta-btn.active {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.34);
+      color: #9a5a00;
+    }
+
+    .filter-date-helper {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .filter-date-weekdays,
+    .filter-date-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .filter-date-weekday {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .filter-date-cell {
+      position: relative;
+      min-height: 36px;
+      border: 1px solid rgba(172, 160, 143, 0.22);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+    }
+
+    .filter-date-cell:hover,
+    .filter-date-cell:focus-visible {
+      background: rgba(15, 118, 110, 0.08);
+      border-color: rgba(15, 118, 110, 0.22);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .filter-date-cell.is-outside-month {
+      color: rgba(71, 84, 103, 0.46);
+      background: rgba(248, 250, 252, 0.6);
+    }
+
+    .filter-date-cell.is-today {
+      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.28);
+    }
+
+    .filter-date-cell.has-tasks {
+      border-color: rgba(245, 158, 11, 0.34);
+      background: rgba(245, 158, 11, 0.08);
+      color: #9a5a00;
+      font-weight: 800;
+    }
+
+    .filter-date-cell.has-tasks::after {
+      content: "";
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--orange);
+    }
+
+    .filter-date-cell.is-selected {
+      border-color: rgba(15, 118, 110, 0.34);
+      background: rgba(15, 118, 110, 0.14);
+      color: var(--teal-strong);
+      font-weight: 900;
+    }
+
+    .filter-date-cell.is-selected.has-tasks {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), rgba(15, 118, 110, 0.14));
     }
 
     input,
@@ -4043,18 +4223,44 @@
         <div class="filters-grid layout-item" data-layout-id="filters-grid-block" data-layout-label="כלי סינון">
           <div class="field">
               <label for="filter-date">תאריך</label>
-              <div class="date-control">
-              <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
-              <input class="date-native" type="date" id="filter-date" />
+              <div
+                class="date-control filter-date-control"
+                id="filter-date-control"
+                role="button"
+                tabindex="0"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
+                <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
+                <input class="date-native" type="date" id="filter-date" />
+                <div class="filter-date-popover" id="filter-date-popover" role="dialog" aria-label="בחירת תאריכים לסינון" hidden>
+                  <div class="filter-date-popover-head">
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש קודם" onclick="shiftFilterCalendarMonth(-1, event)">‹</button>
+                    <div class="filter-date-month-label" id="filter-date-month-label"></div>
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש הבא" onclick="shiftFilterCalendarMonth(1, event)">›</button>
+                  </div>
+                  <div class="filter-date-meta-row">
+                    <button type="button" class="filter-date-meta-btn" id="filter-date-all-btn" onclick="toggleAllDatesFromCalendar(event)" hidden>כל התאריכים</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="resetFilterDateCalendarToToday(event)">היום</button>
+                  </div>
+                  <div class="filter-date-helper" id="filter-date-helper-text"></div>
+                  <div class="filter-date-weekdays">
+                    <span class="filter-date-weekday">א</span>
+                    <span class="filter-date-weekday">ב</span>
+                    <span class="filter-date-weekday">ג</span>
+                    <span class="filter-date-weekday">ד</span>
+                    <span class="filter-date-weekday">ה</span>
+                    <span class="filter-date-weekday">ו</span>
+                    <span class="filter-date-weekday">ש</span>
+                  </div>
+                  <div class="filter-date-grid" id="filter-date-grid"></div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label for="filter-patient">מטופל</label>
-            <input type="text" id="filter-patient" list="all-patient-options" placeholder="סינון לפי שם מטופל" />
-          </div>
-          <div class="field" id="filter-patient-dates-field" hidden>
-            <label>תאריכי מטופל</label>
-            <div class="chips" id="filter-patient-date-options"></div>
+            <div class="field">
+              <label for="filter-patient">מטופל</label>
+              <input type="text" id="filter-patient" list="all-patient-options" placeholder="סינון לפי שם מטופל" />
+            </div>
           </div>
           <div class="field">
             <label for="filter-assignee">שיוך</label>
@@ -4269,6 +4475,7 @@
     let currentCategoryFilter = 'all';
     let filterAllPatientDates = false;
     let selectedPatientFilterDates = [];
+    let filterCalendarMonth = getTodayString().slice(0, 7);
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
@@ -6959,14 +7166,8 @@
       return activeDates.length > 0 ? new Set(activeDates) : null;
     }
 
-    function getPatientFilterDateOptions() {
-      const patientFilter = getNormalizedPatientFilterValue();
-      if (!patientFilter) {
-        return [];
-      }
-
-      const contextualTasks = getTasksForFilters({ exclude: ['date', 'patient'] })
-        .filter((task) => taskMatchesPatientFilter(task, patientFilter));
+    function getFilterCalendarTaskDates() {
+      const contextualTasks = getTasksForFilters({ exclude: ['date'] });
       const dateSet = new Set();
       const fallbackDate = getCurrentFilterDateValue() || getTodayString();
 
@@ -6981,43 +7182,463 @@
         }
       });
 
-      return Array.from(dateSet).sort((a, b) => b.localeCompare(a));
+      return dateSet;
     }
 
-    function renderPatientDateFilterOptions() {
-      const field = document.getElementById('filter-patient-dates-field');
-      const container = document.getElementById('filter-patient-date-options');
-      const patientFilter = getNormalizedPatientFilterValue();
+    function getMonthKeyFromDate(value) {
+      const match = String(value || '').match(/^(\d{4})-(\d{2})/);
+      if (match) {
+        return `${match[1]}-${match[2]}`;
+      }
 
+      return getTodayString().slice(0, 7);
+    }
+
+    function getMonthKeyFromParts(year, monthIndex) {
+      const month = String(monthIndex + 1).padStart(2, '0');
+      return `${year}-${month}`;
+    }
+
+    function parseMonthKey(monthKey) {
+      const [year, month] = String(monthKey || '').split('-').map(Number);
+      return new Date(year || new Date().getFullYear(), (month || 1) - 1, 1);
+    }
+
+    function shiftMonthKey(monthKey, delta) {
+      const nextDate = parseMonthKey(monthKey);
+      nextDate.setMonth(nextDate.getMonth() + delta);
+      return getMonthKeyFromParts(nextDate.getFullYear(), nextDate.getMonth());
+    }
+
+    function formatDateKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function getFilterCalendarActiveDates() {
+      if (filterAllPatientDates) {
+        return new Set();
+      }
+
+      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
+      const activeDates = selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (fallbackDate ? [fallbackDate] : []);
+
+      return new Set(activeDates);
+    }
+
+    function getFilterDateDisplayText(inputDate, emptyLabel = '') {
+      const patientFilter = getNormalizedPatientFilterValue();
       if (!patientFilter) {
-        filterAllPatientDates = false;
-        selectedPatientFilterDates = [];
-        field.hidden = true;
-        container.innerHTML = '';
+        return inputDate ? formatControlDate(inputDate) : emptyLabel;
+      }
+
+      if (filterAllPatientDates) {
+        return 'כל התאריכים';
+      }
+
+      const activeDates = selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (inputDate ? [inputDate] : []);
+
+      if (activeDates.length > 1) {
+        return `${activeDates.length} תאריכים`;
+      }
+
+      return inputDate ? formatControlDate(inputDate) : emptyLabel;
+    }
+
+    function isFilterDatePopoverOpen() {
+      const popover = document.getElementById('filter-date-popover');
+      return Boolean(popover) && !popover.hidden;
+    }
+
+    function openFilterDatePopover() {
+      if (isPhoneLayout) {
         return;
       }
 
-      const dates = getPatientFilterDateOptions();
-      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
-      const activeDateSet = new Set(
-        filterAllPatientDates
-          ? []
-          : (selectedPatientFilterDates.length > 0 ? selectedPatientFilterDates : (fallbackDate ? [fallbackDate] : []))
-      );
+      const control = document.getElementById('filter-date-control');
+      const popover = document.getElementById('filter-date-popover');
+      if (!control || !popover) {
+        return;
+      }
 
-      field.hidden = false;
-      container.innerHTML = `
-        <button
-          type="button"
-          class="chip ${filterAllPatientDates ? 'active' : ''}"
-          onclick="toggleAllPatientDatesFilter()"
-        >כל התאריכים</button>
-        ${dates.map((date) => `
+      filterCalendarMonth = getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      renderFilterDatePopover();
+      popover.hidden = false;
+      control.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeFilterDatePopover() {
+      const control = document.getElementById('filter-date-control');
+      const popover = document.getElementById('filter-date-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      popover.hidden = true;
+      control.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleFilterDatePopover() {
+      if (isFilterDatePopoverOpen()) {
+        closeFilterDatePopover();
+      } else {
+        openFilterDatePopover();
+      }
+    }
+
+    function renderFilterDatePopover() {
+      const popover = document.getElementById('filter-date-popover');
+      const monthLabel = document.getElementById('filter-date-month-label');
+      const helper = document.getElementById('filter-date-helper-text');
+      const grid = document.getElementById('filter-date-grid');
+      const allDatesButton = document.getElementById('filter-date-all-btn');
+
+      if (!popover || !monthLabel || !helper || !grid || !allDatesButton) {
+        return;
+      }
+
+      if (isPhoneLayout) {
+        closeFilterDatePopover();
+        return;
+      }
+
+      const monthKey = filterCalendarMonth || getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      filterCalendarMonth = monthKey;
+
+      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
+      const monthDate = parseMonthKey(monthKey);
+      const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const gridStart = new Date(monthStart);
+      gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+
+      const markedDates = getFilterCalendarTaskDates();
+      const activeDates = getFilterCalendarActiveDates();
+      const today = getTodayString();
+
+      monthLabel.textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
+      helper.textContent = patientFilterActive
+        ? 'כתום = יש משימות. אפשר לבחור כמה תאריכים או לעבור לכל התאריכים.'
+        : 'כתום = יש משימות בתאריך. בלי סינון מטופל נשארת בחירת תאריך אחת.';
+
+      allDatesButton.hidden = !patientFilterActive;
+      allDatesButton.classList.toggle('active', patientFilterActive && filterAllPatientDates);
+
+      grid.innerHTML = Array.from({ length: 42 }, (_, index) => {
+        const cellDate = new Date(gridStart);
+        cellDate.setDate(gridStart.getDate() + index);
+        const dateKey = formatDateKey(cellDate);
+        const isCurrentMonth = cellDate.getMonth() === monthStart.getMonth();
+        const isSelected = !filterAllPatientDates && activeDates.has(dateKey);
+        const hasTasks = markedDates.has(dateKey);
+        const classes = [
+          'filter-date-cell',
+          isCurrentMonth ? '' : 'is-outside-month',
+          dateKey === today ? 'is-today' : '',
+          hasTasks ? 'has-tasks' : '',
+          isSelected ? 'is-selected' : ''
+        ].filter(Boolean).join(' ');
+
+        return `
           <button
             type="button"
-            class="chip ${!filterAllPatientDates && activeDateSet.has(date) ? 'active' : ''}"
-            onclick="togglePatientFilterDate('${escJs(date)}')"
-          >${escHtml(formatControlDate(date) || date)}</button>
+            class="${classes}"
+            onclick="selectFilterCalendarDate('${escJs(dateKey)}', event)"
+            aria-pressed="${isSelected ? 'true' : 'false'}"
+          >${cellDate.getDate()}</button>
+        `;
+      }).join('');
+    }
+
+    function shiftFilterCalendarMonth(delta, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      filterCalendarMonth = shiftMonthKey(filterCalendarMonth, delta);
+      renderFilterDatePopover();
+    }
+
+    function applyFilterDateSelection(date, options = {}) {
+      const {
+        keepOpen = false,
+        resetToSingle = false
+      } = options;
+      const input = document.getElementById('filter-date');
+      if (!input || !date) {
+        return;
+      }
+
+      const currentActiveDates = getFilterCalendarActiveDates();
+      input.value = date;
+      filterCalendarMonth = getMonthKeyFromDate(date);
+
+      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
+      if (!patientFilterActive) {
+        filterAllPatientDates = false;
+        selectedPatientFilterDates = [];
+        syncAllDateDisplays();
+        handleFiltersChanged();
+        if (!keepOpen) {
+          closeFilterDatePopover();
+        }
+        return;
+      }
+
+      if (filterAllPatientDates || resetToSingle) {
+        filterAllPatientDates = false;
+        selectedPatientFilterDates = [date];
+        syncAllDateDisplays();
+        handleFiltersChanged();
+        if (!keepOpen) {
+          closeFilterDatePopover();
+        }
+        return;
+      }
+
+      const selected = new Set(currentActiveDates);
+      if (selected.has(date) && selected.size > 1) {
+        selected.delete(date);
+      } else {
+        selected.add(date);
+      }
+
+      selectedPatientFilterDates = Array.from(selected).sort();
+      syncAllDateDisplays();
+      handleFiltersChanged();
+      if (!keepOpen) {
+        closeFilterDatePopover();
+      }
+    }
+
+    function selectFilterCalendarDate(date, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      applyFilterDateSelection(date, { keepOpen: Boolean(getNormalizedPatientFilterValue()) });
+    }
+
+    function toggleAllDatesFromCalendar(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+
+      if (!getNormalizedPatientFilterValue()) {
+        return;
+      }
+
+      filterAllPatientDates = !filterAllPatientDates;
+      if (filterAllPatientDates) {
+        selectedPatientFilterDates = [];
+      } else {
+        selectedPatientFilterDates = [getCurrentFilterDateValue() || getTodayString()];
+      }
+      syncAllDateDisplays();
+      handleFiltersChanged();
+    }
+
+    function resetFilterDateCalendarToToday(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      applyFilterDateSelection(getTodayString(), { keepOpen: Boolean(getNormalizedPatientFilterValue()), resetToSingle: Boolean(getNormalizedPatientFilterValue()) });
+    }
+
+    function getUploadedPatientPoolNames() {
+      return uniqueNames(activePatientPool);
+    }
+
+    function getTrackedPatientNamesForDate(date) {
+      return uniqueNames([
+        ...allTasks
+          .filter((task) => !date || task.task_date === date)
+          .map((task) => task.patient_name),
+        ...infectedEntries.map((entry) => entry.patient_name),
+        ...surgeryPrepEntries.map((entry) => entry.patient_name)
+      ]);
+    }
+
+    function getPatientPoolNamesForDate(date) {
+      return uniqueNames([
+        ...getUploadedPatientPoolNames(),
+        ...getTrackedPatientNamesForDate(date)
+      ]);
+    }
+
+    function getTaskCreatedAtSortValue(task) {
+      const timestamp = String(task?.created_at || task?.updated_at || '').trim();
+      if (!timestamp) {
+        return 0;
+      }
+
+      const parsed = Date.parse(timestamp.replace(' ', 'T'));
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function getSuggestedPatientsForDate(date) {
+      const taskRecencyByPatient = new Map();
+
+      allTasks
+        .filter((task) => task.task_date === date)
+        .forEach((task) => {
+          const patientName = String(task.patient_name || '').trim();
+          if (!patientName) {
+            return;
+          }
+
+          const sortValue = getTaskCreatedAtSortValue(task);
+          const currentValue = taskRecencyByPatient.get(patientName) || 0;
+          if (sortValue >= currentValue) {
+            taskRecencyByPatient.set(patientName, sortValue);
+          }
+        });
+
+      const recentTaskPatients = Array.from(taskRecencyByPatient.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'he'))
+        .map(([patientName]) => patientName);
+
+      const remainingPoolPatients = getPatientPoolNamesForDate(date)
+        .filter((patientName) => !taskRecencyByPatient.has(patientName));
+
+      return [...recentTaskPatients, ...remainingPoolPatients];
+    }
+
+    function renderDailyPatientPool() {
+      const uploadedPoolNames = getUploadedPatientPoolNames();
+      const suggestionNames = getPatientPoolNamesForDate(getTodayString());
+      const note = document.getElementById('patient-pool-note');
+      const list = document.getElementById('patient-pool-list');
+      const datalist = document.getElementById('daily-patient-pool-options');
+
+      datalist.innerHTML = suggestionNames.map((name) => `<option value="${escAttr(name)}"></option>`).join('');
+
+      if (uploadedPoolNames.length === 0) {
+        note.textContent = 'עדיין לא הועלה מאגר מטופלים פעיל.';
+        list.innerHTML = `<div class="small-note">העלה קובץ Excel כדי לבנות מאגר מטופלים שיישאר פעיל עד שתמחק או תחליף אותו.</div>`;
+        return;
+      }
+
+      const sourceLabel = activePatientPoolDate ? formatControlDate(activePatientPoolDate) : 'Today';
+      note.textContent = `המאגר הפעיל כולל ${uploadedPoolNames.length} מטופלים ונשמר מאז ${sourceLabel}.`;
+      list.innerHTML = uploadedPoolNames.map((name) => `<span class="patient-pool-item">${escHtml(name)}</span>`).join('');
+    }
+
+    function renderPatientHelpers() {
+      const formDate = document.getElementById('input-date').value || getTodayString();
+      const formDatePatients = getSuggestedPatientsForDate(formDate);
+      const filterPatients = uniqueNames(
+        getTasksForFilters({ exclude: ['patient'] }).map((task) => task.patient_name)
+      );
+
+      document.getElementById('input-patient-options').innerHTML =
+        formDatePatients.map((name) => `<option value="${escAttr(name)}"></option>`).join('');
+
+      document.getElementById('all-patient-options').innerHTML =
+        filterPatients.map((name) => `<option value="${escAttr(name)}"></option>`).join('');
+
+      const bar = document.getElementById('input-patient-bar');
+      const phoneBar = document.getElementById('phone-input-patient-bar');
+      if (formDatePatients.length === 0) {
+        const emptyMessage = isPhoneLayout ? 'אין עדיין מטופלים עם משימה להיום.' : 'אין עדיין מטופלים עם משימה לתאריך שנבחר.';
+        bar.innerHTML = `<div class="small-note">${emptyMessage}</div>`;
+        if (phoneBar) {
+          phoneBar.innerHTML = `<div class="small-note">אין עדיין מטופלים עם משימה להיום.</div>`;
+        }
+        renderPatientSuggestionMenu('task');
+        renderPatientSuggestionMenu('infected');
+        renderPatientSuggestionMenu('er');
+        renderPatientSuggestionMenu('surgery');
+        syncTaskFormMode();
+        return;
+      }
+
+      const chipsMarkup = formDatePatients.map((name) => `
+        <button type="button" class="patient-chip" onclick="useSuggestedPatient('${escJs(name)}')">${escHtml(name)}</button>
+      `).join('');
+      bar.innerHTML = chipsMarkup;
+      if (phoneBar) {
+        phoneBar.innerHTML = chipsMarkup;
+      }
+      renderPatientSuggestionMenu('task');
+      renderPatientSuggestionMenu('infected');
+      renderPatientSuggestionMenu('er');
+      renderPatientSuggestionMenu('surgery');
+      syncTaskFormMode();
+    }
+
+    function renderSummary() {
+      const visibleTasks = getTasksForFilters();
+      const visibleNightShiftTasks = getVisibleNightShiftTasks();
+      const summary = document.getElementById('summary');
+      const summaryBlock = document.querySelector('[data-layout-id="summary-block"]');
+      if (isPhoneLayout) {
+        if (summaryBlock) {
+          summaryBlock.hidden = true;
+        }
+        summary.innerHTML = '';
+        document.getElementById('view-subtitle').textContent =
+          visibleTasks.length === 0
+            ? 'מציג כרגע את משימות היום בלבד, ואין משימות פתוחות להצגה.'
+            : `מציג ${visibleTasks.length} משימות של היום בתצוגת טלפון פשוטה.`;
+        document.getElementById('night-shift-subtitle').textContent =
+          visibleNightShiftTasks.length === 0
+            ? 'אין כרגע משימות תורנות פעילות להיום.'
+            : `${visibleNightShiftTasks.length} משימות תורנות פעילות להיום.`;
+        return;
+      }
+
+      const filterAssignee = document.getElementById('filter-assignee').value;
+      const summaryItems = [];
+
+      if (currentCategoryFilter !== 'all') {
+        summaryItems.push(`סוג: ${currentCategoryFilter}`);
+      }
+
+      if (filterAssignee === 'unassigned') {
+        summaryItems.push('ללא שיוך');
+      } else if (filterAssignee) {
+        const member = teamMembers.find((item) => String(item.id) === String(filterAssignee));
+        if (member) {
+          summaryItems.push(`שיוך: ${member.name}`);
+        }
+      }
+
+      if (summaryBlock) {
+        summaryBlock.hidden = summaryItems.length === 0;
+      }
+
+      summary.innerHTML = summaryItems
+        .map((item) => `<span class="summary-pill">${escHtml(item)}</span>`)
+        .join('');
+
+      document.getElementById('view-subtitle').textContent =
+        visibleTasks.length === 0
+          ? 'אין משימות שתואמות לסינון.'
+          : `מציג ${visibleTasks.length} משימות לאחר סינון לפי תאריך, מטופל וסוג.`;
+
+      document.getElementById('night-shift-subtitle').textContent =
+        visibleNightShiftTasks.length === 0
+          ? 'אין כרגע משימות בתורנות לתאריך ולסינון שבחרת.'
+          : `${visibleNightShiftTasks.length} משימות בתורנות. עד ${NIGHT_SHIFT_CUTOFF_LABEL} הן נשארות משויכות ליום שבו הועברו.`;
+    }
+
+    function renderStatusLegend() {
+      const visibleTasks = getTasksForFilters();
+      const counts = Object.fromEntries(
+        STATUS_ORDER.map((status) => [
+          status,
+          visibleTasks.filter((task) => task.status === status).length
+        ])
+      );
+
+      document.getElementById('status-legend').innerHTML = `
+        <span class="legend-total">סה"כ ${visibleTasks.length}</span>
+        ${STATUS_ORDER.map((status) => `
+        <span
+          class="legend-item"
+          data-ui-tooltip="${escAttr(STATUS_LABELS[status])}"
+          data-ui-tooltip-ready="true"
+          aria-label="${escHtml(STATUS_LABELS[status])}"
+        >
+          <span class="status-dot ${status}">${counts[status]}</span>
+        </span>
         `).join('')}
       `;
     }
@@ -7088,37 +7709,6 @@
         String(task.assignee_id || '') === assigneeFilter;
 
       return matchesPatient && matchesCategory && matchesAssignee;
-    }
-
-    function toggleAllPatientDatesFilter() {
-      filterAllPatientDates = !filterAllPatientDates;
-      if (filterAllPatientDates) {
-        selectedPatientFilterDates = [];
-      }
-      handleFiltersChanged();
-    }
-
-    function togglePatientFilterDate(date) {
-      if (!date) {
-        return;
-      }
-
-      if (filterAllPatientDates) {
-        filterAllPatientDates = false;
-        selectedPatientFilterDates = [date];
-        handleFiltersChanged();
-        return;
-      }
-
-      const selected = new Set(selectedPatientFilterDates);
-      if (selected.has(date)) {
-        selected.delete(date);
-      } else {
-        selected.add(date);
-      }
-
-      selectedPatientFilterDates = Array.from(selected).sort();
-      handleFiltersChanged();
     }
 
     function renderTasks() {
@@ -8400,7 +8990,7 @@
     }
 
     function handleFiltersChanged() {
-      renderPatientDateFilterOptions();
+      renderFilterDatePopover();
       renderPatientHelpers();
       renderFilterAssigneeOptions();
       renderCategoryFilters();
@@ -9568,6 +10158,9 @@
         if (!event.target.closest('.suggestion-field')) {
           closeAllPatientSuggestionMenus();
         }
+        if (!event.target.closest('.filter-date-control')) {
+          closeFilterDatePopover();
+        }
         if (!event.target.closest('.hero-menu')) {
           closeHeroMenu();
         }
@@ -9586,6 +10179,7 @@
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeStatusPicker();
+        closeFilterDatePopover();
         closeAllPatientSuggestionMenus();
         hidePatientHistoryTooltip();
       });
@@ -9604,8 +10198,14 @@
           closeAdminSuggestionsModal();
         }
       });
-      window.addEventListener('resize', hidePatientHistoryTooltip);
-      window.addEventListener('scroll', hidePatientHistoryTooltip, true);
+      window.addEventListener('resize', () => {
+        hidePatientHistoryTooltip();
+        closeFilterDatePopover();
+      });
+      window.addEventListener('scroll', () => {
+        hidePatientHistoryTooltip();
+        closeFilterDatePopover();
+      }, true);
       window.addEventListener('beforeunload', closeLiveSync);
       if (typeof phoneLayoutMediaQuery.addEventListener === 'function') {
         phoneLayoutMediaQuery.addEventListener('change', () => syncPhoneLayoutMode());
@@ -9619,6 +10219,7 @@
       const { rerender = true } = options;
       const wasPhoneLayout = document.body.classList.contains('phone-layout');
       isPhoneLayout = phoneLayoutMediaQuery.matches;
+      closeFilterDatePopover();
       document.body.classList.toggle('phone-layout', isPhoneLayout);
       const newTaskSubtitle = document.getElementById('new-task-subtitle');
 
@@ -10145,8 +10746,12 @@
       const display = document.getElementById(displayId);
       const emptyLabel = display.dataset.emptyLabel || '';
 
-      display.textContent = inputDate ? formatControlDate(inputDate) : emptyLabel;
-      display.classList.toggle('is-empty', !inputDate);
+      const displayText = inputId === 'filter-date'
+        ? getFilterDateDisplayText(inputDate, emptyLabel)
+        : (inputDate ? formatControlDate(inputDate) : emptyLabel);
+
+      display.textContent = displayText;
+      display.classList.toggle('is-empty', !displayText);
     }
 
     function syncDateLimits() {
@@ -10170,6 +10775,30 @@
         }
 
         control.dataset.bound = 'true';
+        if (control.id === 'filter-date-control') {
+          control.addEventListener('click', (event) => {
+            if (event.target.closest('.filter-date-popover')) {
+              return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            toggleFilterDatePopover();
+          });
+          control.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              toggleFilterDatePopover();
+              return;
+            }
+
+            if (event.key === 'Escape') {
+              closeFilterDatePopover();
+            }
+          });
+          return;
+        }
+
         control.addEventListener('click', () => {
           const input = control.querySelector('.date-native');
           if (!input) {
