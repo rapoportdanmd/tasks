@@ -1121,3 +1121,7 @@
 ## 2026-04-04 08:31 IDT
 
 - Split patient-name ordering into two behaviors: the bottom quick-pick chips in `משימה חדשה` still bring the most recently used patient to the front, while the name dropdown menus now stay alphabetical.
+
+## 2026-04-04 16:38 IDT
+
+- Added direct inline editing for `מכתבים` task sub-categories from the task bar by replacing the read-only letter badge with a compact dropdown that reuses the existing letter subcategory list.

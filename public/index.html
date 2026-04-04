@@ -2782,6 +2782,24 @@
       border: 1px solid rgba(211, 203, 190, 0.72);
     }
 
+    .task-meta-select {
+      min-width: 0;
+      max-width: 100%;
+      min-height: 24px;
+      height: 24px;
+      padding: 2px 26px 2px 9px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #475569;
+      border-radius: 999px;
+      border: 1px solid rgba(211, 203, 190, 0.8);
+      background: rgba(255, 255, 255, 0.82);
+      appearance: auto;
+      -webkit-appearance: menulist;
+      direction: rtl;
+    }
+
     .task-datetime-box {
       display: flex;
       gap: 4px;
@@ -7924,6 +7942,21 @@
       const metaLines = [
         task.subcategory ? `מכתב: ${escHtml(task.subcategory)}` : ''
       ].filter(Boolean);
+      const isLetterTask = task.category === 'מכתבים';
+      const metaHtml = isLetterTask
+        ? `
+            <select
+              class="task-meta-select"
+              aria-label="עדכון תת-סוג מכתב"
+              onchange="updateTask(${task.id}, { subcategory: this.value || null })"
+            >
+              <option value="">ללא תת-סוג</option>
+              ${letterSubcategories.map((subcategory) => `
+                <option value="${escAttr(subcategory)}" ${task.subcategory === subcategory ? 'selected' : ''}>${escHtml(subcategory)}</option>
+              `).join('')}
+            </select>
+          `
+        : metaLines.map((line) => `<span>${line}</span>`).join('');
       const statusPickerOpen = openStatusPickerTaskId === task.id;
       const rowClasses = [
         'task-row',
@@ -7953,7 +7986,7 @@
               onclick="startNewTaskForPatient('${escJs(task.patient_name)}', '${escJs(task.task_date || '')}')"
             >${escHtml(task.patient_name)}</button>
             <div class="task-meta">
-              ${metaLines.map((line) => `<span>${line}</span>`).join('')}
+              ${metaHtml}
             </div>
           </div>
           <div class="task-desc-shell" onclick="focusTaskDescription(${task.id})">
