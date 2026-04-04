@@ -1031,3 +1031,8 @@
 ## 2026-04-04 08:31 IDT
 
 - Split patient-name ordering into two behaviors: the bottom quick-pick chips in `משימה חדשה` still bring the most recently used patient to the front, while the name dropdown menus now stay alphabetical.
+
+## 2026-04-04 09:08 IDT
+
+- Matched the new-task browser-side validation to the backend so category `קבלות` can be saved without `פירוט`.
+- Added a standard fold/unfold control to the `מאגר מטופלים` panel using the same collapse behavior as the other top-level boxes.

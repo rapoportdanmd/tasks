@@ -4161,10 +4161,20 @@
           <p>העלה קובץ Excel של מטופלים. המאגר יישאר פעיל גם בימים הבאים עד שיימחק או יוחלף, וישמש להצעות במשימות, מזוהמים והכנות ניתוחים בלבד.</p>
         </div>
         <div class="panel-head-actions">
+          <button
+            class="btn secondary compact panel-collapse-btn"
+            id="patient-pool-panel-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-label="כווץ מאגר מטופלים"
+            data-ui-tooltip="כווץ מאגר מטופלים"
+            data-ui-tooltip-ready="true"
+            onclick="togglePanelCollapsed('patient-pool-panel')"
+          >▴</button>
           <button class="btn danger compact" type="button" onclick="clearTodayPatientPool()">מחק מאגר</button>
         </div>
       </div>
-      <div class="panel-body layout-container" data-layout-container="patient-pool-panel-content" data-layout-axis="y">
+      <div class="panel-body layout-container" id="patient-pool-panel-body" data-layout-container="patient-pool-panel-content" data-layout-axis="y">
         <div class="layout-item" data-layout-id="patient-pool-upload-block" data-layout-label="העלאת מאגר מטופלים">
           <div class="upload-row">
             <input
@@ -4204,7 +4214,7 @@
       done: 'בוצע',
       canceled: 'בוטל'
     };
-    const OPTIONAL_DESCRIPTION_CATEGORIES = ['פיזיותרפיה', 'שיקום', 'מכתבים'];
+    const OPTIONAL_DESCRIPTION_CATEGORIES = ['פיזיותרפיה', 'שיקום', 'מכתבים', 'קבלות'];
     const FOLDABLE_TASK_STATUSES = ['done', 'canceled'];
     const LAYOUT_STORAGE_KEY = 'patientTasks.layout.v1';
     const FREEFORM_STORAGE_KEY = 'patientTasks.freeform.v2';
