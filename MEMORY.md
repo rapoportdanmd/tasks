@@ -1027,3 +1027,7 @@
 ## 2026-04-04 08:23 IDT
 
 - Fixed the desktop filter-patient suggestion list being clipped by the bottom edge of the filtering panel by allowing overflow to stay visible for that panel only.
+
+## 2026-04-04 08:31 IDT
+
+- Split patient-name ordering into two behaviors: the bottom quick-pick chips in `משימה חדשה` still bring the most recently used patient to the front, while the name dropdown menus now stay alphabetical.

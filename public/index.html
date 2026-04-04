@@ -6803,7 +6803,7 @@
       return Number.isNaN(parsed) ? 0 : parsed;
     }
 
-    function getSuggestedPatientsForDate(date) {
+    function getRecentTaskPatientsForDate(date) {
       const taskRecencyByPatient = new Map();
 
       allTasks
@@ -6821,12 +6821,20 @@
           }
         });
 
-      const recentTaskPatients = Array.from(taskRecencyByPatient.entries())
+      return Array.from(taskRecencyByPatient.entries())
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'he'))
         .map(([patientName]) => patientName);
+    }
 
+    function getSuggestedPatientsForDate(date) {
+      return getPatientPoolNamesForDate(date);
+    }
+
+    function getTaskChipPatientsForDate(date) {
+      const recentTaskPatients = getRecentTaskPatientsForDate(date);
+      const recentPatientSet = new Set(recentTaskPatients);
       const remainingPoolPatients = getPatientPoolNamesForDate(date)
-        .filter((patientName) => !taskRecencyByPatient.has(patientName));
+        .filter((patientName) => !recentPatientSet.has(patientName));
 
       return [...recentTaskPatients, ...remainingPoolPatients];
     }
@@ -6853,7 +6861,7 @@
 
     function renderPatientHelpers() {
       const formDate = document.getElementById('input-date').value || getTodayString();
-      const formDatePatients = getSuggestedPatientsForDate(formDate);
+      const formDatePatients = getTaskChipPatientsForDate(formDate);
       const filterPatients = uniqueNames(
         getTasksForFilters({ exclude: ['patient'] }).map((task) => task.patient_name)
       );
