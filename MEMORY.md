@@ -1014,3 +1014,7 @@
 
 - Added a desktop-only orange `כל התאריכים` toggle under the category chips that appears only while a patient filter is active, without changing the rest of the filter layout.
 - When enabled, the button temporarily widens that one patient's task view across every date while leaving the normal current-day date filter intact for everything else and for when the toggle is turned back off.
+
+## 2026-04-04 08:08 IDT
+
+- Moved the desktop `כל התאריכים` toggle into the task-category chip flow itself, so it sits as the wrapped leftmost chip instead of on a separate line below the chips.
