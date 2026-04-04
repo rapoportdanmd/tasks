@@ -3961,10 +3961,6 @@
           <button class="hero-menu-item" type="button" role="menuitem" onclick="bookmarkCurrentPage()">
             <span class="hero-menu-item-main">שמור סימנייה</span>
           </button>
-          <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-copy-department-link" onclick="copyDepartmentAccessLink()">
-            <span class="hero-menu-item-main">העתק קישור למחלקה</span>
-            <span class="hero-menu-item-meta" id="hero-menu-copy-department-link-meta"></span>
-          </button>
           <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-account" onclick="openAccountAccessOverlay()">
             <span class="hero-menu-item-main">חשבון</span>
           </button>
@@ -4904,8 +4900,6 @@
       const menuButton = document.getElementById('hero-menu-button');
       const menuTitle = document.getElementById('hero-menu-title');
       const menuSubtitle = document.getElementById('hero-menu-subtitle');
-      const copyDepartmentLinkButton = document.getElementById('hero-menu-copy-department-link');
-      const copyDepartmentLinkMeta = document.getElementById('hero-menu-copy-department-link-meta');
       const accountButton = document.getElementById('hero-menu-account');
       const logoutButton = document.getElementById('hero-menu-logout');
       const feedbackInboxButton = document.getElementById('hero-menu-feedback-inbox');
@@ -4938,9 +4932,6 @@
       feedbackInboxButton.hidden = !isAdmin;
       sendSuggestionButton.hidden = isAdmin || (authEnabled && !authenticated);
 
-      copyDepartmentLinkMeta.textContent = getDepartmentAccessUrl();
-      copyDepartmentLinkButton.hidden = !getDepartmentAccessUrl();
-      copyDepartmentLinkButton.disabled = !getDepartmentAccessUrl();
       accountButton.disabled = !authEnabled;
       logoutButton.disabled = !authEnabled || !authenticated;
       feedbackInboxButton.disabled = !authenticated || !isAdmin;

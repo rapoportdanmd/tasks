@@ -1169,3 +1169,7 @@
 ## 2026-04-04 18:58 IDT
 
 - Fixed the task-row inner status color layer so it now inherits the same rounded corners as the task bar itself, preventing the tinted background from looking like a squared-off rectangle inside rounded task rows.
+
+## 2026-04-04 19:04 IDT
+
+- Removed the `העתק קישור למחלקה` quick action from the book-menu popover and cleaned up the menu-state code that used to show and label that button.
