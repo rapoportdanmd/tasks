@@ -1712,6 +1712,30 @@
       border-color: rgba(15, 118, 110, 0.24);
     }
 
+    .patient-all-dates-row {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 8px;
+    }
+
+    .patient-all-dates-btn {
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.34);
+      background: rgba(255, 247, 237, 0.92);
+      color: #c2410c;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    }
+
+    .patient-all-dates-btn.active {
+      background: rgba(251, 191, 36, 0.26);
+      border-color: rgba(217, 119, 6, 0.42);
+      color: #9a3412;
+    }
+
     .chip.is-empty:not(.active) {
       background: rgba(241, 245, 249, 0.96);
       color: #94a3b8;
@@ -4059,6 +4083,14 @@
           <div class="field">
             <label>סוגי משימות</label>
             <div class="chips" id="category-filters"></div>
+            <div class="patient-all-dates-row" id="patient-all-dates-row" hidden>
+              <button
+                type="button"
+                class="patient-all-dates-btn"
+                id="patient-all-dates-btn"
+                onclick="togglePatientAllDatesFilter()"
+              >כל התאריכים</button>
+            </div>
           </div>
         </div>
 
@@ -4263,6 +4295,7 @@
     let erPatientEntries = [];
     let surgeryPrepEntries = [];
     let currentCategoryFilter = 'all';
+    let filterAllPatientDates = false;
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
@@ -6712,6 +6745,38 @@
       `;
     }
 
+    function getNormalizedPatientFilterValue() {
+      return isPhoneLayout
+        ? ''
+        : document.getElementById('filter-patient').value.trim().toLowerCase();
+    }
+
+    function isAllPatientDatesFilterActive() {
+      return !isPhoneLayout && filterAllPatientDates && Boolean(getNormalizedPatientFilterValue());
+    }
+
+    function syncPatientAllDatesButton() {
+      const row = document.getElementById('patient-all-dates-row');
+      const button = document.getElementById('patient-all-dates-btn');
+      if (!row || !button) {
+        return;
+      }
+
+      const patientFilterActive = Boolean(getNormalizedPatientFilterValue()) && !isPhoneLayout;
+      row.hidden = !patientFilterActive;
+      button.classList.toggle('active', patientFilterActive && filterAllPatientDates);
+      button.setAttribute('aria-pressed', patientFilterActive && filterAllPatientDates ? 'true' : 'false');
+    }
+
+    function togglePatientAllDatesFilter() {
+      if (!getNormalizedPatientFilterValue() || isPhoneLayout) {
+        return;
+      }
+
+      filterAllPatientDates = !filterAllPatientDates;
+      handleFiltersChanged();
+    }
+
     function getUploadedPatientPoolNames() {
       return uniqueNames(activePatientPool);
     }
@@ -6923,7 +6988,7 @@
       const excludeSet = new Set(exclude);
       const filterDate = isPhoneLayout
         ? getTodayString()
-        : document.getElementById('filter-date').value;
+        : (isAllPatientDatesFilterActive() ? '' : document.getElementById('filter-date').value);
 
       return allTasks.filter((task) => {
         if (task.night_shift_anchor_date) {
@@ -6940,8 +7005,8 @@
       const excludeSet = new Set(exclude);
       const filterDate = isPhoneLayout
         ? getTodayString()
-        : document.getElementById('filter-date').value;
-      const validAnchorDates = getNightShiftAnchorDatesForFilter(filterDate);
+        : (isAllPatientDatesFilterActive() ? '' : document.getElementById('filter-date').value);
+      const validAnchorDates = filterDate ? getNightShiftAnchorDatesForFilter(filterDate) : null;
 
       return allTasks.filter((task) => {
         if (!task.night_shift_anchor_date) {
@@ -6950,7 +7015,7 @@
 
         const matchesDate =
           excludeSet.has('date') ||
-          !filterDate ||
+          !validAnchorDates ||
           validAnchorDates.has(task.night_shift_anchor_date);
 
         return matchesDate && matchesSharedTaskFilters(task, excludeSet);
@@ -6965,15 +7030,13 @@
     }
 
     function matchesSharedTaskFilters(task, excludeSet) {
-      const patientFilter = isPhoneLayout
-        ? ''
-        : document.getElementById('filter-patient').value.trim().toLowerCase();
+      const patientFilter = getNormalizedPatientFilterValue();
       const assigneeFilter = isPhoneLayout
         ? ''
         : document.getElementById('filter-assignee').value;
       const activeCategoryFilter = isPhoneLayout ? 'all' : currentCategoryFilter;
 
-      const matchesPatient = excludeSet.has('patient') || !patientFilter || task.patient_name.toLowerCase().includes(patientFilter);
+      const matchesPatient = excludeSet.has('patient') || !patientFilter || String(task.patient_name || '').toLowerCase().includes(patientFilter);
       const matchesCategory = excludeSet.has('category') || activeCategoryFilter === 'all' || task.category === activeCategoryFilter;
       const matchesAssignee =
         excludeSet.has('assignee') ||
@@ -8263,6 +8326,7 @@
     }
 
     function handleFiltersChanged() {
+      syncPatientAllDatesButton();
       renderPatientHelpers();
       renderFilterAssigneeOptions();
       renderCategoryFilters();
@@ -9394,7 +9458,12 @@
         syncAllDateDisplays();
         handleFiltersChanged();
       });
-      document.getElementById('filter-patient').addEventListener('input', handleFiltersChanged);
+      document.getElementById('filter-patient').addEventListener('input', () => {
+        if (!getNormalizedPatientFilterValue()) {
+          filterAllPatientDates = false;
+        }
+        handleFiltersChanged();
+      });
       bindPatientSuggestionInput('task');
       bindPatientSuggestionInput('infected');
       bindPatientSuggestionInput('er');

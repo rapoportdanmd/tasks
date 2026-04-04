@@ -1009,3 +1009,8 @@
 
 - Prepared a clean deployment upload bundle on Dan's Desktop for the permanent-domain rollout, excluding local database files, secrets, logs, caches, and other machine-specific artifacts.
 - Created both a folder and zip version to make the GitHub upload step easier for a non-technical handoff into Render deployment.
+
+## 2026-04-04 07:59 IDT
+
+- Added a desktop-only orange `כל התאריכים` toggle under the category chips that appears only while a patient filter is active, without changing the rest of the filter layout.
+- When enabled, the button temporarily widens that one patient's task view across every date while leaving the normal current-day date filter intact for everything else and for when the toggle is turned back off.
