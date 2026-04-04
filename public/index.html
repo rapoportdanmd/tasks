@@ -6797,7 +6797,6 @@
 
     function renderLetterSubcategoryInput() {
       document.getElementById('input-subcategory').innerHTML = `
-        <option value="">ללא תת-סוג</option>
         ${letterSubcategories.map((subcategory) => `<option value="${escAttr(subcategory)}">${escHtml(subcategory)}</option>`).join('')}
       `;
       syncSubcategoryVisibility();

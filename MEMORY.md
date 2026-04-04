@@ -1133,3 +1133,7 @@
 ## 2026-04-04 17:09 IDT
 
 - Corrected the `סינון ותצוגה` panel’s top gray decorative line so it is clipped by the same rounded-corner shape as the other panels and ends with the same sloped taper instead of a blunt overhang.
+
+## 2026-04-04 17:11 IDT
+
+- Removed the visible `ללא תת-סוג` option from the `מכתבים` sub-category dropdown in the create/edit task form so it now matches the simplified inline task-bar selector.
