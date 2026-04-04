@@ -1145,3 +1145,7 @@
 ## 2026-04-04 17:43 IDT
 
 - Adjusted task ordering so items with the same subcategory are grouped together automatically inside the existing date/category/status structure, keeping the broader board organization intact while clustering similar task bars.
+
+## 2026-04-04 17:59 IDT
+
+- Replaced the native `רופא בכיר` datalist behavior with the app’s own styled suggestion menus in both the new-task form and inline `שיחות` task bars, so those dropdowns now match the patient-name suggestion look while still allowing free text.

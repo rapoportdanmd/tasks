@@ -2510,7 +2510,7 @@
     .task-fold-body {
       display: grid;
       gap: 6px;
-      overflow: hidden;
+      overflow: visible;
       will-change: transform, opacity;
     }
 
@@ -2520,7 +2520,7 @@
       gap: 8px;
       align-items: center;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .task-row {
@@ -2805,6 +2805,7 @@
     .task-meta-input {
       min-width: 0;
       max-width: 100%;
+      width: 100%;
       min-height: 24px;
       height: 24px;
       padding: 2px 9px;
@@ -2816,6 +2817,19 @@
       border: 1px solid rgba(211, 203, 190, 0.8);
       background: rgba(255, 255, 255, 0.82);
       direction: rtl;
+    }
+
+    .task-meta-suggestion-field {
+      position: relative;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .task-meta-suggestion-field .patient-suggestion-menu {
+      min-width: 180px;
+      inset-inline: auto 0;
+      width: max-content;
+      max-width: min(260px, calc(100vw - 28px));
     }
 
     .task-datetime-box {
@@ -4066,7 +4080,7 @@
               <label for="input-category">סוג</label>
               <select id="input-category"></select>
             </div>
-            <div class="field task-form-subcategory" id="subcategory-field" hidden>
+            <div class="field task-form-subcategory suggestion-field" id="subcategory-field" hidden>
               <label for="input-subcategory" id="subcategory-label">תת-סוג מכתב</label>
               <select id="input-subcategory"></select>
               <input
@@ -4074,9 +4088,11 @@
                 id="input-subcategory-freeform"
                 maxlength="80"
                 placeholder="רופא בכיר"
-                list="call-senior-options"
+                autocomplete="off"
+                aria-autocomplete="list"
                 hidden
               />
+              <div class="patient-suggestion-menu" id="input-subcategory-freeform-suggestions" hidden></div>
             </div>
             <div class="field task-form-date">
               <label for="input-date">תאריך</label>
@@ -4484,7 +4500,6 @@
     </section>
   </main>
   <datalist id="daily-patient-pool-options"></datalist>
-  <datalist id="call-senior-options"></datalist>
 
   <script>
     const STATUS_ORDER = ['not_started', 'in_progress', 'completed_pending_review', 'done', 'canceled'];
@@ -4616,6 +4631,8 @@
       filter: false,
       surgery: false
     };
+    let talkSeniorSuggestionMenuOpen = false;
+    let openTaskTalkSuggestionMenuId = null;
     let currentDailyAdmin = {
       assignment_date: '',
       team_member_id: null,
@@ -6841,13 +6858,15 @@
       return names;
     }
 
+    function getOrderedTalkSeniorSuggestions() {
+      return getTalkSeniorNameSuggestions().sort((a, b) => a.localeCompare(b, 'he'));
+    }
+
     function renderTaskSubcategoryInput() {
       document.getElementById('input-subcategory').innerHTML = `
         ${letterSubcategories.map((subcategory) => `<option value="${escAttr(subcategory)}">${escHtml(subcategory)}</option>`).join('')}
       `;
-      document.getElementById('call-senior-options').innerHTML = `
-        ${getTalkSeniorNameSuggestions().map((name) => `<option value="${escAttr(name)}"></option>`).join('')}
-      `;
+      renderTalkSeniorSuggestionMenu();
       syncSubcategoryVisibility();
     }
 
@@ -8010,16 +8029,24 @@
           `
         : isTalkTask
           ? `
-            <input
-              class="task-meta-input"
-              type="text"
-              value="${escAttr(task.subcategory || '')}"
-              placeholder="רופא בכיר"
-              list="call-senior-options"
-              aria-label="עדכון רופא בכיר"
-              onchange="updateTask(${task.id}, { subcategory: this.value.trim() || null })"
-              onkeydown="if (event.key === 'Enter') this.blur()"
-            />
+            <div class="suggestion-field task-meta-suggestion-field">
+              <input
+                class="task-meta-input"
+                id="task-talk-subcategory-${task.id}"
+                type="text"
+                value="${escAttr(task.subcategory || '')}"
+                placeholder="רופא בכיר"
+                autocomplete="off"
+                aria-autocomplete="list"
+                aria-label="עדכון רופא בכיר"
+                onchange="updateTask(${task.id}, { subcategory: this.value.trim() || null })"
+                onfocus="openTalkSeniorSuggestionMenu(${task.id})"
+                onclick="openTalkSeniorSuggestionMenu(${task.id})"
+                oninput="renderTalkSeniorSuggestionMenu(${task.id})"
+                onkeydown="if (event.key === 'Escape') { closeTalkSeniorSuggestionMenu(${task.id}); } else if (event.key === 'Enter') { closeTalkSeniorSuggestionMenu(${task.id}); this.blur(); }"
+              />
+              <div class="patient-suggestion-menu" id="task-talk-subcategory-suggestions-${task.id}" hidden></div>
+            </div>
           `
         : metaLines.map((line) => `<span>${line}</span>`).join('');
       const statusPickerOpen = openStatusPickerTaskId === task.id;
@@ -8867,6 +8894,145 @@
     function closeAllPatientSuggestionMenus() {
       Object.keys(patientSuggestionMenuState).forEach((kind) => {
         closePatientSuggestionMenu(kind);
+      });
+    }
+
+    function getTalkSeniorSuggestionElements(taskId = null) {
+      if (taskId === null) {
+        return {
+          input: document.getElementById('input-subcategory-freeform'),
+          menu: document.getElementById('input-subcategory-freeform-suggestions')
+        };
+      }
+
+      return {
+        input: document.getElementById(`task-talk-subcategory-${taskId}`),
+        menu: document.getElementById(`task-talk-subcategory-suggestions-${taskId}`)
+      };
+    }
+
+    function getTalkSeniorSuggestions(query) {
+      return filterPatientSuggestions(query, getOrderedTalkSeniorSuggestions());
+    }
+
+    function renderTalkSeniorSuggestionMenu(taskId = null) {
+      const { input, menu } = getTalkSeniorSuggestionElements(taskId);
+      const isOpen = taskId === null
+        ? talkSeniorSuggestionMenuOpen
+        : openTaskTalkSuggestionMenuId === taskId;
+
+      if (!input || !menu || !isOpen || input.hidden || input.disabled) {
+        if (menu) {
+          menu.hidden = true;
+          menu.innerHTML = '';
+        }
+        return;
+      }
+
+      const suggestions = getTalkSeniorSuggestions(String(input.value || '').trim());
+      if (suggestions.length === 0) {
+        menu.hidden = true;
+        menu.innerHTML = '';
+        return;
+      }
+
+      const taskArg = taskId === null ? 'null' : String(taskId);
+      menu.innerHTML = suggestions.map((name) => `
+        <button
+          type="button"
+          class="patient-suggestion-option"
+          onmousedown="event.preventDefault()"
+          onclick="chooseTalkSeniorSuggestion(${taskArg}, '${escJs(name)}')"
+        >${escHtml(name)}</button>
+      `).join('');
+      menu.hidden = false;
+    }
+
+    function openTalkSeniorSuggestionMenu(taskId = null) {
+      if (taskId === null) {
+        if (openTaskTalkSuggestionMenuId !== null) {
+          const previousTaskId = openTaskTalkSuggestionMenuId;
+          openTaskTalkSuggestionMenuId = null;
+          renderTalkSeniorSuggestionMenu(previousTaskId);
+        }
+        talkSeniorSuggestionMenuOpen = true;
+      } else {
+        if (talkSeniorSuggestionMenuOpen) {
+          talkSeniorSuggestionMenuOpen = false;
+          renderTalkSeniorSuggestionMenu();
+        }
+        if (openTaskTalkSuggestionMenuId !== null && openTaskTalkSuggestionMenuId !== taskId) {
+          const previousTaskId = openTaskTalkSuggestionMenuId;
+          openTaskTalkSuggestionMenuId = null;
+          renderTalkSeniorSuggestionMenu(previousTaskId);
+        }
+        openTaskTalkSuggestionMenuId = taskId;
+      }
+      renderTalkSeniorSuggestionMenu(taskId);
+    }
+
+    function closeTalkSeniorSuggestionMenu(taskId = null) {
+      if (taskId === null) {
+        talkSeniorSuggestionMenuOpen = false;
+      } else if (openTaskTalkSuggestionMenuId === taskId) {
+        openTaskTalkSuggestionMenuId = null;
+      }
+      renderTalkSeniorSuggestionMenu(taskId);
+    }
+
+    function closeAllTalkSeniorSuggestionMenus() {
+      talkSeniorSuggestionMenuOpen = false;
+      renderTalkSeniorSuggestionMenu();
+
+      if (openTaskTalkSuggestionMenuId !== null) {
+        const openId = openTaskTalkSuggestionMenuId;
+        openTaskTalkSuggestionMenuId = null;
+        renderTalkSeniorSuggestionMenu(openId);
+      }
+    }
+
+    function chooseTalkSeniorSuggestion(taskId, name) {
+      const normalizedTaskId = taskId === null || taskId === 'null' ? null : Number(taskId);
+      const { input } = getTalkSeniorSuggestionElements(normalizedTaskId);
+      if (!input) {
+        return;
+      }
+
+      input.value = name;
+
+      if (normalizedTaskId === null) {
+        closeTalkSeniorSuggestionMenu();
+        document.getElementById('input-desc').focus();
+        return;
+      }
+
+      closeTalkSeniorSuggestionMenu(normalizedTaskId);
+      updateTask(normalizedTaskId, { subcategory: name });
+    }
+
+    function bindTalkSeniorSuggestionInput() {
+      const input = document.getElementById('input-subcategory-freeform');
+      if (!input || input.dataset.suggestionBound === 'true') {
+        return;
+      }
+
+      input.dataset.suggestionBound = 'true';
+      input.addEventListener('focus', () => openTalkSeniorSuggestionMenu());
+      input.addEventListener('click', () => openTalkSeniorSuggestionMenu());
+      input.addEventListener('input', () => {
+        talkSeniorSuggestionMenuOpen = document.activeElement === input;
+        renderTalkSeniorSuggestionMenu();
+      });
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeTalkSeniorSuggestionMenu();
+          return;
+        }
+
+        if (event.key === 'Enter') {
+          closeTalkSeniorSuggestionMenu();
+          document.getElementById('input-desc').focus();
+        }
       });
     }
 
@@ -10277,6 +10443,7 @@
       bindPatientSuggestionInput('filter');
       bindPatientSuggestionInput('er');
       bindPatientSuggestionInput('surgery');
+      bindTalkSeniorSuggestionInput();
       document.getElementById('input-desc').addEventListener('keydown', (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
           saveTask();
@@ -10297,6 +10464,7 @@
         hideInlineValueTooltip();
         if (!event.target.closest('.suggestion-field')) {
           closeAllPatientSuggestionMenus();
+          closeAllTalkSeniorSuggestionMenus();
         }
         if (!event.target.closest('.filter-date-control')) {
           closeFilterDatePopover();
@@ -11070,6 +11238,7 @@
       }
 
       if (!isTalks) {
+        closeTalkSeniorSuggestionMenu();
         freeformInput.value = '';
       }
     }
