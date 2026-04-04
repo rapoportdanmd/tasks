@@ -4238,6 +4238,9 @@
     const ON_CALL_CUTOFF_HOUR = 6;
     const ON_CALL_CUTOFF_MINUTE = 0;
     const ON_CALL_CUTOFF_LABEL = '06:00';
+    const TASK_NIGHT_SHIFT_START_HOUR = 18;
+    const TASK_NIGHT_SHIFT_MORNING_END_HOUR = 5;
+    const TASK_PREVIOUS_DAY_SELECTION_END_HOUR = 6;
     const TASK_MOVE_ANIMATION_MS = 320;
     const STATUS_LABELS = {
       not_started: 'לא התחיל',
@@ -4401,7 +4404,7 @@
 
     async function init() {
       const today = getTodayString();
-      document.getElementById('input-date').value = today;
+      document.getElementById('input-date').value = getDefaultNewTaskDate();
       document.getElementById('input-time').value = '';
       document.getElementById('filter-date').value = today;
       syncAllDateDisplays();
@@ -8249,10 +8252,10 @@
 
     function startNewTaskForPatient(name, preferredDate = '') {
       const nextDate = isPhoneLayout
-        ? getTodayString()
-        : preferredDate && !isPastDate(preferredDate)
+        ? getDefaultNewTaskDate()
+        : preferredDate && canUseTaskCreationDate(preferredDate)
         ? preferredDate
-        : getTodayString();
+        : getDefaultNewTaskDate();
 
       currentEditingTaskId = null;
       resetTaskForm({
@@ -8289,8 +8292,8 @@
       }
 
       const formDate = isPhoneLayout
-        ? getTodayString()
-        : document.getElementById('input-date').value || getTodayString();
+        ? getDefaultNewTaskDate()
+        : document.getElementById('input-date').value || getDefaultNewTaskDate();
       document.getElementById('task-form-mode').textContent =
         isPhoneLayout
           ? 'תצוגת טלפון: בחר מטופל מרשימת היום והוסף משימה חדשה.'
@@ -8416,8 +8419,8 @@
       const subcategory = category === 'מכתבים' ? document.getElementById('input-subcategory').value : null;
       const description = document.getElementById('input-desc').value.trim();
       const taskDate = isPhoneLayout
-        ? getTodayString()
-        : document.getElementById('input-date').value || getTodayString();
+        ? getDefaultNewTaskDate()
+        : document.getElementById('input-date').value || getDefaultNewTaskDate();
       const taskTime = isPhoneLayout ? '' : document.getElementById('input-time').value;
 
       if (!patient || !category) {
@@ -8430,10 +8433,12 @@
         return;
       }
 
-      if (isPastDate(taskDate)) {
+      if (!canUseTaskCreationDate(taskDate)) {
         alert('אי אפשר ליצור משימה לתאריך שעבר.');
         return;
       }
+
+      const nightShiftAnchorDate = getDefaultNewTaskNightShiftAnchorDate(taskDate);
 
       const res = await fetch('/api/tasks', {
         method: 'POST',
@@ -8444,7 +8449,8 @@
           category,
           subcategory,
           task_date: taskDate,
-          task_time: taskTime
+          task_time: taskTime,
+          night_shift_anchor_date: nightShiftAnchorDate
         })
       });
 
@@ -8467,8 +8473,8 @@
       const comment = document.getElementById('input-comment').value.trim();
       const assigneeId = document.getElementById('input-assignee').value;
       const taskDate = isPhoneLayout
-        ? getTodayString()
-        : document.getElementById('input-date').value || getTodayString();
+        ? getDefaultNewTaskDate()
+        : document.getElementById('input-date').value || getDefaultNewTaskDate();
       const taskTime = isPhoneLayout ? '' : document.getElementById('input-time').value;
 
       if (!patient || !category) {
@@ -8511,10 +8517,10 @@
     function resetTaskForm(options = {}) {
       const {
         preservePatient = '',
-        preserveDate = getTodayString()
+        preserveDate = getDefaultNewTaskDate()
       } = options;
 
-      const nextDate = isPhoneLayout ? getTodayString() : preserveDate;
+      const nextDate = isPhoneLayout ? getDefaultNewTaskDate() : preserveDate;
 
       closePatientSuggestionMenu('task');
       setTaskFormPatientValue(preservePatient);
@@ -9617,13 +9623,13 @@
       }
 
       if (isPhoneLayout) {
-        document.getElementById('input-date').value = getTodayString();
+        document.getElementById('input-date').value = getDefaultNewTaskDate();
         document.getElementById('input-time').value = '';
         if (newTaskSubtitle) {
-          newTaskSubtitle.textContent = 'בטלפון משימה חדשה נשמרת אוטומטית להיום, בלי בחירת תאריך או שעה.';
+          newTaskSubtitle.textContent = 'בטלפון משימה חדשה נשמרת אוטומטית לפי ברירת המחדל של המשמרת, בלי בחירת תאריך או שעה.';
         }
       } else if (newTaskSubtitle) {
-        newTaskSubtitle.textContent = 'ברירת המחדל היא תאריך של היום. שנה תאריך רק אם המשימה שייכת ליום אחר.';
+        newTaskSubtitle.textContent = 'ברירת המחדל היא תאריך העבודה הפעיל. שנה תאריך רק אם המשימה שייכת ליום אחר.';
       }
 
       syncAllDateDisplays();
@@ -9671,6 +9677,60 @@
       return isBeforeOnCallCutoff()
         ? addDaysString(getTodayString(), -1)
         : getTodayString();
+    }
+
+    function getCurrentHour() {
+      return new Date().getHours();
+    }
+
+    function isWithinTaskPreviousDaySelectionWindow() {
+      return getCurrentHour() < TASK_PREVIOUS_DAY_SELECTION_END_HOUR;
+    }
+
+    function getPreviousTaskDateOption() {
+      return addDaysString(getTodayString(), -1);
+    }
+
+    function canUseTaskCreationDate(value) {
+      if (typeof value !== 'string' || !value) {
+        return false;
+      }
+
+      if (!isPastDate(value)) {
+        return true;
+      }
+
+      return isWithinTaskPreviousDaySelectionWindow() && value === getPreviousTaskDateOption();
+    }
+
+    function getDefaultNewTaskDate() {
+      return getCurrentHour() < TASK_NIGHT_SHIFT_MORNING_END_HOUR
+        ? getPreviousTaskDateOption()
+        : getTodayString();
+    }
+
+    function getDefaultNewTaskNightShiftAnchorDate(taskDate) {
+      if (typeof taskDate !== 'string' || !taskDate) {
+        return null;
+      }
+
+      const currentHour = getCurrentHour();
+      const today = getTodayString();
+      const previousDate = getPreviousTaskDateOption();
+
+      if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR && taskDate === today) {
+        return today;
+      }
+
+      if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR && taskDate === previousDate) {
+        return previousDate;
+      }
+
+      return null;
+    }
+
+    function shouldShowNightShiftDefaultLabel(taskDate) {
+      return !currentEditingTaskId && Boolean(getDefaultNewTaskNightShiftAnchorDate(taskDate));
     }
 
     function getNightShiftAnchorDatesForFilter(filterDate) {
@@ -10132,13 +10192,21 @@
       const display = document.getElementById(displayId);
       const emptyLabel = display.dataset.emptyLabel || '';
 
-      display.textContent = inputDate ? formatControlDate(inputDate) : emptyLabel;
-      display.classList.toggle('is-empty', !inputDate);
+      const displayText = inputId === 'filter-date'
+        ? getFilterDateDisplayText(inputDate, emptyLabel)
+        : inputId === 'input-date' && shouldShowNightShiftDefaultLabel(inputDate)
+        ? 'Night-Shift'
+        : (inputDate ? formatControlDate(inputDate) : emptyLabel);
+
+      display.textContent = displayText;
+      display.classList.toggle('is-empty', !displayText);
     }
 
     function syncDateLimits() {
       const today = getTodayString();
-      document.getElementById('input-date').min = today;
+      document.getElementById('input-date').min = isWithinTaskPreviousDaySelectionWindow()
+        ? getPreviousTaskDateOption()
+        : today;
       document.querySelectorAll('.task-inline-date-input').forEach((input) => {
         input.min = today;
       });

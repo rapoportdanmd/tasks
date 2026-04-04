@@ -1050,3 +1050,8 @@
 ## 2026-04-04 14:56 IDT
 
 - Refined the `סינון ותצוגה` top accent again so it visually matches the other panel headers while still staying clipped just inside the rounded card edge.
+
+## 2026-04-04 15:09 IDT
+
+- Added overnight default task-creation rules: new tasks created from 18:00 default into the current day's `תורנות`, while tasks created before 05:00 default to the previous day's date and `תורנות`.
+- Between 00:00 and 06:00 the new-task form now allows selecting the previous day, and the date display shows `Night-Shift` whenever the current default save target is the night-shift bucket.

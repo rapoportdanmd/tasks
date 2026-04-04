@@ -98,6 +98,9 @@ const ON_CALL_CUTOFF_HOUR = 6;
 const ON_CALL_CUTOFF_MINUTE = 0;
 const ADMISSIONS_NIGHT_SHIFT_START_HOUR = 18;
 const ADMISSIONS_NIGHT_SHIFT_END_HOUR = 5;
+const TASK_NIGHT_SHIFT_START_HOUR = 18;
+const TASK_NIGHT_SHIFT_MORNING_END_HOUR = 5;
+const TASK_PREVIOUS_DAY_SELECTION_END_HOUR = 6;
 const OPTIONAL_DESCRIPTION_CATEGORIES = [
   'קבלות',
   'פיזיותרפיה',
@@ -956,9 +959,11 @@ app.post('/api/tasks', (req, res) => {
   const comment = normalizeOptionalText(req.body.comment);
   const category = normalizeCategory(req.body.category);
   const subcategory = normalizeSubcategory(req.body.subcategory, category);
-  const taskDate = normalizeTaskDate(req.body.task_date) || todayDate();
+  const taskDefaults = getNewTaskCreationContext();
+  const taskDate = normalizeTaskDate(req.body.task_date) || taskDefaults.taskDate;
   const taskTime = normalizeTaskTime(req.body.task_time);
   const assigneeId = normalizeAssigneeId(req.body.assignee_id);
+  const nightShiftAnchorDate = getDefaultNightShiftAnchorDateForTask(taskDate);
 
   if (!patientName || !category) {
     return res.status(400).json({ error: 'Patient name and category are required.' });
@@ -980,7 +985,7 @@ app.post('/api/tasks', (req, res) => {
     return res.status(400).json({ error: 'Invalid assignee.' });
   }
 
-  if (isPastDate(taskDate)) {
+  if (!canAssignNewTaskDate(taskDate)) {
     return res.status(400).json({ error: 'Task date cannot be before today.' });
   }
 
@@ -1000,10 +1005,12 @@ app.post('/api/tasks', (req, res) => {
       task_date,
       task_time,
       high_priority,
+      night_shift_anchor_date,
+      night_shift_moved_at,
       recurring_followup_id,
       updated_by_name
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)
   `);
 
   const createdTaskId = insertTask.run(
@@ -1015,6 +1022,8 @@ app.post('/api/tasks', (req, res) => {
     assigneeId,
     taskDate,
     taskTime,
+    nightShiftAnchorDate,
+    nightShiftAnchorDate ? new Date().toISOString() : null,
     recurringFollowupId,
     editorName
   ).lastInsertRowid;
@@ -1102,7 +1111,7 @@ app.patch('/api/tasks/:id', (req, res) => {
     if (!taskDate) {
       return res.status(400).json({ error: 'Invalid task date.' });
     }
-    if (isPastDate(taskDate) && taskDate !== existingTask.task_date) {
+    if (!canAssignNewTaskDate(taskDate) && taskDate !== existingTask.task_date) {
       return res.status(400).json({ error: 'Task date cannot be before today.' });
     }
     updates.push('task_date = ?');
@@ -4048,6 +4057,64 @@ function getAdmissionsTransferContext(now = new Date()) {
     taskDate: currentDate,
     nightShiftAnchorDate: null
   };
+}
+
+function getNewTaskCreationContext(now = new Date()) {
+  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
+  const currentDate = formatDateForStorage(current);
+  const currentHour = current.getHours();
+
+  if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR) {
+    const previousDate = addDays(currentDate, -1);
+    return {
+      taskDate: previousDate,
+      nightShiftAnchorDate: previousDate
+    };
+  }
+
+  if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR) {
+    return {
+      taskDate: currentDate,
+      nightShiftAnchorDate: currentDate
+    };
+  }
+
+  return {
+    taskDate: currentDate,
+    nightShiftAnchorDate: null
+  };
+}
+
+function getDefaultNightShiftAnchorDateForTask(taskDate, now = new Date()) {
+  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
+  const currentDate = formatDateForStorage(current);
+  const currentHour = current.getHours();
+  const previousDate = addDays(currentDate, -1);
+
+  if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR && taskDate === currentDate) {
+    return currentDate;
+  }
+
+  if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR && taskDate === previousDate) {
+    return previousDate;
+  }
+
+  return null;
+}
+
+function canAssignNewTaskDate(value, now = new Date()) {
+  if (typeof value !== 'string' || !value) {
+    return false;
+  }
+
+  if (!isPastDate(value)) {
+    return true;
+  }
+
+  const current = now instanceof Date ? new Date(now.getTime()) : new Date();
+  const currentDate = formatDateForStorage(current);
+  const previousDate = addDays(currentDate, -1);
+  return current.getHours() < TASK_PREVIOUS_DAY_SELECTION_END_HOUR && value === previousDate;
 }
 
 function isPastDate(value) {
