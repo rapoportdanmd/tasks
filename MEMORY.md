@@ -1165,3 +1165,7 @@
 ## 2026-04-04 18:49 IDT
 
 - Unified the overnight task-default clock on both frontend and backend to the department timezone (`Asia/Jerusalem`) so a form that defaults to `Night-Shift` now saves the task directly into `תורנות` instead of sometimes landing in regular `משימות` because the server was evaluating the rule in a different timezone.
+
+## 2026-04-04 18:58 IDT
+
+- Fixed the task-row inner status color layer so it now inherits the same rounded corners as the task bar itself, preventing the tinted background from looking like a squared-off rectangle inside rounded task rows.
