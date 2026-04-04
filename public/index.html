@@ -4060,9 +4060,20 @@
               <input class="date-native" type="date" id="filter-date" />
             </div>
           </div>
-          <div class="field">
+          <div class="field suggestion-field">
             <label for="filter-patient">מטופל</label>
-            <input type="text" id="filter-patient" list="all-patient-options" placeholder="סינון לפי שם מטופל" />
+            <input
+              type="text"
+              id="filter-patient"
+              maxlength="80"
+              placeholder="סינון לפי שם מטופל"
+              autocomplete="new-password"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-autocomplete="list"
+            />
+            <div class="patient-suggestion-menu" id="filter-patient-suggestions" hidden></div>
           </div>
           <div class="field">
             <label for="filter-assignee">שיוך</label>
@@ -4081,7 +4092,6 @@
         <div class="layout-item" data-layout-id="summary-block" data-layout-label="סיכום מסננים">
           <div class="summary" id="summary"></div>
         </div>
-        <datalist id="all-patient-options"></datalist>
       </div>
     </section>
 
@@ -4284,6 +4294,7 @@
     let patientSuggestionMenuState = {
       task: false,
       infected: false,
+      filter: false,
       surgery: false
     };
     let currentDailyAdmin = {
@@ -6844,9 +6855,6 @@
       document.getElementById('input-patient-options').innerHTML =
         formDatePatients.map((name) => `<option value="${escAttr(name)}"></option>`).join('');
 
-      document.getElementById('all-patient-options').innerHTML =
-        filterPatients.map((name) => `<option value="${escAttr(name)}"></option>`).join('');
-
       const bar = document.getElementById('input-patient-bar');
       const phoneBar = document.getElementById('phone-input-patient-bar');
       if (formDatePatients.length === 0) {
@@ -6857,6 +6865,7 @@
         }
         renderPatientSuggestionMenu('task');
         renderPatientSuggestionMenu('infected');
+        renderPatientSuggestionMenu('filter');
         renderPatientSuggestionMenu('er');
         renderPatientSuggestionMenu('surgery');
         syncTaskFormMode();
@@ -6872,6 +6881,7 @@
       }
       renderPatientSuggestionMenu('task');
       renderPatientSuggestionMenu('infected');
+      renderPatientSuggestionMenu('filter');
       renderPatientSuggestionMenu('er');
       renderPatientSuggestionMenu('surgery');
       syncTaskFormMode();
@@ -7991,6 +8001,17 @@
               document.getElementById('infected-culture').focus();
             },
             onEnter: () => document.getElementById('infected-culture').focus()
+          };
+        case 'filter':
+          return {
+            inputId: 'filter-patient',
+            menuId: 'filter-patient-suggestions',
+            getSuggestions: () => uniqueNames(
+              getTasksForFilters({ exclude: ['patient'] }).map((task) => task.patient_name)
+            ),
+            choose: (name) => {
+              setNamedInputValue('filter-patient', name);
+            }
           };
         case 'er':
           return {
@@ -9443,6 +9464,7 @@
       });
       bindPatientSuggestionInput('task');
       bindPatientSuggestionInput('infected');
+      bindPatientSuggestionInput('filter');
       bindPatientSuggestionInput('er');
       bindPatientSuggestionInput('surgery');
       document.getElementById('input-desc').addEventListener('keydown', (event) => {

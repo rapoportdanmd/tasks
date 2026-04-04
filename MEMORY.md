@@ -1018,3 +1018,8 @@
 ## 2026-04-04 08:08 IDT
 
 - Moved the desktop `כל התאריכים` toggle into the task-category chip flow itself, so it sits as the wrapped leftmost chip instead of on a separate line below the chips.
+
+## 2026-04-04 08:17 IDT
+
+- Switched the desktop patient filter field from the browser's native autofill style to the same app-controlled patient suggestion dropdown used in the other patient-name fields.
+- The filter box now opens the same styled suggestion menu and uses current filtered task names instead of stale browser-saved names.
