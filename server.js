@@ -1103,7 +1103,7 @@ app.patch('/api/tasks/:id', (req, res) => {
       : existingTask.subcategory;
     const subcategory = normalizeSubcategory(rawSubcategory, subcategoryCategory);
 
-    if (rawSubcategory && subcategory === null) {
+    if (subcategoryCategory === 'מכתבים' && rawSubcategory && subcategory === null) {
       return res.status(400).json({ error: 'Invalid letter subcategory.' });
     }
 
@@ -2464,6 +2464,7 @@ function migrateLegacyTasksTable(columns) {
           hasSubcategory
             ? `CASE
                 WHEN category = 'מכתבים' AND subcategory IN (${LETTER_SUBCATEGORIES.map((item) => `'${item}'`).join(', ')}) THEN subcategory
+                WHEN category = 'שיחות' THEN NULLIF(TRIM(subcategory), '')
                 ELSE NULL
               END`
             : 'NULL'
@@ -2811,7 +2812,7 @@ function normalizeExistingTasks() {
     db.prepare(`
       UPDATE tasks
       SET subcategory = NULL
-      WHERE category != 'מכתבים'
+      WHERE category NOT IN ('מכתבים', 'שיחות')
     `).run();
   })();
 }
@@ -3933,6 +3934,10 @@ function normalizeHighPriority(value) {
 }
 
 function normalizeSubcategory(value, category) {
+  if (category === 'שיחות') {
+    return normalizeOptionalText(value);
+  }
+
   if (category !== 'מכתבים') {
     return null;
   }

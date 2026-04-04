@@ -1137,3 +1137,7 @@
 ## 2026-04-04 17:11 IDT
 
 - Removed the visible `ללא תת-סוג` option from the `מכתבים` sub-category dropdown in the create/edit task form so it now matches the simplified inline task-bar selector.
+
+## 2026-04-04 17:30 IDT
+
+- Added a second task-level subcategory flow for `שיחות`: the task form now shows a `רופא בכיר` field with on-call-name suggestions plus free text, the task bar allows inline editing of that field, and the backend now preserves `שיחות` subcategory values instead of clearing them on restart.

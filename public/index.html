@@ -2802,6 +2802,22 @@
       direction: rtl;
     }
 
+    .task-meta-input {
+      min-width: 0;
+      max-width: 100%;
+      min-height: 24px;
+      height: 24px;
+      padding: 2px 9px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #475569;
+      border-radius: 999px;
+      border: 1px solid rgba(211, 203, 190, 0.8);
+      background: rgba(255, 255, 255, 0.82);
+      direction: rtl;
+    }
+
     .task-datetime-box {
       display: flex;
       gap: 4px;
@@ -4051,8 +4067,16 @@
               <select id="input-category"></select>
             </div>
             <div class="field task-form-subcategory" id="subcategory-field" hidden>
-              <label for="input-subcategory">תת-סוג מכתב</label>
+              <label for="input-subcategory" id="subcategory-label">תת-סוג מכתב</label>
               <select id="input-subcategory"></select>
+              <input
+                type="text"
+                id="input-subcategory-freeform"
+                maxlength="80"
+                placeholder="רופא בכיר"
+                list="call-senior-options"
+                hidden
+              />
             </div>
             <div class="field task-form-date">
               <label for="input-date">תאריך</label>
@@ -4460,6 +4484,7 @@
     </section>
   </main>
   <datalist id="daily-patient-pool-options"></datalist>
+  <datalist id="call-senior-options"></datalist>
 
   <script>
     const STATUS_ORDER = ['not_started', 'in_progress', 'completed_pending_review', 'done', 'canceled'];
@@ -4468,6 +4493,8 @@
     const NIGHT_SHIFT_CUTOFF_HOUR = 7;
     const NIGHT_SHIFT_CUTOFF_MINUTE = 15;
     const NIGHT_SHIFT_CUTOFF_LABEL = '07:15';
+    const LETTERS_CATEGORY = 'מכתבים';
+    const TALKS_CATEGORY = 'שיחות';
     const ON_CALL_CUTOFF_HOUR = 6;
     const ON_CALL_CUTOFF_MINUTE = 0;
     const ON_CALL_CUTOFF_LABEL = '06:00';
@@ -6680,7 +6707,7 @@
 
       document.getElementById('infected-title').textContent = infectedListLabel;
       renderTaskCategoryInput();
-      renderLetterSubcategoryInput();
+      renderTaskSubcategoryInput();
       renderInfectedCultureInput();
       renderSurgeryPrepInputs();
       renderAssigneeOptions();
@@ -6795,9 +6822,31 @@
       syncSubcategoryVisibility();
     }
 
-    function renderLetterSubcategoryInput() {
+    function getTalkSeniorNameSuggestions() {
+      const seenNames = new Set();
+      const names = [];
+
+      onCallRoles.forEach((role) => {
+        const options = Array.isArray(role?.options) ? role.options : [];
+        options.forEach((name) => {
+          const normalized = String(name || '').trim();
+          if (!normalized || seenNames.has(normalized)) {
+            return;
+          }
+          seenNames.add(normalized);
+          names.push(normalized);
+        });
+      });
+
+      return names;
+    }
+
+    function renderTaskSubcategoryInput() {
       document.getElementById('input-subcategory').innerHTML = `
         ${letterSubcategories.map((subcategory) => `<option value="${escAttr(subcategory)}">${escHtml(subcategory)}</option>`).join('')}
+      `;
+      document.getElementById('call-senior-options').innerHTML = `
+        ${getTalkSeniorNameSuggestions().map((name) => `<option value="${escAttr(name)}"></option>`).join('')}
       `;
       syncSubcategoryVisibility();
     }
@@ -7942,9 +7991,11 @@
 
     function renderTaskRow(task) {
       const metaLines = [
-        task.subcategory ? `מכתב: ${escHtml(task.subcategory)}` : ''
+        task.category === TALKS_CATEGORY && task.subcategory ? `רופא בכיר: ${escHtml(task.subcategory)}` : '',
+        task.category === LETTERS_CATEGORY && task.subcategory ? `מכתב: ${escHtml(task.subcategory)}` : ''
       ].filter(Boolean);
-      const isLetterTask = task.category === 'מכתבים';
+      const isLetterTask = task.category === LETTERS_CATEGORY;
+      const isTalkTask = task.category === TALKS_CATEGORY;
       const metaHtml = isLetterTask
         ? `
             <select
@@ -7956,6 +8007,19 @@
                 <option value="${escAttr(subcategory)}" ${task.subcategory === subcategory ? 'selected' : ''}>${escHtml(subcategory)}</option>
               `).join('')}
             </select>
+          `
+        : isTalkTask
+          ? `
+            <input
+              class="task-meta-input"
+              type="text"
+              value="${escAttr(task.subcategory || '')}"
+              placeholder="רופא בכיר"
+              list="call-senior-options"
+              aria-label="עדכון רופא בכיר"
+              onchange="updateTask(${task.id}, { subcategory: this.value.trim() || null })"
+              onkeydown="if (event.key === 'Enter') this.blur()"
+            />
           `
         : metaLines.map((line) => `<span>${line}</span>`).join('');
       const statusPickerOpen = openStatusPickerTaskId === task.id;
@@ -8927,7 +8991,7 @@
       document.getElementById('input-patient').value = task.patient_name;
       document.getElementById('input-category').value = task.category;
       syncSubcategoryVisibility();
-      document.getElementById('input-subcategory').value = task.category === 'מכתבים' ? (task.subcategory || '') : '';
+      setTaskFormSubcategory(task.category, task.subcategory || '');
       document.getElementById('input-date').value = task.task_date;
       document.getElementById('input-time').value = task.task_time || '';
       syncTaskAssigneeFieldVisibility();
@@ -9034,7 +9098,7 @@
     async function addTask() {
       const patient = document.getElementById('input-patient').value.trim();
       const category = document.getElementById('input-category').value;
-      const subcategory = category === 'מכתבים' ? document.getElementById('input-subcategory').value : null;
+      const subcategory = getTaskFormSubcategory();
       const description = document.getElementById('input-desc').value.trim();
       const taskDate = isPhoneLayout
         ? getDefaultNewTaskDate()
@@ -9086,7 +9150,7 @@
     async function updateExistingTask(id) {
       const patient = document.getElementById('input-patient').value.trim();
       const category = document.getElementById('input-category').value;
-      const subcategory = category === 'מכתבים' ? document.getElementById('input-subcategory').value : null;
+      const subcategory = getTaskFormSubcategory();
       const description = document.getElementById('input-desc').value.trim();
       const comment = document.getElementById('input-comment').value.trim();
       const assigneeId = document.getElementById('input-assignee').value;
@@ -9145,7 +9209,7 @@
       document.getElementById('input-desc').value = '';
       document.getElementById('input-comment').value = '';
       document.getElementById('input-category').value = '';
-      document.getElementById('input-subcategory').value = '';
+      setTaskFormSubcategory('', '');
       document.getElementById('input-assignee').value = '';
       document.getElementById('input-date').value = nextDate;
       document.getElementById('input-time').value = '';
@@ -10950,17 +11014,63 @@
       });
     }
 
+    function getTaskFormSubcategory() {
+      const category = document.getElementById('input-category').value;
+      if (category === LETTERS_CATEGORY) {
+        return document.getElementById('input-subcategory').value || null;
+      }
+      if (category === TALKS_CATEGORY) {
+        const value = document.getElementById('input-subcategory-freeform').value.trim();
+        return value || null;
+      }
+      return null;
+    }
+
+    function setTaskFormSubcategory(category, value) {
+      const normalizedValue = typeof value === 'string' ? value : '';
+      const select = document.getElementById('input-subcategory');
+      const freeformInput = document.getElementById('input-subcategory-freeform');
+
+      if (category === LETTERS_CATEGORY) {
+        select.value = normalizedValue;
+        freeformInput.value = '';
+        return;
+      }
+
+      if (category === TALKS_CATEGORY) {
+        freeformInput.value = normalizedValue;
+        select.value = '';
+        return;
+      }
+
+      select.value = '';
+      freeformInput.value = '';
+    }
+
     function syncSubcategoryVisibility() {
       const category = document.getElementById('input-category').value;
-      const isLetters = category === 'מכתבים';
+      const isLetters = category === LETTERS_CATEGORY;
+      const isTalks = category === TALKS_CATEGORY;
       const field = document.getElementById('subcategory-field');
+      const label = document.getElementById('subcategory-label');
       const select = document.getElementById('input-subcategory');
+      const freeformInput = document.getElementById('input-subcategory-freeform');
 
-      field.hidden = !isLetters;
+      field.hidden = !(isLetters || isTalks);
+      label.textContent = isLetters ? 'תת-סוג מכתב' : 'רופא בכיר';
+      label.htmlFor = isLetters ? 'input-subcategory' : 'input-subcategory-freeform';
+
+      select.hidden = !isLetters;
       select.disabled = !isLetters;
+      freeformInput.hidden = !isTalks;
+      freeformInput.disabled = !isTalks;
 
       if (!isLetters) {
         select.value = '';
+      }
+
+      if (!isTalks) {
+        freeformInput.value = '';
       }
     }
 
