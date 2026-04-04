@@ -1009,3 +1009,9 @@
 
 - Prepared a clean deployment upload bundle on Dan's Desktop for the permanent-domain rollout, excluding local database files, secrets, logs, caches, and other machine-specific artifacts.
 - Created both a folder and zip version to make the GitHub upload step easier for a non-technical handoff into Render deployment.
+
+## 2026-04-04 06:51 IDT
+
+- Expanded the desktop patient filter so date filtering can be widened for one patient across multiple dates or all dates, while still defaulting to the current day.
+- Added a patient-date chip row that appears only when a patient filter is active, with one-click toggles for specific dates plus `כל התאריכים`.
+- Wired the task and night-shift filtering logic to respect either the default single date, a chosen set of dates, or the new all-dates mode without changing the phone layout.
