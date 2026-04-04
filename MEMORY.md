@@ -1041,3 +1041,8 @@
 
 - Added the same fold/unfold control to `ניהול אנשי צוות`, with that panel defaulting open.
 - Set `מאגר מטופלים` to start collapsed by default through the shared panel-collapse state, while still allowing it to be reopened manually.
+
+## 2026-04-04 09:24 IDT
+
+- Fixed the top-left visual leak on `סינון ותצוגה` by insetting its accent line so the rounded filter card stays clean even while its overflow remains visible for dropdowns.
+- Added the standard fold/unfold button to `סינון ותצוגה` and set that panel to start collapsed by default through the shared collapse-state system.

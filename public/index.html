@@ -669,6 +669,11 @@
       z-index: 4;
     }
 
+    [data-layout-id="filters-panel"]::before {
+      inset: 0 16px auto 16px;
+      border-radius: 999px;
+    }
+
     [data-layout-id="filters-panel"] .panel-body {
       overflow: visible;
     }
@@ -4068,8 +4073,20 @@
           <h2>סינון ותצוגה</h2>
           <p>ברירת המחדל היא להציג רק את משימות היום.</p>
         </div>
+        <div class="panel-head-actions">
+          <button
+            class="btn secondary compact panel-collapse-btn"
+            id="filters-panel-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-label="כווץ סינון ותצוגה"
+            data-ui-tooltip="כווץ סינון ותצוגה"
+            data-ui-tooltip-ready="true"
+            onclick="togglePanelCollapsed('filters-panel')"
+          >▴</button>
+        </div>
       </div>
-      <div class="panel-body layout-container" data-layout-container="filters-panel-content" data-layout-axis="y">
+      <div class="panel-body layout-container" id="filters-panel-body" data-layout-container="filters-panel-content" data-layout-axis="y">
         <div class="filters-grid layout-item" data-layout-id="filters-grid-block" data-layout-label="כלי סינון">
           <div class="field">
               <label for="filter-date">תאריך</label>
@@ -4293,6 +4310,7 @@
     const PHONE_READONLY_PANEL_IDS = ['infected-panel', 'er-panel', 'surgery-prep-panel'];
     const PHONE_DEFAULT_COLLAPSED_PANEL_IDS = ['mobile-on-call-panel', ...PHONE_READONLY_PANEL_IDS];
     const DEFAULT_COLLAPSED_PANELS = {
+      'filters-panel': true,
       'patient-pool-panel': true,
       'team-panel': false
     };
@@ -5353,6 +5371,7 @@
       const panelNames = {
         'mobile-on-call-panel': 'כוננים פעילים',
         'team-panel': 'ניהול אנשי צוות',
+        'filters-panel': 'סינון ותצוגה',
         'night-shift-panel': 'תורנות',
         'tasks-panel': 'משימות',
         'patient-pool-panel': 'מאגר מטופלים',
@@ -5379,7 +5398,7 @@
     }
 
     function applyCollapsedPanelState() {
-      ['mobile-on-call-panel', 'team-panel', 'infected-panel', 'er-panel', 'surgery-prep-panel', 'night-shift-panel', 'tasks-panel', 'patient-pool-panel'].forEach((panelId) => {
+      ['mobile-on-call-panel', 'team-panel', 'filters-panel', 'infected-panel', 'er-panel', 'surgery-prep-panel', 'night-shift-panel', 'tasks-panel', 'patient-pool-panel'].forEach((panelId) => {
         const body = getCollapsiblePanelBody(panelId);
         const toggle = getCollapsiblePanelToggle(panelId);
         if (!body || !toggle) {
