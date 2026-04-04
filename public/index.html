@@ -4551,6 +4551,7 @@
       'patient-pool-panel': true,
       'team-panel': false
     };
+    const pendingTaskInlineSaveTimers = new Map();
     const phoneLayoutMediaQuery = window.matchMedia(`(max-width: ${PHONE_LAYOUT_BREAKPOINT}px)`);
     const clientInstanceId = window.crypto?.randomUUID?.()
       || `client-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -7950,7 +7951,6 @@
               aria-label="עדכון תת-סוג מכתב"
               onchange="updateTask(${task.id}, { subcategory: this.value || null })"
             >
-              <option value="">ללא תת-סוג</option>
               ${letterSubcategories.map((subcategory) => `
                 <option value="${escAttr(subcategory)}" ${task.subcategory === subcategory ? 'selected' : ''}>${escHtml(subcategory)}</option>
               `).join('')}
@@ -7995,7 +7995,7 @@
               class="task-desc-input"
               rows="1"
               onchange="saveTaskDescription(${task.id})"
-              oninput="autoGrowTaskDescription(this)"
+              oninput="handleTaskDescriptionInput(${task.id}, this)"
               onkeydown="if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.blur(); }"
             >${escHtml(task.description)}</textarea>
             <span class="task-desc-hint" aria-hidden="true">✎</span>
@@ -8038,7 +8038,7 @@
                 value="${escAttr(task.comment || '')}"
                 placeholder="הוסף הערה..."
                 onchange="saveTaskComment(${task.id})"
-                oninput="const shell = this.closest('.hover-value-anchor'); if (shell) { shell.dataset.hoverValue = this.value; }"
+                oninput="handleTaskCommentInput(${task.id}, this)"
                 onkeydown="if (event.key === 'Enter') this.blur()"
               />
               <span class="task-comment-hint" aria-hidden="true">✎</span>
@@ -9740,7 +9740,56 @@
       await reloadAll();
     }
 
+    function getPendingTaskInlineSaveKey(id, field) {
+      return `${id}:${field}`;
+    }
+
+    function clearPendingTaskInlineSave(id, field) {
+      const key = getPendingTaskInlineSaveKey(id, field);
+      const timer = pendingTaskInlineSaveTimers.get(key);
+      if (timer) {
+        window.clearTimeout(timer);
+        pendingTaskInlineSaveTimers.delete(key);
+      }
+    }
+
+    function scheduleEmptyTaskInlineSave(id, field, element) {
+      clearPendingTaskInlineSave(id, field);
+
+      if (!element || element.value.trim() !== '') {
+        return;
+      }
+
+      const key = getPendingTaskInlineSaveKey(id, field);
+      const saver = field === 'comment' ? saveTaskComment : saveTaskDescription;
+      const elementId = field === 'comment' ? `comment-${id}` : `desc-${id}`;
+      const timer = window.setTimeout(async () => {
+        pendingTaskInlineSaveTimers.delete(key);
+        const currentElement = document.getElementById(elementId);
+        if (!currentElement || currentElement.value.trim() !== '') {
+          return;
+        }
+        await saver(id);
+      }, 450);
+
+      pendingTaskInlineSaveTimers.set(key, timer);
+    }
+
+    function handleTaskCommentInput(id, element) {
+      const shell = element?.closest('.hover-value-anchor');
+      if (shell) {
+        shell.dataset.hoverValue = element.value;
+      }
+      scheduleEmptyTaskInlineSave(id, 'comment', element);
+    }
+
+    function handleTaskDescriptionInput(id, element) {
+      autoGrowTaskDescription(element);
+      scheduleEmptyTaskInlineSave(id, 'description', element);
+    }
+
     async function saveTaskComment(id) {
+      clearPendingTaskInlineSave(id, 'comment');
       const comment = document.getElementById(`comment-${id}`).value;
       await updateTask(id, { comment });
     }
@@ -9755,6 +9804,7 @@
     }
 
     async function saveTaskDescription(id) {
+      clearPendingTaskInlineSave(id, 'description');
       const description = document.getElementById(`desc-${id}`).value;
       await updateTask(id, { description });
     }

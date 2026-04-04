@@ -1125,3 +1125,7 @@
 ## 2026-04-04 16:38 IDT
 
 - Added direct inline editing for `מכתבים` task sub-categories from the task bar by replacing the read-only letter badge with a compact dropdown that reuses the existing letter subcategory list.
+
+## 2026-04-04 16:56 IDT
+
+- Fixed task-bar clearing of `פירוט` and `הערה` so empty values get saved reliably instead of being restored by the next live/background refresh, and removed the `ללא תת-סוג` option from the inline `מכתבים` sub-category selector.
