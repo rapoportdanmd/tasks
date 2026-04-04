@@ -1149,3 +1149,7 @@
 ## 2026-04-04 17:59 IDT
 
 - Replaced the native `רופא בכיר` datalist behavior with the app’s own styled suggestion menus in both the new-task form and inline `שיחות` task bars, so those dropdowns now match the patient-name suggestion look while still allowing free text.
+
+## 2026-04-04 18:10 IDT
+
+- Fixed the inline `רופא בכיר` popup layering in task rows by raising the focused task bar above neighboring rows, so its suggestion menu opens in front instead of behind the next tasks.
