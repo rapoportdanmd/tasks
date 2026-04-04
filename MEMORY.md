@@ -1023,3 +1023,7 @@
 
 - Switched the desktop patient filter field from the browser's native autofill style to the same app-controlled patient suggestion dropdown used in the other patient-name fields.
 - The filter box now opens the same styled suggestion menu and uses current filtered task names instead of stale browser-saved names.
+
+## 2026-04-04 08:23 IDT
+
+- Fixed the desktop filter-patient suggestion list being clipped by the bottom edge of the filtering panel by allowing overflow to stay visible for that panel only.
