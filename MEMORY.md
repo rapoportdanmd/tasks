@@ -1141,3 +1141,7 @@
 ## 2026-04-04 17:30 IDT
 
 - Added a second task-level subcategory flow for `שיחות`: the task form now shows a `רופא בכיר` field with on-call-name suggestions plus free text, the task bar allows inline editing of that field, and the backend now preserves `שיחות` subcategory values instead of clearing them on restart.
+
+## 2026-04-04 17:43 IDT
+
+- Adjusted task ordering so items with the same subcategory are grouped together automatically inside the existing date/category/status structure, keeping the broader board organization intact while clustering similar task bars.

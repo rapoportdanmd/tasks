@@ -797,6 +797,11 @@ app.get('/api/tasks', (_req, res) => {
         WHEN 'canceled' THEN 5
         ELSE 6
       END,
+      CASE
+        WHEN tasks.subcategory IS NULL OR TRIM(tasks.subcategory) = '' THEN 1
+        ELSE 0
+      END,
+      LOWER(TRIM(COALESCE(tasks.subcategory, ''))) COLLATE NOCASE ASC,
       tasks.high_priority DESC,
       CASE
         WHEN tasks.priority_pinned_at IS NULL OR TRIM(tasks.priority_pinned_at) = '' THEN 1
