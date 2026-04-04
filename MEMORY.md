@@ -1129,3 +1129,7 @@
 ## 2026-04-04 16:56 IDT
 
 - Fixed task-bar clearing of `פירוט` and `הערה` so empty values get saved reliably instead of being restored by the next live/background refresh, and removed the `ללא תת-סוג` option from the inline `מכתבים` sub-category selector.
+
+## 2026-04-04 17:09 IDT
+
+- Corrected the `סינון ותצוגה` panel’s top gray decorative line so it is clipped by the same rounded-corner shape as the other panels and ends with the same sloped taper instead of a blunt overhang.
