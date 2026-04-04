@@ -101,6 +101,9 @@ const ADMISSIONS_NIGHT_SHIFT_END_HOUR = 5;
 const TASK_NIGHT_SHIFT_START_HOUR = 18;
 const TASK_NIGHT_SHIFT_MORNING_END_HOUR = 5;
 const TASK_PREVIOUS_DAY_SELECTION_END_HOUR = 6;
+const TASK_NIGHT_SHIFT_START_MINUTES = (TASK_NIGHT_SHIFT_START_HOUR * 60);
+const TASK_NIGHT_SHIFT_MORNING_END_MINUTES = (TASK_NIGHT_SHIFT_MORNING_END_HOUR * 60);
+const TASK_PREVIOUS_DAY_SELECTION_END_MINUTES = (TASK_PREVIOUS_DAY_SELECTION_END_HOUR * 60);
 const OPTIONAL_DESCRIPTION_CATEGORIES = [
   'קבלות',
   'פיזיותרפיה',
@@ -4125,9 +4128,9 @@ function getAdmissionsTransferContext(now = new Date()) {
 function getNewTaskCreationContext(now = new Date()) {
   const current = now instanceof Date ? new Date(now.getTime()) : new Date();
   const currentDate = formatDateForStorage(current);
-  const currentHour = current.getHours();
+  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
 
-  if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR) {
+  if (currentMinutes <= TASK_NIGHT_SHIFT_MORNING_END_MINUTES) {
     const previousDate = addDays(currentDate, -1);
     return {
       taskDate: previousDate,
@@ -4135,7 +4138,7 @@ function getNewTaskCreationContext(now = new Date()) {
     };
   }
 
-  if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR) {
+  if (currentMinutes >= TASK_NIGHT_SHIFT_START_MINUTES) {
     return {
       taskDate: currentDate,
       nightShiftAnchorDate: currentDate
@@ -4151,14 +4154,14 @@ function getNewTaskCreationContext(now = new Date()) {
 function getDefaultNightShiftAnchorDateForTask(taskDate, now = new Date()) {
   const current = now instanceof Date ? new Date(now.getTime()) : new Date();
   const currentDate = formatDateForStorage(current);
-  const currentHour = current.getHours();
+  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
   const previousDate = addDays(currentDate, -1);
 
-  if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR && taskDate === currentDate) {
+  if (currentMinutes >= TASK_NIGHT_SHIFT_START_MINUTES && taskDate === currentDate) {
     return currentDate;
   }
 
-  if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR && taskDate === previousDate) {
+  if (currentMinutes <= TASK_NIGHT_SHIFT_MORNING_END_MINUTES && taskDate === previousDate) {
     return previousDate;
   }
 
@@ -4177,7 +4180,8 @@ function canAssignNewTaskDate(value, now = new Date()) {
   const current = now instanceof Date ? new Date(now.getTime()) : new Date();
   const currentDate = formatDateForStorage(current);
   const previousDate = addDays(currentDate, -1);
-  return current.getHours() < TASK_PREVIOUS_DAY_SELECTION_END_HOUR && value === previousDate;
+  const currentMinutes = (current.getHours() * 60) + current.getMinutes();
+  return currentMinutes <= TASK_PREVIOUS_DAY_SELECTION_END_MINUTES && value === previousDate;
 }
 
 function isPastDate(value) {

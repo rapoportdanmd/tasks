@@ -1153,3 +1153,7 @@
 ## 2026-04-04 18:10 IDT
 
 - Fixed the inline `רופא בכיר` popup layering in task rows by raising the focused task bar above neighboring rows, so its suggestion menu opens in front instead of behind the next tasks.
+
+## 2026-04-04 18:17 IDT
+
+- Tightened the overnight new-task defaults to exact minute cutoffs on both frontend and backend: `18:00-23:59` now reliably defaults to the current day’s `תורנות`, `00:00-05:00` defaults to the previous day’s `תורנות`, and previous-day manual selection remains allowed through `06:00`.

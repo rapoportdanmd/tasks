@@ -4520,6 +4520,9 @@
     const TASK_NIGHT_SHIFT_START_HOUR = 18;
     const TASK_NIGHT_SHIFT_MORNING_END_HOUR = 5;
     const TASK_PREVIOUS_DAY_SELECTION_END_HOUR = 6;
+    const TASK_NIGHT_SHIFT_START_MINUTES = (TASK_NIGHT_SHIFT_START_HOUR * 60);
+    const TASK_NIGHT_SHIFT_MORNING_END_MINUTES = (TASK_NIGHT_SHIFT_MORNING_END_HOUR * 60);
+    const TASK_PREVIOUS_DAY_SELECTION_END_MINUTES = (TASK_PREVIOUS_DAY_SELECTION_END_HOUR * 60);
     const TASK_MOVE_ANIMATION_MS = 320;
     const STATUS_LABELS = {
       not_started: 'לא התחיל',
@@ -10603,8 +10606,13 @@
       return new Date().getHours();
     }
 
+    function getCurrentMinutesSinceMidnight() {
+      const now = new Date();
+      return (now.getHours() * 60) + now.getMinutes();
+    }
+
     function isWithinTaskPreviousDaySelectionWindow() {
-      return getCurrentHour() < TASK_PREVIOUS_DAY_SELECTION_END_HOUR;
+      return getCurrentMinutesSinceMidnight() <= TASK_PREVIOUS_DAY_SELECTION_END_MINUTES;
     }
 
     function getPreviousTaskDateOption() {
@@ -10624,7 +10632,7 @@
     }
 
     function getDefaultNewTaskDate() {
-      return getCurrentHour() < TASK_NIGHT_SHIFT_MORNING_END_HOUR
+      return getCurrentMinutesSinceMidnight() <= TASK_NIGHT_SHIFT_MORNING_END_MINUTES
         ? getPreviousTaskDateOption()
         : getTodayString();
     }
@@ -10634,15 +10642,15 @@
         return null;
       }
 
-      const currentHour = getCurrentHour();
+      const currentMinutes = getCurrentMinutesSinceMidnight();
       const today = getTodayString();
       const previousDate = getPreviousTaskDateOption();
 
-      if (currentHour >= TASK_NIGHT_SHIFT_START_HOUR && taskDate === today) {
+      if (currentMinutes >= TASK_NIGHT_SHIFT_START_MINUTES && taskDate === today) {
         return today;
       }
 
-      if (currentHour < TASK_NIGHT_SHIFT_MORNING_END_HOUR && taskDate === previousDate) {
+      if (currentMinutes <= TASK_NIGHT_SHIFT_MORNING_END_MINUTES && taskDate === previousDate) {
         return previousDate;
       }
 
