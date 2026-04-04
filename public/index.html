@@ -3730,8 +3730,20 @@
           <h2>ניהול אנשי צוות</h2>
           <p>הגדרת אחראי/ת יומי/ת, כוננים, וניהול השיוך לצוות הרשום.</p>
         </div>
+        <div class="panel-head-actions">
+          <button
+            class="btn secondary compact panel-collapse-btn"
+            id="team-panel-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-label="כווץ ניהול אנשי צוות"
+            data-ui-tooltip="כווץ ניהול אנשי צוות"
+            data-ui-tooltip-ready="true"
+            onclick="togglePanelCollapsed('team-panel')"
+          >▴</button>
+        </div>
       </div>
-      <div class="panel-body layout-container" data-layout-container="team-panel-content" data-layout-axis="y">
+      <div class="panel-body layout-container" id="team-panel-body" data-layout-container="team-panel-content" data-layout-axis="y">
         <div class="management-grid layout-item" data-layout-id="team-management-fields" data-layout-label="הגדרות צוות">
           <div class="field span-2 duty-strip">
             <div class="duty-strip-grid">
@@ -4280,6 +4292,10 @@
     const PHONE_LAYOUT_BREAKPOINT = 760;
     const PHONE_READONLY_PANEL_IDS = ['infected-panel', 'er-panel', 'surgery-prep-panel'];
     const PHONE_DEFAULT_COLLAPSED_PANEL_IDS = ['mobile-on-call-panel', ...PHONE_READONLY_PANEL_IDS];
+    const DEFAULT_COLLAPSED_PANELS = {
+      'patient-pool-panel': true,
+      'team-panel': false
+    };
     const phoneLayoutMediaQuery = window.matchMedia(`(max-width: ${PHONE_LAYOUT_BREAKPOINT}px)`);
     const clientInstanceId = window.crypto?.randomUUID?.()
       || `client-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -5307,7 +5323,10 @@
         storedState = null;
       }
 
-      collapsedPanels = storedState && typeof storedState === 'object' ? storedState : {};
+      collapsedPanels = {
+        ...DEFAULT_COLLAPSED_PANELS,
+        ...(storedState && typeof storedState === 'object' ? storedState : {})
+      };
     }
 
     function saveCollapsedPanelsState() {
@@ -5333,8 +5352,10 @@
     function getCollapsedPanelLabel(panelId, isCollapsed) {
       const panelNames = {
         'mobile-on-call-panel': 'כוננים פעילים',
+        'team-panel': 'ניהול אנשי צוות',
         'night-shift-panel': 'תורנות',
         'tasks-panel': 'משימות',
+        'patient-pool-panel': 'מאגר מטופלים',
         'infected-panel': 'רשימת מזוהמים',
         'er-panel': 'מיונים/יעוצים',
         'surgery-prep-panel': 'רשימת הכנות ניתוחים'
@@ -5358,7 +5379,7 @@
     }
 
     function applyCollapsedPanelState() {
-      ['mobile-on-call-panel', 'infected-panel', 'er-panel', 'surgery-prep-panel', 'night-shift-panel', 'tasks-panel'].forEach((panelId) => {
+      ['mobile-on-call-panel', 'team-panel', 'infected-panel', 'er-panel', 'surgery-prep-panel', 'night-shift-panel', 'tasks-panel', 'patient-pool-panel'].forEach((panelId) => {
         const body = getCollapsiblePanelBody(panelId);
         const toggle = getCollapsiblePanelToggle(panelId);
         if (!body || !toggle) {

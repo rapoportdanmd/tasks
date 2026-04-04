@@ -1036,3 +1036,8 @@
 
 - Matched the new-task browser-side validation to the backend so category `קבלות` can be saved without `פירוט`.
 - Added a standard fold/unfold control to the `מאגר מטופלים` panel using the same collapse behavior as the other top-level boxes.
+
+## 2026-04-04 09:14 IDT
+
+- Added the same fold/unfold control to `ניהול אנשי צוות`, with that panel defaulting open.
+- Set `מאגר מטופלים` to start collapsed by default through the shared panel-collapse state, while still allowing it to be reopened manually.
