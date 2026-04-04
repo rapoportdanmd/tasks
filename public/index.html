@@ -738,6 +738,19 @@
       align-content: start;
     }
 
+    .panel-persistent-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 18px 16px;
+    }
+
+    .panel-persistent-actions.filters-danger-row {
+      padding-top: 2px;
+    }
+
     .layout-toolbar {
       display: flex;
       justify-content: space-between;
@@ -4408,6 +4421,11 @@
           <div class="summary" id="summary"></div>
         </div>
       </div>
+      <div class="panel-persistent-actions filters-danger-row">
+        <button class="btn danger compact" type="button" onclick="deletePreviousDayTasks()">מחק ימים קודמים</button>
+        <button class="btn danger compact" type="button" onclick="deleteShownFilteredTasks()">מחק משימות מוצגות</button>
+        <button class="btn danger compact" type="button" onclick="resetAllData()">איפוס מלא</button>
+      </div>
     </section>
 
     <section class="panel layout-item" data-layout-id="night-shift-panel" data-layout-label="תורנות">
@@ -4451,9 +4469,6 @@
             data-ui-tooltip-ready="true"
             onclick="togglePanelCollapsed('tasks-panel')"
           >▴</button>
-          <button class="btn danger compact" type="button" onclick="deletePreviousDayTasks()">מחק ימים קודמים</button>
-          <button class="btn danger compact" type="button" onclick="deleteShownFilteredTasks()">מחק משימות מוצגות</button>
-          <button class="btn danger compact" type="button" onclick="resetAllData()">איפוס מלא</button>
         </div>
       </div>
       <div class="panel-body layout-container" id="tasks-panel-body" data-layout-container="tasks-panel-content" data-layout-axis="y">
