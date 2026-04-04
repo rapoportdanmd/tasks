@@ -1119,6 +1119,10 @@
       cursor: pointer;
     }
 
+    .filter-date-control {
+      outline: none;
+    }
+
     .date-display {
       width: 100%;
       min-height: 38px;
@@ -1155,6 +1159,182 @@
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .filter-date-control[aria-expanded="true"] .date-display {
+      border-color: var(--teal);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .filter-date-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 300px;
+      max-width: min(340px, calc(100vw - 32px));
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 252, 247, 0.98);
+      border: 1px solid rgba(220, 212, 199, 0.92);
+      box-shadow: 0 24px 50px rgba(15, 23, 42, 0.16);
+      display: grid;
+      gap: 10px;
+      backdrop-filter: blur(16px);
+      cursor: default;
+      z-index: 28;
+    }
+
+    .filter-date-popover-head {
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-date-month-label {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .filter-date-nav-btn,
+    .filter-date-meta-btn {
+      min-height: 32px;
+      border: 1px solid rgba(172, 160, 143, 0.34);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+    }
+
+    .filter-date-nav-btn:hover,
+    .filter-date-nav-btn:focus-visible,
+    .filter-date-meta-btn:hover,
+    .filter-date-meta-btn:focus-visible {
+      background: rgba(15, 118, 110, 0.08);
+      border-color: rgba(15, 118, 110, 0.24);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .filter-date-nav-btn {
+      width: 34px;
+      padding: 0;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .filter-date-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-date-meta-btn {
+      min-width: 86px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--muted-strong);
+    }
+
+    .filter-date-meta-btn.active {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.34);
+      color: #9a5a00;
+    }
+
+    .filter-date-helper {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .filter-date-weekdays,
+    .filter-date-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .filter-date-weekday {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .filter-date-cell {
+      position: relative;
+      min-height: 36px;
+      border: 1px solid rgba(172, 160, 143, 0.22);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+    }
+
+    .filter-date-cell:hover,
+    .filter-date-cell:focus-visible {
+      background: rgba(15, 118, 110, 0.08);
+      border-color: rgba(15, 118, 110, 0.22);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .filter-date-cell.is-outside-month {
+      color: rgba(71, 84, 103, 0.46);
+      background: rgba(248, 250, 252, 0.6);
+    }
+
+    .filter-date-cell.is-today {
+      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.28);
+    }
+
+    .filter-date-cell.has-tasks {
+      border-color: rgba(245, 158, 11, 0.34);
+      background: rgba(245, 158, 11, 0.08);
+      color: #9a5a00;
+      font-weight: 800;
+    }
+
+    .filter-date-cell.has-tasks::after {
+      content: "";
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--orange);
+    }
+
+    .filter-date-cell.is-selected {
+      border-color: rgba(15, 118, 110, 0.34);
+      background: rgba(15, 118, 110, 0.14);
+      color: var(--teal-strong);
+      font-weight: 900;
+    }
+
+    .filter-date-cell.is-selected.has-tasks {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), rgba(15, 118, 110, 0.14));
     }
 
     input,
@@ -3713,6 +3893,10 @@
           <button class="hero-menu-item" type="button" role="menuitem" onclick="bookmarkCurrentPage()">
             <span class="hero-menu-item-main">שמור סימנייה</span>
           </button>
+          <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-copy-department-link" onclick="copyDepartmentAccessLink()">
+            <span class="hero-menu-item-main">העתק קישור למחלקה</span>
+            <span class="hero-menu-item-meta" id="hero-menu-copy-department-link-meta"></span>
+          </button>
           <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-account" onclick="openAccountAccessOverlay()">
             <span class="hero-menu-item-main">חשבון</span>
           </button>
@@ -4093,11 +4277,40 @@
         <div class="filters-grid layout-item" data-layout-id="filters-grid-block" data-layout-label="כלי סינון">
           <div class="field">
               <label for="filter-date">תאריך</label>
-              <div class="date-control">
-              <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
-              <input class="date-native" type="date" id="filter-date" />
+              <div
+                class="date-control filter-date-control"
+                id="filter-date-control"
+                role="button"
+                tabindex="0"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
+                <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
+                <input class="date-native" type="date" id="filter-date" />
+                <div class="filter-date-popover" id="filter-date-popover" role="dialog" aria-label="בחירת תאריכים לסינון" hidden>
+                  <div class="filter-date-popover-head">
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש קודם" onclick="shiftFilterCalendarMonth(-1, event)">‹</button>
+                    <div class="filter-date-month-label" id="filter-date-month-label"></div>
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש הבא" onclick="shiftFilterCalendarMonth(1, event)">›</button>
+                  </div>
+                  <div class="filter-date-meta-row">
+                    <button type="button" class="filter-date-meta-btn" id="filter-date-all-btn" onclick="toggleAllDatesFromCalendar(event)" hidden>כל התאריכים</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="resetFilterDateCalendarToToday(event)">היום</button>
+                  </div>
+                  <div class="filter-date-helper" id="filter-date-helper-text"></div>
+                  <div class="filter-date-weekdays">
+                    <span class="filter-date-weekday">א</span>
+                    <span class="filter-date-weekday">ב</span>
+                    <span class="filter-date-weekday">ג</span>
+                    <span class="filter-date-weekday">ד</span>
+                    <span class="filter-date-weekday">ה</span>
+                    <span class="filter-date-weekday">ו</span>
+                    <span class="filter-date-weekday">ש</span>
+                  </div>
+                  <div class="filter-date-grid" id="filter-date-grid"></div>
+                </div>
+              </div>
             </div>
-          </div>
           <div class="field suggestion-field">
             <label for="filter-patient">מטופל</label>
             <input
@@ -4342,6 +4555,8 @@
     let surgeryPrepEntries = [];
     let currentCategoryFilter = 'all';
     let filterAllPatientDates = false;
+    let selectedPatientFilterDates = [];
+    let filterCalendarMonth = getTodayString().slice(0, 7);
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
@@ -4401,6 +4616,11 @@
     let inlineValueTooltipTimer = null;
     let inlineValueTooltipAnchor = null;
     let isPhoneLayout = phoneLayoutMediaQuery.matches;
+    let serverAccessInfo = {
+      request_origin: window.location.origin,
+      share_urls: [],
+      suggested_share_url: window.location.origin
+    };
 
     async function init() {
       const today = getTodayString();
@@ -4595,6 +4815,8 @@
       const menuButton = document.getElementById('hero-menu-button');
       const menuTitle = document.getElementById('hero-menu-title');
       const menuSubtitle = document.getElementById('hero-menu-subtitle');
+      const copyDepartmentLinkButton = document.getElementById('hero-menu-copy-department-link');
+      const copyDepartmentLinkMeta = document.getElementById('hero-menu-copy-department-link-meta');
       const accountButton = document.getElementById('hero-menu-account');
       const logoutButton = document.getElementById('hero-menu-logout');
       const feedbackInboxButton = document.getElementById('hero-menu-feedback-inbox');
@@ -4627,6 +4849,9 @@
       feedbackInboxButton.hidden = !isAdmin;
       sendSuggestionButton.hidden = isAdmin || (authEnabled && !authenticated);
 
+      copyDepartmentLinkMeta.textContent = getDepartmentAccessUrl();
+      copyDepartmentLinkButton.hidden = !getDepartmentAccessUrl();
+      copyDepartmentLinkButton.disabled = !getDepartmentAccessUrl();
       accountButton.disabled = !authEnabled;
       logoutButton.disabled = !authEnabled || !authenticated;
       feedbackInboxButton.disabled = !authenticated || !isAdmin;
@@ -5003,6 +5228,47 @@
       } catch (error) {
         status.textContent = 'לא הצלחנו להעתיק את הקישור כרגע.';
         status.dataset.kind = 'error';
+      }
+    }
+
+    function getDepartmentAccessUrl() {
+      if (serverAccessInfo && Array.isArray(serverAccessInfo.share_urls) && serverAccessInfo.share_urls.length > 0) {
+        return serverAccessInfo.share_urls[0];
+      }
+
+      if (serverAccessInfo && serverAccessInfo.suggested_share_url) {
+        return serverAccessInfo.suggested_share_url;
+      }
+
+      return window.location.href;
+    }
+
+    async function copyDepartmentAccessLink() {
+      closeHeroMenu();
+      const targetUrl = getDepartmentAccessUrl();
+
+      try {
+        const res = await fetch('/api/server-access', { cache: 'no-store' });
+        const data = await res.json().catch(() => null);
+
+        if (data && typeof data === 'object') {
+          serverAccessInfo = {
+            request_origin: data.request_origin || window.location.origin,
+            share_urls: Array.isArray(data.share_urls) ? data.share_urls : [],
+            suggested_share_url: data.suggested_share_url || data.request_origin || targetUrl
+          };
+        }
+      } catch (error) {
+        console.warn('Could not refresh department access link.', error);
+      }
+
+      const nextUrl = getDepartmentAccessUrl();
+
+      try {
+        await navigator.clipboard.writeText(nextUrl);
+        window.alert(`הקישור למחלקה הועתק:\n${nextUrl}`);
+      } catch (error) {
+        window.prompt('העתק את הקישור למחלקה:', nextUrl);
       }
     }
 
@@ -6379,6 +6645,17 @@
       onCallRoles = Array.isArray(data.onCallRoles) ? data.onCallRoles : [];
       infectedListLabel = data.infectedListLabel || infectedListLabel;
       teamMembers = Array.isArray(data.teamMembers) ? data.teamMembers : [];
+      serverAccessInfo = data.serverAccess && typeof data.serverAccess === 'object'
+        ? {
+          request_origin: data.serverAccess.request_origin || window.location.origin,
+          share_urls: Array.isArray(data.serverAccess.share_urls) ? data.serverAccess.share_urls : [],
+          suggested_share_url: data.serverAccess.suggested_share_url || data.serverAccess.request_origin || window.location.origin
+        }
+        : {
+          request_origin: window.location.origin,
+          share_urls: [],
+          suggested_share_url: window.location.origin
+        };
 
       document.getElementById('infected-title').textContent = infectedListLabel;
       renderTaskCategoryInput();
@@ -6390,6 +6667,7 @@
       await loadDailyAdmin();
       await loadOnCallAssignments();
       renderCategoryFilters();
+      syncHeroMenuUi();
     }
 
     async function loadActivePatientPool(options = {}) {
@@ -6809,23 +7087,328 @@
       `;
     }
 
-    function getNormalizedPatientFilterValue() {
-      return isPhoneLayout
-        ? ''
-        : document.getElementById('filter-patient').value.trim().toLowerCase();
-    }
-
-    function isAllPatientDatesFilterActive() {
-      return !isPhoneLayout && filterAllPatientDates && Boolean(getNormalizedPatientFilterValue());
-    }
-
     function togglePatientAllDatesFilter() {
       if (!getNormalizedPatientFilterValue() || isPhoneLayout) {
         return;
       }
 
       filterAllPatientDates = !filterAllPatientDates;
+      renderFilterDatePopover();
       handleFiltersChanged();
+    }
+
+    function getNormalizedPatientFilterValue() {
+      return isPhoneLayout
+        ? ''
+        : document.getElementById('filter-patient').value.trim().toLowerCase();
+    }
+
+    function taskMatchesPatientFilter(task, patientFilter = getNormalizedPatientFilterValue()) {
+      if (!patientFilter) {
+        return true;
+      }
+
+      return String(task?.patient_name || '').toLowerCase().includes(patientFilter);
+    }
+
+    function getCurrentFilterDateValue() {
+      return isPhoneLayout
+        ? getTodayString()
+        : (document.getElementById('filter-date').value || '');
+    }
+
+    function getActiveTaskFilterDates() {
+      const filterDate = getCurrentFilterDateValue();
+      const patientFilter = getNormalizedPatientFilterValue();
+
+      if (!patientFilter) {
+        return filterDate ? new Set([filterDate]) : null;
+      }
+
+      if (filterAllPatientDates) {
+        return null;
+      }
+
+      const activeDates = selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (filterDate ? [filterDate] : []);
+
+      return activeDates.length > 0 ? new Set(activeDates) : null;
+    }
+
+    function getFilterCalendarTaskDates() {
+      const contextualTasks = getTasksForFilters({ exclude: ['date'] });
+      const dateSet = new Set();
+      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
+
+      if (fallbackDate) {
+        dateSet.add(fallbackDate);
+      }
+
+      contextualTasks.forEach((task) => {
+        const taskDate = String(task?.night_shift_anchor_date || task?.task_date || '').trim();
+        if (taskDate) {
+          dateSet.add(taskDate);
+        }
+      });
+
+      return dateSet;
+    }
+
+    function getMonthKeyFromDate(value) {
+      const match = String(value || '').match(/^(\d{4})-(\d{2})/);
+      if (match) {
+        return `${match[1]}-${match[2]}`;
+      }
+
+      return getTodayString().slice(0, 7);
+    }
+
+    function getMonthKeyFromParts(year, monthIndex) {
+      const month = String(monthIndex + 1).padStart(2, '0');
+      return `${year}-${month}`;
+    }
+
+    function parseMonthKey(monthKey) {
+      const [year, month] = String(monthKey || '').split('-').map(Number);
+      return new Date(year || new Date().getFullYear(), (month || 1) - 1, 1);
+    }
+
+    function shiftMonthKey(monthKey, delta) {
+      const nextDate = parseMonthKey(monthKey);
+      nextDate.setMonth(nextDate.getMonth() + delta);
+      return getMonthKeyFromParts(nextDate.getFullYear(), nextDate.getMonth());
+    }
+
+    function formatDateKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function getFilterCalendarActiveDates() {
+      if (filterAllPatientDates) {
+        return new Set();
+      }
+
+      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
+      const activeDates = selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (fallbackDate ? [fallbackDate] : []);
+
+      return new Set(activeDates);
+    }
+
+    function getFilterDateDisplayText(inputDate, emptyLabel = '') {
+      const patientFilter = getNormalizedPatientFilterValue();
+      if (!patientFilter) {
+        return inputDate ? formatControlDate(inputDate) : emptyLabel;
+      }
+
+      if (filterAllPatientDates) {
+        return 'כל התאריכים';
+      }
+
+      const activeDates = selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (inputDate ? [inputDate] : []);
+
+      if (activeDates.length > 1) {
+        return `${activeDates.length} תאריכים`;
+      }
+
+      return inputDate ? formatControlDate(inputDate) : emptyLabel;
+    }
+
+    function isFilterDatePopoverOpen() {
+      const popover = document.getElementById('filter-date-popover');
+      return Boolean(popover) && !popover.hidden;
+    }
+
+    function openFilterDatePopover() {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      const control = document.getElementById('filter-date-control');
+      const popover = document.getElementById('filter-date-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      filterCalendarMonth = getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      renderFilterDatePopover();
+      popover.hidden = false;
+      control.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeFilterDatePopover() {
+      const control = document.getElementById('filter-date-control');
+      const popover = document.getElementById('filter-date-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      popover.hidden = true;
+      control.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleFilterDatePopover() {
+      if (isFilterDatePopoverOpen()) {
+        closeFilterDatePopover();
+      } else {
+        openFilterDatePopover();
+      }
+    }
+
+    function renderFilterDatePopover() {
+      const popover = document.getElementById('filter-date-popover');
+      const monthLabel = document.getElementById('filter-date-month-label');
+      const helper = document.getElementById('filter-date-helper-text');
+      const grid = document.getElementById('filter-date-grid');
+      const allDatesButton = document.getElementById('filter-date-all-btn');
+
+      if (!popover || !monthLabel || !helper || !grid || !allDatesButton) {
+        return;
+      }
+
+      if (isPhoneLayout) {
+        closeFilterDatePopover();
+        return;
+      }
+
+      const monthKey = filterCalendarMonth || getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      filterCalendarMonth = monthKey;
+
+      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
+      const monthDate = parseMonthKey(monthKey);
+      const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const gridStart = new Date(monthStart);
+      gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+
+      const markedDates = getFilterCalendarTaskDates();
+      const activeDates = getFilterCalendarActiveDates();
+      const today = getTodayString();
+
+      monthLabel.textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
+      helper.textContent = patientFilterActive
+        ? 'כתום = יש משימות. אפשר לבחור כמה תאריכים או לעבור לכל התאריכים.'
+        : 'כתום = יש משימות בתאריך. בלי סינון מטופל נשארת בחירת תאריך אחת.';
+
+      allDatesButton.hidden = !patientFilterActive;
+      allDatesButton.classList.toggle('active', patientFilterActive && filterAllPatientDates);
+
+      grid.innerHTML = Array.from({ length: 42 }, (_, index) => {
+        const cellDate = new Date(gridStart);
+        cellDate.setDate(gridStart.getDate() + index);
+        const dateKey = formatDateKey(cellDate);
+        const isCurrentMonth = cellDate.getMonth() === monthStart.getMonth();
+        const isSelected = !filterAllPatientDates && activeDates.has(dateKey);
+        const hasTasks = markedDates.has(dateKey);
+        const classes = [
+          'filter-date-cell',
+          isCurrentMonth ? '' : 'is-outside-month',
+          dateKey === today ? 'is-today' : '',
+          hasTasks ? 'has-tasks' : '',
+          isSelected ? 'is-selected' : ''
+        ].filter(Boolean).join(' ');
+
+        return `
+          <button
+            type="button"
+            class="${classes}"
+            onclick="selectFilterCalendarDate('${escJs(dateKey)}', event)"
+            aria-pressed="${isSelected ? 'true' : 'false'}"
+          >${cellDate.getDate()}</button>
+        `;
+      }).join('');
+    }
+
+    function shiftFilterCalendarMonth(delta, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      filterCalendarMonth = shiftMonthKey(filterCalendarMonth, delta);
+      renderFilterDatePopover();
+    }
+
+    function applyFilterDateSelection(date, options = {}) {
+      const {
+        keepOpen = false,
+        resetToSingle = false
+      } = options;
+      const input = document.getElementById('filter-date');
+      if (!input || !date) {
+        return;
+      }
+
+      const currentActiveDates = getFilterCalendarActiveDates();
+      input.value = date;
+      filterCalendarMonth = getMonthKeyFromDate(date);
+
+      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
+      if (!patientFilterActive) {
+        filterAllPatientDates = false;
+        selectedPatientFilterDates = [];
+        syncAllDateDisplays();
+        handleFiltersChanged();
+        if (!keepOpen) {
+          closeFilterDatePopover();
+        }
+        return;
+      }
+
+      if (filterAllPatientDates || resetToSingle) {
+        filterAllPatientDates = false;
+        selectedPatientFilterDates = [date];
+        syncAllDateDisplays();
+        handleFiltersChanged();
+        if (!keepOpen) {
+          closeFilterDatePopover();
+        }
+        return;
+      }
+
+      const selected = new Set(currentActiveDates);
+      if (selected.has(date) && selected.size > 1) {
+        selected.delete(date);
+      } else {
+        selected.add(date);
+      }
+
+      selectedPatientFilterDates = Array.from(selected).sort();
+      syncAllDateDisplays();
+      handleFiltersChanged();
+      if (!keepOpen) {
+        closeFilterDatePopover();
+      }
+    }
+
+    function selectFilterCalendarDate(date, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      applyFilterDateSelection(date, { keepOpen: Boolean(getNormalizedPatientFilterValue()) });
+    }
+
+    function toggleAllDatesFromCalendar(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+
+      if (!getNormalizedPatientFilterValue()) {
+        return;
+      }
+
+      filterAllPatientDates = !filterAllPatientDates;
+      if (filterAllPatientDates) {
+        selectedPatientFilterDates = [];
+      } else {
+        selectedPatientFilterDates = [getCurrentFilterDateValue() || getTodayString()];
+      }
+      syncAllDateDisplays();
+      handleFiltersChanged();
+    }
+
+    function resetFilterDateCalendarToToday(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      applyFilterDateSelection(getTodayString(), { keepOpen: Boolean(getNormalizedPatientFilterValue()), resetToSingle: Boolean(getNormalizedPatientFilterValue()) });
     }
 
     function getUploadedPatientPoolNames() {
@@ -7044,16 +7627,14 @@
     function getVisibleMainTasks(options = {}) {
       const { exclude = [] } = options;
       const excludeSet = new Set(exclude);
-      const filterDate = isPhoneLayout
-        ? getTodayString()
-        : (isAllPatientDatesFilterActive() ? '' : document.getElementById('filter-date').value);
+      const activeFilterDates = excludeSet.has('date') ? null : getActiveTaskFilterDates();
 
       return allTasks.filter((task) => {
         if (task.night_shift_anchor_date) {
           return false;
         }
 
-        const matchesDate = excludeSet.has('date') || !filterDate || task.task_date === filterDate;
+        const matchesDate = !activeFilterDates || activeFilterDates.has(task.task_date);
         return matchesDate && matchesSharedTaskFilters(task, excludeSet);
       });
     }
@@ -7061,10 +7642,13 @@
     function getVisibleNightShiftTasks(options = {}) {
       const { exclude = [] } = options;
       const excludeSet = new Set(exclude);
-      const filterDate = isPhoneLayout
-        ? getTodayString()
-        : (isAllPatientDatesFilterActive() ? '' : document.getElementById('filter-date').value);
-      const validAnchorDates = filterDate ? getNightShiftAnchorDatesForFilter(filterDate) : null;
+      const activeFilterDates = excludeSet.has('date') ? null : getActiveTaskFilterDates();
+      const validAnchorDates = activeFilterDates
+        ? Array.from(activeFilterDates).reduce((dates, filterDate) => {
+          getNightShiftAnchorDatesForFilter(filterDate).forEach((value) => dates.add(value));
+          return dates;
+        }, new Set())
+        : null;
 
       return allTasks.filter((task) => {
         if (!task.night_shift_anchor_date) {
@@ -7072,7 +7656,6 @@
         }
 
         const matchesDate =
-          excludeSet.has('date') ||
           !validAnchorDates ||
           validAnchorDates.has(task.night_shift_anchor_date);
 
@@ -7094,7 +7677,7 @@
         : document.getElementById('filter-assignee').value;
       const activeCategoryFilter = isPhoneLayout ? 'all' : currentCategoryFilter;
 
-      const matchesPatient = excludeSet.has('patient') || !patientFilter || String(task.patient_name || '').toLowerCase().includes(patientFilter);
+      const matchesPatient = excludeSet.has('patient') || taskMatchesPatientFilter(task, patientFilter);
       const matchesCategory = excludeSet.has('category') || activeCategoryFilter === 'all' || task.category === activeCategoryFilter;
       const matchesAssignee =
         excludeSet.has('assignee') ||
@@ -8395,6 +8978,7 @@
     }
 
     function handleFiltersChanged() {
+      renderFilterDatePopover();
       renderPatientHelpers();
       renderFilterAssigneeOptions();
       renderCategoryFilters();
@@ -9527,11 +10111,16 @@
       });
       document.getElementById('filter-date').addEventListener('change', () => {
         syncAllDateDisplays();
+        if (getNormalizedPatientFilterValue() && !filterAllPatientDates) {
+          const nextDate = getCurrentFilterDateValue();
+          selectedPatientFilterDates = nextDate ? [nextDate] : [];
+        }
         handleFiltersChanged();
       });
       document.getElementById('filter-patient').addEventListener('input', () => {
         if (!getNormalizedPatientFilterValue()) {
           filterAllPatientDates = false;
+          selectedPatientFilterDates = [];
         }
         handleFiltersChanged();
       });
@@ -9561,6 +10150,9 @@
         if (!event.target.closest('.suggestion-field')) {
           closeAllPatientSuggestionMenus();
         }
+        if (!event.target.closest('.filter-date-control')) {
+          closeFilterDatePopover();
+        }
         if (!event.target.closest('.hero-menu')) {
           closeHeroMenu();
         }
@@ -9579,6 +10171,7 @@
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeStatusPicker();
+        closeFilterDatePopover();
         closeAllPatientSuggestionMenus();
         hidePatientHistoryTooltip();
       });
@@ -9597,8 +10190,14 @@
           closeAdminSuggestionsModal();
         }
       });
-      window.addEventListener('resize', hidePatientHistoryTooltip);
-      window.addEventListener('scroll', hidePatientHistoryTooltip, true);
+      window.addEventListener('resize', () => {
+        hidePatientHistoryTooltip();
+        closeFilterDatePopover();
+      });
+      window.addEventListener('scroll', () => {
+        hidePatientHistoryTooltip();
+        closeFilterDatePopover();
+      }, true);
       window.addEventListener('beforeunload', closeLiveSync);
       if (typeof phoneLayoutMediaQuery.addEventListener === 'function') {
         phoneLayoutMediaQuery.addEventListener('change', () => syncPhoneLayoutMode());
@@ -9612,6 +10211,7 @@
       const { rerender = true } = options;
       const wasPhoneLayout = document.body.classList.contains('phone-layout');
       isPhoneLayout = phoneLayoutMediaQuery.matches;
+      closeFilterDatePopover();
       document.body.classList.toggle('phone-layout', isPhoneLayout);
       const newTaskSubtitle = document.getElementById('new-task-subtitle');
 
@@ -10225,6 +10825,30 @@
         }
 
         control.dataset.bound = 'true';
+        if (control.id === 'filter-date-control') {
+          control.addEventListener('click', (event) => {
+            if (event.target.closest('.filter-date-popover')) {
+              return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            toggleFilterDatePopover();
+          });
+          control.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              toggleFilterDatePopover();
+              return;
+            }
+
+            if (event.key === 'Escape') {
+              closeFilterDatePopover();
+            }
+          });
+          return;
+        }
+
         control.addEventListener('click', () => {
           const input = control.querySelector('.date-native');
           if (!input) {

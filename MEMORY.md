@@ -218,6 +218,12 @@
 
 ## 2026-04-02 21:19 IDT
 
+## 2026-04-03 11:34 IDT
+
+- Added a hospital-network/shared-drive deployment path: `npm run start:network-share` now starts the app on LAN-friendly settings and stores the SQLite file in `shared-data/tasks.db`.
+- The new startup script writes `network-share-access.txt` with the host computer's local URL, the department-facing LAN URLs, and the database/log paths for easier handoff.
+- Exposed server access info in the API and added a quick in-app menu action to copy the department share link, so staff can share the correct network address without using terminal commands.
+
 - Reviewed the current working tree and separated project files from machine-local clutter before preparing the next commit.
 - Expanded `.gitignore` to exclude local logs, PID files, Codex state, recovered cache HTML, test artifacts, and the downloaded `cloudflared` binary while keeping deploy scripts and app assets tracked.
 - Staged the meaningful app, docs, scripts, deployment, and asset changes as a clean follow-up commit set; only a syntax check is available right now because the repo does not yet define an automated test suite.
@@ -231,6 +237,35 @@
 
 - Reworked the status legend in `סינון ותצוגה` into compact colored circles that show live task counts inside the circles themselves, instead of repeating status names next to them.
 - Updated the green completion wording to `בוצע`, replacing the older `סגור` label where that status name is still used.
+
+## 2026-04-04 09:08 IDT
+
+- Matched the new-task browser-side validation to the backend so category `קבלות` can be saved without `פירוט`.
+- Added a standard fold/unfold control to the `מאגר מטופלים` panel using the same collapse behavior as the other top-level boxes.
+
+## 2026-04-04 09:14 IDT
+
+- Added the same fold/unfold control to `ניהול אנשי צוות`, with that panel defaulting open.
+- Set `מאגר מטופלים` to start collapsed by default through the shared panel-collapse state, while still allowing it to be reopened manually.
+
+## 2026-04-04 09:24 IDT
+
+- Fixed the top-left visual leak on `סינון ותצוגה` by insetting its accent line so the rounded filter card stays clean even while its overflow remains visible for dropdowns.
+- Added the standard fold/unfold button to `סינון ותצוגה` and set that panel to start collapsed by default through the shared collapse-state system.
+
+## 2026-04-04 14:56 IDT
+
+- Refined the `סינון ותצוגה` top accent again so it visually matches the other panel headers while still staying clipped just inside the rounded card edge.
+
+## 2026-04-04 15:09 IDT
+
+- Added overnight default task-creation rules: new tasks created from 18:00 default into the current day's `תורנות`, while tasks created before 05:00 default to the previous day's date and `תורנות`.
+- Between 00:00 and 06:00 the new-task form now allows selecting the previous day, and the date display shows `Night-Shift` whenever the current default save target is the night-shift bucket.
+
+## 2026-04-04 15:18 IDT
+
+- Restored the fuller current UI/app baseline after the overnight task patch was accidentally deployed on top of a much smaller committed baseline.
+- Re-kept the overnight default task behavior while bringing back the richer live UI pieces already present in the local working copy, including online status, populated dropdowns, and the broader task/list rendering logic.
 
 ## 2026-03-29 21:13 IDT
 
@@ -1010,10 +1045,65 @@
 - Prepared a clean deployment upload bundle on Dan's Desktop for the permanent-domain rollout, excluding local database files, secrets, logs, caches, and other machine-specific artifacts.
 - Created both a folder and zip version to make the GitHub upload step easier for a non-technical handoff into Render deployment.
 
-## 2026-04-04 07:59 IDT
+## 2026-04-03 13:23 IDT
 
-- Added a desktop-only orange `כל התאריכים` toggle under the category chips that appears only while a patient filter is active, without changing the rest of the filter layout.
-- When enabled, the button temporarily widens that one patient's task view across every date while leaving the normal current-day date filter intact for everything else and for when the toggle is turned back off.
+- Investigated migrating the real working data into the new permanent Render domain at `https://www.sefer-neuro.org`.
+- Confirmed the live Render site is healthy and authenticated, but the obvious local source databases on this Mac (`tasks.db`, `shared-data/tasks.db`, and the latest backup) currently contain almost no operational data beyond staff accounts/suggestions.
+- Confirmed the running local server process is attached to `shared-data/tasks.db`, so blindly migrating from this machine right now would overwrite the permanent site with the wrong mostly-empty dataset. The real source data appears to live somewhere else and needs to be identified before executing migration.
+
+## 2026-04-03 13:33 IDT
+
+- Fixed the iPhone-style auto-zoom annoyance in the phone layout by forcing focused text controls to render at `16px` while editing.
+- Kept the change scoped to `body.phone-layout` so the desktop UI and the compact non-focused mobile look stay unchanged.
+
+## 2026-04-03 14:19 IDT
+
+- Added explicit favicon/bookmark icon links in the page head, pointing at the existing transparent book asset so browser bookmarks stop falling back to the generic globe icon.
+- Included both regular favicon and Apple touch icon declarations to improve bookmark/home-screen icon pickup across desktop and mobile browsers.
+
+## 2026-04-03 15:37 IDT
+
+- Added `קבלות` as a real task category in the backend source of truth.
+- Updated the category sort order and the task-table category constraint refresh logic so the new category is accepted both for fresh saves and for existing deployed databases that need their SQLite category check rebuilt.
+
+## 2026-04-03 16:09 IDT
+
+- Added a closed-state helper button to `מיונים/יעוצים`: when an entry status is `סגור`, the row now shows `הוסף הערה` beside the inline note box.
+- The new button does not create a second field; it simply focuses the existing inline comment box to make post-closure note entry faster. Kept it out of the phone layout so the simplified mobile view stays unchanged.
+
+## 2026-04-03 16:17 IDT
+
+- Replaced the temporary closed-state ER helper button with a real move action: closed `מיונים/יעוצים` rows now show `הוסף לקבלות`.
+- Added a backend route that creates a task under category `קבלות`, carries over useful ER details, and removes the patient from the ER list in one transaction.
+- Added an evening/night rule for this transfer: from `18:00` through before `05:00`, the created admissions task is automatically placed into `תורנות`; before `05:00` it is anchored to the previous date's night shift.
+- Verified the core move flow on a temporary isolated server: closed ER entry -> new `קבלות` task created -> ER entry removed.
+
+## 2026-04-03 16:27 IDT
+
+- Relaxed `קבלות` so it no longer requires mandatory `פירוט`.
+- Refined the ER-to-`קבלות` transfer so the original `מיונים/יעוצים` note/comment is no longer copied into the admissions task.
+- Verified the updated transfer on a temporary isolated server: the created `קבלות` task now has blank description and keeps only structured ER details (`אגף/מחלקה/ביה״ח` and `ת.ז`) in the task comment.
+
+## 2026-04-03 16:29 IDT
+
+- Changed the `הוסף לקבלות` action button style from teal to orange so it reads more clearly as a transfer/action button in the `מיונים/יעוצים` list.
+
+## 2026-04-03 16:32 IDT
+
+- Further simplified the ER-to-`קבלות` transfer: moved admissions tasks no longer carry over `אגף/מחלקה/ביה״ח` or `ת.ז` either.
+- Verified on a temporary isolated server that the created `קבלות` task now arrives fully clean: blank description and no transferred comment/details at all.
+
+## 2026-04-04 06:51 IDT
+
+- Expanded the desktop patient filter so date filtering can be widened for one patient across multiple dates or all dates, while still defaulting to the current day.
+- Added a patient-date chip row that appears only when a patient filter is active, with one-click toggles for specific dates plus `כל התאריכים`.
+- Wired the task and night-shift filtering logic to respect either the default single date, a chosen set of dates, or the new all-dates mode without changing the phone layout.
+
+## 2026-04-04 07:27 IDT
+
+- Reworked the new patient multi-date filtering so the visible desktop layout stays unchanged: the extra date chip row was removed again and the behavior moved into the existing date control.
+- The desktop filter date button now opens a custom calendar popover that marks task dates in orange, allows selecting multiple dates for a filtered patient, and includes an in-calendar `כל התאריכים` action.
+- Kept the default behavior anchored to the current day, while leaving the phone layout unchanged.
 
 ## 2026-04-04 08:08 IDT
 
@@ -1031,27 +1121,3 @@
 ## 2026-04-04 08:31 IDT
 
 - Split patient-name ordering into two behaviors: the bottom quick-pick chips in `משימה חדשה` still bring the most recently used patient to the front, while the name dropdown menus now stay alphabetical.
-
-## 2026-04-04 09:08 IDT
-
-- Matched the new-task browser-side validation to the backend so category `קבלות` can be saved without `פירוט`.
-- Added a standard fold/unfold control to the `מאגר מטופלים` panel using the same collapse behavior as the other top-level boxes.
-
-## 2026-04-04 09:14 IDT
-
-- Added the same fold/unfold control to `ניהול אנשי צוות`, with that panel defaulting open.
-- Set `מאגר מטופלים` to start collapsed by default through the shared panel-collapse state, while still allowing it to be reopened manually.
-
-## 2026-04-04 09:24 IDT
-
-- Fixed the top-left visual leak on `סינון ותצוגה` by insetting its accent line so the rounded filter card stays clean even while its overflow remains visible for dropdowns.
-- Added the standard fold/unfold button to `סינון ותצוגה` and set that panel to start collapsed by default through the shared collapse-state system.
-
-## 2026-04-04 14:56 IDT
-
-- Refined the `סינון ותצוגה` top accent again so it visually matches the other panel headers while still staying clipped just inside the rounded card edge.
-
-## 2026-04-04 15:09 IDT
-
-- Added overnight default task-creation rules: new tasks created from 18:00 default into the current day's `תורנות`, while tasks created before 05:00 default to the previous day's date and `תורנות`.
-- Between 00:00 and 06:00 the new-task form now allows selecting the previous day, and the date display shows `Night-Shift` whenever the current default save target is the night-shift bucket.

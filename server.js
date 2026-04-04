@@ -635,8 +635,13 @@ app.get('/api/meta', (_req, res) => {
     onCallRoles: DAILY_ON_CALL_ROLES,
     infectedListLabel: INFECTED_LIST_LABEL,
     statuses: VALID_STATUSES,
-    teamMembers: getTeamMembers()
+    teamMembers: getTeamMembers(),
+    serverAccess: getServerAccessInfo()
   });
+});
+
+app.get('/api/server-access', (req, res) => {
+  res.json(getServerAccessInfo(getRequestOrigin(req)));
 });
 
 app.post('/api/accounts/:id/approve', requireAdminSession, (req, res) => {
@@ -2947,6 +2952,54 @@ function getRequestOrigin(req) {
   }
 
   return `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;
+}
+
+function getServerAccessInfo(requestOrigin = '') {
+  const shareUrls = getServerShareUrls();
+  const normalizedOrigin = normalizeText(requestOrigin);
+  const fallbackOrigin = normalizedOrigin || `http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`;
+
+  return {
+    request_origin: fallbackOrigin,
+    host: HOST,
+    hostname: os.hostname(),
+    port: PORT,
+    share_urls: shareUrls,
+    suggested_share_url: shareUrls[0] || fallbackOrigin
+  };
+}
+
+function getServerShareUrls() {
+  const interfaces = os.networkInterfaces();
+  const urls = new Set();
+
+  Object.values(interfaces).forEach((entries) => {
+    if (!Array.isArray(entries)) {
+      return;
+    }
+
+    entries.forEach((entry) => {
+      if (!entry || entry.internal) {
+        return;
+      }
+
+      const family = typeof entry.family === 'string'
+        ? entry.family
+        : String(entry.family);
+
+      if (family !== 'IPv4') {
+        return;
+      }
+
+      if (!entry.address) {
+        return;
+      }
+
+      urls.add(`http://${entry.address}:${PORT}`);
+    });
+  });
+
+  return Array.from(urls).sort();
 }
 
 function createSessionCookieValue(sessionInput = {}) {
