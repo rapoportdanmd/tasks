@@ -1173,3 +1173,7 @@
 ## 2026-04-04 19:04 IDT
 
 - Removed the `העתק קישור למחלקה` quick action from the book-menu popover and cleaned up the menu-state code that used to show and label that button.
+
+## 2026-04-05 00:09 IDT
+
+- Fixed the phone-only `תורנות` task board styling so the mobile night-shift block now carries the same purple accent as the desktop night-shift panel instead of inheriting the generic green/teal task-group marker.

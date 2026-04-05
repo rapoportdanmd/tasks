@@ -2413,6 +2413,10 @@
       align-content: start;
     }
 
+    .phone-task-block.night-shift-mobile {
+      --panel-accent: rgba(79, 70, 229, 0.84);
+    }
+
     .phone-task-block + .phone-task-block {
       margin-top: 12px;
     }
@@ -7915,7 +7919,7 @@
 
       if (nightShiftHtml) {
         sections.push(`
-          <section class="phone-task-block">
+          <section class="phone-task-block night-shift-mobile">
             <div class="phone-task-block-head">
               <h3>תורנות</h3>
               <span>${nightShiftTasks.length} משימות</span>
