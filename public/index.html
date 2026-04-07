@@ -4154,7 +4154,7 @@
                     <button type="button" class="filter-date-nav-btn" aria-label="חודש הבא" onclick="shiftInputCalendarMonth(1, event)">›</button>
                   </div>
                   <div class="filter-date-meta-row">
-                    <button type="button" class="filter-date-meta-btn" onclick="resetInputDateCalendarToDefault(event)">ברירת מחדל</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="resetInputDateCalendarToDefault(event)">לפי המשמרת</button>
                     <button type="button" class="filter-date-meta-btn" onclick="resetInputDateCalendarToToday(event)">היום</button>
                   </div>
                   <div class="filter-date-helper" id="input-date-helper-text"></div>
@@ -7464,9 +7464,8 @@
       const today = getTodayString();
 
       monthLabel.textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
-      helper.textContent = patientFilterActive
-        ? 'כתום = יש משימות. אפשר לבחור כמה תאריכים או לעבור לכל התאריכים.'
-        : 'כתום = יש משימות בתאריך. בלי סינון מטופל נשארת בחירת תאריך אחת.';
+      helper.textContent = '';
+      helper.hidden = true;
 
       allDatesButton.hidden = !patientFilterActive;
       allDatesButton.classList.toggle('active', patientFilterActive && filterAllPatientDates);
@@ -7566,9 +7565,8 @@
       const defaultDate = getDefaultNewTaskDate();
 
       monthLabel.textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
-      helper.textContent = isWithinTaskPreviousDaySelectionWindow()
-        ? 'ימים שעברו נעולים. בין 00:00 ל-06:00 אפשר גם לבחור את הלילה הקודם.'
-        : 'ימים שעברו נעולים. אפשר לבחור רק מהיום והלאה.';
+      helper.textContent = '';
+      helper.hidden = true;
 
       grid.innerHTML = Array.from({ length: 42 }, (_, index) => {
         const cellDate = new Date(gridStart);

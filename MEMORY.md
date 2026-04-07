@@ -1201,3 +1201,7 @@
 ## 2026-04-07 21:33 IDT
 
 - Stopped date popovers from auto-closing on page scroll while keeping outside-click dismissal, so the filter and new-task calendars can stay open during vertical scrolling without breaking the close-on-click-outside behavior.
+
+## 2026-04-07 21:40 IDT
+
+- Removed the explanatory helper copy from both in-app date popovers for a cleaner look, and renamed the new-task calendar reset button from `ברירת מחדל` to `לפי המשמרת` so it better matches the shift-based date default behavior.
