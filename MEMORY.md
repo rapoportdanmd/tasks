@@ -1197,3 +1197,7 @@
 ## 2026-04-07 21:27 IDT
 
 - Fixed the new-task calendar clipping by letting the `משימה חדשה` panel overflow visibly like the filter panel and raising the active date control above neighboring content, so the popover can extend outside the form box instead of being cut off.
+
+## 2026-04-07 21:33 IDT
+
+- Stopped date popovers from auto-closing on page scroll while keeping outside-click dismissal, so the filter and new-task calendars can stay open during vertical scrolling without breaking the close-on-click-outside behavior.
