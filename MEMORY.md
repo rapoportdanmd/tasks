@@ -1185,3 +1185,7 @@
 ## 2026-04-07 20:56 IDT
 
 - Aligned the desktop filter with the overnight workflow: between `00:00` and `06:00` the filter now defaults to the previous day instead of today, and the filter date box shows `Night-Shift` for that previous-day overnight view while keeping the visible layout unchanged.
+
+## 2026-04-07 21:02 IDT
+
+- Broadened only the desktop patient-filter suggestion dropdown so it still includes the current filter-day pool names, but now also surfaces patients who have tasks on other dates even if they are not in the current day’s patient pool.

@@ -7586,6 +7586,13 @@
       return getPatientPoolNamesForDate(date);
     }
 
+    function getFilterPatientSuggestionNames() {
+      return uniqueNames([
+        ...getPatientPoolNamesForDate(getCurrentFilterDateValue() || getDefaultFilterDate()),
+        ...allTasks.map((task) => task.patient_name)
+      ]);
+    }
+
     function getTaskChipPatientsForDate(date) {
       const recentTaskPatients = getRecentTaskPatientsForDate(date);
       const recentPatientSet = new Set(recentTaskPatients);
@@ -8813,9 +8820,7 @@
           return {
             inputId: 'filter-patient',
             menuId: 'filter-patient-suggestions',
-            getSuggestions: () => uniqueNames(
-              getTasksForFilters({ exclude: ['patient'] }).map((task) => task.patient_name)
-            ),
+            getSuggestions: () => getFilterPatientSuggestionNames(),
             choose: (name) => {
               setNamedInputValue('filter-patient', name);
             }
