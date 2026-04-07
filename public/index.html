@@ -1176,7 +1176,7 @@
         0 0 0 4px rgba(15, 118, 110, 0.1);
     }
 
-    .filter-date-control[aria-expanded="true"] .date-display {
+    .date-control[aria-expanded="true"] .date-display {
       border-color: var(--teal);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
@@ -1329,16 +1329,21 @@
       font-weight: 800;
     }
 
-    .filter-date-cell.has-tasks::after {
-      content: "";
-      position: absolute;
-      bottom: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      border-radius: 999px;
-      background: var(--orange);
+    .filter-date-cell.is-default {
+      border-color: rgba(245, 158, 11, 0.34);
+      background: rgba(245, 158, 11, 0.08);
+      color: #9a5a00;
+      font-weight: 800;
+    }
+
+    .filter-date-cell.is-disabled {
+      color: rgba(71, 84, 103, 0.34);
+      background: rgba(248, 250, 252, 0.52);
+      border-color: rgba(172, 160, 143, 0.14);
+      cursor: not-allowed;
+      pointer-events: none;
+      transform: none;
+      box-shadow: none;
     }
 
     .filter-date-cell.is-selected {
@@ -1349,6 +1354,10 @@
     }
 
     .filter-date-cell.is-selected.has-tasks {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), rgba(15, 118, 110, 0.14));
+    }
+
+    .filter-date-cell.is-selected.is-default {
       background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), rgba(15, 118, 110, 0.14));
     }
 
@@ -4114,9 +4123,38 @@
             </div>
             <div class="field task-form-date">
               <label for="input-date">תאריך</label>
-              <div class="date-control">
+              <div
+                class="date-control input-date-control"
+                id="input-date-control"
+                role="button"
+                tabindex="0"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
                 <div class="date-display" id="input-date-display">Today</div>
                 <input class="date-native" type="date" id="input-date" />
+                <div class="filter-date-popover input-date-popover" id="input-date-popover" role="dialog" aria-label="בחירת תאריך למשימה" hidden>
+                  <div class="filter-date-popover-head">
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש קודם" onclick="shiftInputCalendarMonth(-1, event)">‹</button>
+                    <div class="filter-date-month-label" id="input-date-month-label"></div>
+                    <button type="button" class="filter-date-nav-btn" aria-label="חודש הבא" onclick="shiftInputCalendarMonth(1, event)">›</button>
+                  </div>
+                  <div class="filter-date-meta-row">
+                    <button type="button" class="filter-date-meta-btn" onclick="resetInputDateCalendarToDefault(event)">ברירת מחדל</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="resetInputDateCalendarToToday(event)">היום</button>
+                  </div>
+                  <div class="filter-date-helper" id="input-date-helper-text"></div>
+                  <div class="filter-date-weekdays">
+                    <span class="filter-date-weekday">א</span>
+                    <span class="filter-date-weekday">ב</span>
+                    <span class="filter-date-weekday">ג</span>
+                    <span class="filter-date-weekday">ד</span>
+                    <span class="filter-date-weekday">ה</span>
+                    <span class="filter-date-weekday">ו</span>
+                    <span class="filter-date-weekday">ש</span>
+                  </div>
+                  <div class="filter-date-grid" id="input-date-grid"></div>
+                </div>
               </div>
             </div>
             <div class="field task-form-time">
@@ -4644,6 +4682,7 @@
     let filterAllPatientDates = false;
     let selectedPatientFilterDates = [];
     let filterCalendarMonth = getDefaultFilterDate().slice(0, 7);
+    let inputCalendarMonth = getDefaultNewTaskDate().slice(0, 7);
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
@@ -7368,6 +7407,11 @@
       control.setAttribute('aria-expanded', 'false');
     }
 
+    function closeAllCustomDatePopovers() {
+      closeFilterDatePopover();
+      closeInputDatePopover();
+    }
+
     function toggleFilterDatePopover() {
       if (isFilterDatePopoverOpen()) {
         closeFilterDatePopover();
@@ -7437,6 +7481,152 @@
           >${cellDate.getDate()}</button>
         `;
       }).join('');
+    }
+
+    function isInputDatePopoverOpen() {
+      const popover = document.getElementById('input-date-popover');
+      return Boolean(popover) && !popover.hidden;
+    }
+
+    function openInputDatePopover() {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      const control = document.getElementById('input-date-control');
+      const popover = document.getElementById('input-date-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      inputCalendarMonth = getMonthKeyFromDate(
+        document.getElementById('input-date').value || getDefaultNewTaskDate()
+      );
+      renderInputDatePopover();
+      popover.hidden = false;
+      control.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeInputDatePopover() {
+      const control = document.getElementById('input-date-control');
+      const popover = document.getElementById('input-date-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      popover.hidden = true;
+      control.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleInputDatePopover() {
+      if (isInputDatePopoverOpen()) {
+        closeInputDatePopover();
+      } else {
+        openInputDatePopover();
+      }
+    }
+
+    function renderInputDatePopover() {
+      const popover = document.getElementById('input-date-popover');
+      const monthLabel = document.getElementById('input-date-month-label');
+      const helper = document.getElementById('input-date-helper-text');
+      const grid = document.getElementById('input-date-grid');
+      if (!popover || !monthLabel || !helper || !grid) {
+        return;
+      }
+
+      if (isPhoneLayout) {
+        closeInputDatePopover();
+        return;
+      }
+
+      const selectedDate = document.getElementById('input-date').value || getDefaultNewTaskDate();
+      const monthKey = inputCalendarMonth || getMonthKeyFromDate(selectedDate);
+      inputCalendarMonth = monthKey;
+
+      const monthDate = parseMonthKey(monthKey);
+      const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const gridStart = new Date(monthStart);
+      gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+      const today = getTodayString();
+      const defaultDate = getDefaultNewTaskDate();
+
+      monthLabel.textContent = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
+      helper.textContent = isWithinTaskPreviousDaySelectionWindow()
+        ? 'ימים שעברו נעולים. בין 00:00 ל-06:00 אפשר גם לבחור את הלילה הקודם.'
+        : 'ימים שעברו נעולים. אפשר לבחור רק מהיום והלאה.';
+
+      grid.innerHTML = Array.from({ length: 42 }, (_, index) => {
+        const cellDate = new Date(gridStart);
+        cellDate.setDate(gridStart.getDate() + index);
+        const dateKey = formatDateKey(cellDate);
+        const isCurrentMonth = cellDate.getMonth() === monthStart.getMonth();
+        const isSelected = dateKey === selectedDate;
+        const isDefault = dateKey === defaultDate;
+        const isDisabled = !canUseTaskCreationDate(dateKey);
+        const classes = [
+          'filter-date-cell',
+          isCurrentMonth ? '' : 'is-outside-month',
+          dateKey === today ? 'is-today' : '',
+          isSelected ? 'is-selected' : '',
+          isDefault ? 'is-default' : '',
+          isDisabled ? 'is-disabled' : ''
+        ].filter(Boolean).join(' ');
+
+        return `
+          <button
+            type="button"
+            class="${classes}"
+            onclick="selectInputCalendarDate('${escJs(dateKey)}', event)"
+            aria-pressed="${isSelected ? 'true' : 'false'}"
+            ${isDisabled ? 'disabled' : ''}
+          >${cellDate.getDate()}</button>
+        `;
+      }).join('');
+    }
+
+    function shiftInputCalendarMonth(delta, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      inputCalendarMonth = shiftMonthKey(inputCalendarMonth, delta);
+      renderInputDatePopover();
+    }
+
+    async function applyInputDateSelection(date, options = {}) {
+      const { keepOpen = false } = options;
+      const input = document.getElementById('input-date');
+      if (!input || !date || !canUseTaskCreationDate(date)) {
+        return;
+      }
+
+      input.value = date;
+      inputCalendarMonth = getMonthKeyFromDate(date);
+      syncAllDateDisplays();
+      await refreshRelevantPatientPools();
+      syncTaskFormMode();
+      if (!keepOpen) {
+        closeInputDatePopover();
+      }
+    }
+
+    async function selectInputCalendarDate(date, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      await applyInputDateSelection(date);
+    }
+
+    async function resetInputDateCalendarToDefault(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      await applyInputDateSelection(getDefaultNewTaskDate(), { keepOpen: true });
+      renderInputDatePopover();
+    }
+
+    async function resetInputDateCalendarToToday(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      await applyInputDateSelection(getTodayString(), { keepOpen: true });
+      renderInputDatePopover();
     }
 
     function shiftFilterCalendarMonth(delta, event) {
@@ -10503,6 +10693,9 @@
         if (!event.target.closest('.filter-date-control')) {
           closeFilterDatePopover();
         }
+        if (!event.target.closest('.input-date-control')) {
+          closeInputDatePopover();
+        }
         if (!event.target.closest('.hero-menu')) {
           closeHeroMenu();
         }
@@ -10521,7 +10714,7 @@
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeStatusPicker();
-        closeFilterDatePopover();
+        closeAllCustomDatePopovers();
         closeAllPatientSuggestionMenus();
         hidePatientHistoryTooltip();
       });
@@ -10542,11 +10735,11 @@
       });
       window.addEventListener('resize', () => {
         hidePatientHistoryTooltip();
-        closeFilterDatePopover();
+        closeAllCustomDatePopovers();
       });
       window.addEventListener('scroll', () => {
         hidePatientHistoryTooltip();
-        closeFilterDatePopover();
+        closeAllCustomDatePopovers();
       }, true);
       window.addEventListener('beforeunload', closeLiveSync);
       if (typeof phoneLayoutMediaQuery.addEventListener === 'function') {
@@ -10561,7 +10754,7 @@
       const { rerender = true } = options;
       const wasPhoneLayout = document.body.classList.contains('phone-layout');
       isPhoneLayout = phoneLayoutMediaQuery.matches;
-      closeFilterDatePopover();
+      closeAllCustomDatePopovers();
       document.body.classList.toggle('phone-layout', isPhoneLayout);
       const newTaskSubtitle = document.getElementById('new-task-subtitle');
 
@@ -11218,25 +11411,29 @@
         }
 
         control.dataset.bound = 'true';
-        if (control.id === 'filter-date-control') {
+        if (control.id === 'filter-date-control' || control.id === 'input-date-control') {
+          const isFilterControl = control.id === 'filter-date-control';
+          const popoverSelector = '.filter-date-popover';
+          const togglePopover = isFilterControl ? toggleFilterDatePopover : toggleInputDatePopover;
+          const closePopover = isFilterControl ? closeFilterDatePopover : closeInputDatePopover;
           control.addEventListener('click', (event) => {
-            if (event.target.closest('.filter-date-popover')) {
+            if (event.target.closest(popoverSelector)) {
               return;
             }
 
             event.preventDefault();
             event.stopPropagation();
-            toggleFilterDatePopover();
+            togglePopover();
           });
           control.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
-              toggleFilterDatePopover();
+              togglePopover();
               return;
             }
 
             if (event.key === 'Escape') {
-              closeFilterDatePopover();
+              closePopover();
             }
           });
           return;

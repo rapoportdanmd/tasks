@@ -1189,3 +1189,7 @@
 ## 2026-04-07 21:02 IDT
 
 - Broadened only the desktop patient-filter suggestion dropdown so it still includes the current filter-day pool names, but now also surfaces patients who have tasks on other dates even if they are not in the current day’s patient pool.
+
+## 2026-04-07 21:18 IDT
+
+- Simplified the filter calendar marking by removing the extra orange dot and relying on the date-cell color state alone, then replaced the new-task date picker’s native browser calendar with the same in-app calendar style used by the filter while preserving the rule that past task dates stay locked except for the allowed overnight previous-day window.
