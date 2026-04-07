@@ -1209,3 +1209,7 @@
 ## 2026-04-07 21:46 IDT
 
 - Updated the shared in-app calendar styling so the current day now reads as a blue date cell instead of just a subtle ring, while still preserving clear selected/default/task states in both the filter calendar and the new-task calendar.
+
+## 2026-04-07 21:52 IDT
+
+- Removed the redundant `כל התאריכים` chip from the task-type filter row, leaving the calendar’s own `כל התאריכים` control as the single source for all-dates patient filtering.

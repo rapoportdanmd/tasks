@@ -1963,18 +1963,6 @@
       border-color: rgba(15, 118, 110, 0.24);
     }
 
-    .chip.patient-all-dates-chip {
-      border: 1px solid rgba(245, 158, 11, 0.34);
-      background: rgba(255, 247, 237, 0.92);
-      color: #c2410c;
-    }
-
-    .chip.patient-all-dates-chip.active {
-      background: rgba(251, 191, 36, 0.26);
-      border-color: rgba(217, 119, 6, 0.42);
-      color: #9a3412;
-    }
-
     .chip.is-empty:not(.active) {
       background: rgba(241, 245, 249, 0.96);
       color: #94a3b8;
@@ -7242,16 +7230,6 @@
       const container = document.getElementById('category-filters');
       const contextualTasks = getTasksForFilters({ exclude: ['category'] });
       const availableCategories = new Set(contextualTasks.map((task) => task.category));
-      const patientAllDatesButton = Boolean(getNormalizedPatientFilterValue()) && !isPhoneLayout
-        ? `
-          <button
-            type="button"
-            class="chip patient-all-dates-chip ${filterAllPatientDates ? 'active' : ''}"
-            onclick="togglePatientAllDatesFilter()"
-            aria-pressed="${filterAllPatientDates ? 'true' : 'false'}"
-          >כל התאריכים</button>
-        `
-        : '';
       container.innerHTML = `
         <button type="button" class="chip ${currentCategoryFilter === 'all' ? 'active' : ''}" onclick="setCategoryFilter('all')">הכול</button>
         ${taskCategories.map((category) => `
@@ -7261,18 +7239,7 @@
             onclick="setCategoryFilter('${escJs(category)}')"
           >${escHtml(category)}</button>
         `).join('')}
-        ${patientAllDatesButton}
       `;
-    }
-
-    function togglePatientAllDatesFilter() {
-      if (!getNormalizedPatientFilterValue() || isPhoneLayout) {
-        return;
-      }
-
-      filterAllPatientDates = !filterAllPatientDates;
-      renderFilterDatePopover();
-      handleFiltersChanged();
     }
 
     function getNormalizedPatientFilterValue() {
