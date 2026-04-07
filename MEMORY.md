@@ -1205,3 +1205,7 @@
 ## 2026-04-07 21:40 IDT
 
 - Removed the explanatory helper copy from both in-app date popovers for a cleaner look, and renamed the new-task calendar reset button from `ברירת מחדל` to `לפי המשמרת` so it better matches the shift-based date default behavior.
+
+## 2026-04-07 21:46 IDT
+
+- Updated the shared in-app calendar styling so the current day now reads as a blue date cell instead of just a subtle ring, while still preserving clear selected/default/task states in both the filter calendar and the new-task calendar.
