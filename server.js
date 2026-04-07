@@ -1131,6 +1131,10 @@ app.patch('/api/tasks/:id', (req, res) => {
     updates.push('task_date = ?');
     values.push(taskDate);
     nextTaskDate = taskDate;
+    if (taskDate !== existingTask.task_date && existingTask.night_shift_anchor_date) {
+      updates.push('night_shift_anchor_date = NULL');
+      updates.push('night_shift_moved_at = NULL');
+    }
   }
 
   if (Object.prototype.hasOwnProperty.call(req.body, 'task_time')) {
@@ -3353,7 +3357,7 @@ function getStaffAccountById(id) {
     return null;
   }
 
-  return db.prepare(`
+  const account = db.prepare(`
     SELECT
       staff_accounts.*,
       team_members.name AS team_member_name
@@ -3362,6 +3366,22 @@ function getStaffAccountById(id) {
       ON team_members.id = staff_accounts.team_member_id
     WHERE staff_accounts.id = ?
   `).get(parsedId) || null;
+
+  return sanitizeStaffAccount(account);
+}
+
+function sanitizeStaffAccount(account) {
+  if (!account) {
+    return null;
+  }
+
+  const {
+    password_hash: _passwordHash,
+    password_salt: _passwordSalt,
+    ...safeAccount
+  } = account;
+
+  return safeAccount;
 }
 
 function ensureTeamMemberForName(name) {

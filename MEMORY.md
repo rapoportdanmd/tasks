@@ -1177,3 +1177,7 @@
 ## 2026-04-05 00:09 IDT
 
 - Fixed the phone-only `תורנות` task board styling so the mobile night-shift block now carries the same purple accent as the desktop night-shift panel instead of inheriting the generic green/teal task-group marker.
+
+## 2026-04-07 20:17 IDT
+
+- Tightened two backend rules without changing the UI: account registration/approval responses no longer expose password hash/salt fields to the browser, and manually changing the date of an existing `תורנות` task now clears its night-shift anchor so it becomes a regular task on the new date as requested.
