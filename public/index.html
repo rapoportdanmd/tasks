@@ -649,6 +649,12 @@
 
     [data-layout-id="new-task-panel"] {
       --panel-accent: rgba(15, 118, 110, 0.88);
+      overflow: visible;
+      z-index: 5;
+    }
+
+    [data-layout-id="new-task-panel"] .panel-body {
+      overflow: visible;
     }
 
     [data-layout-id="infected-panel"] {
@@ -1132,6 +1138,14 @@
     .date-control {
       position: relative;
       cursor: pointer;
+    }
+
+    .input-date-control {
+      outline: none;
+    }
+
+    .input-date-control[aria-expanded="true"] {
+      z-index: 30;
     }
 
     .filter-date-control {

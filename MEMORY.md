@@ -1193,3 +1193,7 @@
 ## 2026-04-07 21:18 IDT
 
 - Simplified the filter calendar marking by removing the extra orange dot and relying on the date-cell color state alone, then replaced the new-task date picker’s native browser calendar with the same in-app calendar style used by the filter while preserving the rule that past task dates stay locked except for the allowed overnight previous-day window.
+
+## 2026-04-07 21:27 IDT
+
+- Fixed the new-task calendar clipping by letting the `משימה חדשה` panel overflow visibly like the filter panel and raising the active date control above neighboring content, so the popover can extend outside the form box instead of being cut off.
