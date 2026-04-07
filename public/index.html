@@ -4643,7 +4643,7 @@
     let currentCategoryFilter = 'all';
     let filterAllPatientDates = false;
     let selectedPatientFilterDates = [];
-    let filterCalendarMonth = getTodayString().slice(0, 7);
+    let filterCalendarMonth = getDefaultFilterDate().slice(0, 7);
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
@@ -4712,10 +4712,9 @@
     };
 
     async function init() {
-      const today = getTodayString();
       document.getElementById('input-date').value = getDefaultNewTaskDate();
       document.getElementById('input-time').value = '';
-      document.getElementById('filter-date').value = today;
+      document.getElementById('filter-date').value = getDefaultFilterDate();
       syncAllDateDisplays();
 
       initializeClearButtons();
@@ -7246,7 +7245,7 @@
     function getFilterCalendarTaskDates() {
       const contextualTasks = getTasksForFilters({ exclude: ['date'] });
       const dateSet = new Set();
-      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
+      const fallbackDate = getCurrentFilterDateValue() || getDefaultFilterDate();
 
       if (fallbackDate) {
         dateSet.add(fallbackDate);
@@ -7296,7 +7295,7 @@
         return new Set();
       }
 
-      const fallbackDate = getCurrentFilterDateValue() || getTodayString();
+      const fallbackDate = getCurrentFilterDateValue() || getDefaultFilterDate();
       const activeDates = selectedPatientFilterDates.length > 0
         ? selectedPatientFilterDates
         : (fallbackDate ? [fallbackDate] : []);
@@ -7307,7 +7306,12 @@
     function getFilterDateDisplayText(inputDate, emptyLabel = '') {
       const patientFilter = getNormalizedPatientFilterValue();
       if (!patientFilter) {
-        return inputDate ? formatControlDate(inputDate) : emptyLabel;
+        if (!inputDate) {
+          return emptyLabel;
+        }
+        return shouldShowNightShiftFilterLabel(inputDate)
+          ? 'Night-Shift'
+          : formatControlDate(inputDate);
       }
 
       if (filterAllPatientDates) {
@@ -7322,7 +7326,13 @@
         return `${activeDates.length} תאריכים`;
       }
 
-      return inputDate ? formatControlDate(inputDate) : emptyLabel;
+      if (!inputDate) {
+        return emptyLabel;
+      }
+
+      return shouldShowNightShiftFilterLabel(inputDate)
+        ? 'Night-Shift'
+        : formatControlDate(inputDate);
     }
 
     function isFilterDatePopoverOpen() {
@@ -7341,7 +7351,7 @@
         return;
       }
 
-      filterCalendarMonth = getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      filterCalendarMonth = getMonthKeyFromDate(getCurrentFilterDateValue() || getDefaultFilterDate());
       renderFilterDatePopover();
       popover.hidden = false;
       control.setAttribute('aria-expanded', 'true');
@@ -7382,7 +7392,7 @@
         return;
       }
 
-      const monthKey = filterCalendarMonth || getMonthKeyFromDate(getCurrentFilterDateValue() || getTodayString());
+      const monthKey = filterCalendarMonth || getMonthKeyFromDate(getCurrentFilterDateValue() || getDefaultFilterDate());
       filterCalendarMonth = monthKey;
 
       const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
@@ -7506,7 +7516,7 @@
       if (filterAllPatientDates) {
         selectedPatientFilterDates = [];
       } else {
-        selectedPatientFilterDates = [getCurrentFilterDateValue() || getTodayString()];
+        selectedPatientFilterDates = [getCurrentFilterDateValue() || getDefaultFilterDate()];
       }
       syncAllDateDisplays();
       handleFiltersChanged();
@@ -10652,6 +10662,16 @@
       return addDaysString(getTodayString(), -1);
     }
 
+    function isWithinNightShiftFilterDefaultWindow() {
+      return getCurrentMinutesSinceMidnight() <= TASK_PREVIOUS_DAY_SELECTION_END_MINUTES;
+    }
+
+    function getDefaultFilterDate() {
+      return isWithinNightShiftFilterDefaultWindow()
+        ? getPreviousTaskDateOption()
+        : getTodayString();
+    }
+
     function canUseTaskCreationDate(value) {
       if (typeof value !== 'string' || !value) {
         return false;
@@ -10692,6 +10712,13 @@
 
     function shouldShowNightShiftDefaultLabel(taskDate) {
       return !currentEditingTaskId && Boolean(getDefaultNewTaskNightShiftAnchorDate(taskDate));
+    }
+
+    function shouldShowNightShiftFilterLabel(filterDate) {
+      return typeof filterDate === 'string'
+        && Boolean(filterDate)
+        && isWithinNightShiftFilterDefaultWindow()
+        && filterDate === getPreviousTaskDateOption();
     }
 
     function getNightShiftAnchorDatesForFilter(filterDate) {

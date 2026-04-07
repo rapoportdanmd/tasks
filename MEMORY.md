@@ -1181,3 +1181,7 @@
 ## 2026-04-07 20:17 IDT
 
 - Tightened two backend rules without changing the UI: account registration/approval responses no longer expose password hash/salt fields to the browser, and manually changing the date of an existing `תורנות` task now clears its night-shift anchor so it becomes a regular task on the new date as requested.
+
+## 2026-04-07 20:56 IDT
+
+- Aligned the desktop filter with the overnight workflow: between `00:00` and `06:00` the filter now defaults to the previous day instead of today, and the filter date box shows `Night-Shift` for that previous-day overnight view while keeping the visible layout unchanged.
