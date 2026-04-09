@@ -35,6 +35,7 @@
       --compact-radius: 10px;
       --compact-pill-height: 30px;
       --task-action-size: 22px;
+      --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5 6 7.5l3-3' stroke='%23738495' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
     * {
@@ -1444,6 +1445,18 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
     }
 
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: var(--select-chevron);
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+      background-size: 12px 12px;
+      padding-left: 34px;
+      cursor: pointer;
+    }
+
     textarea {
       resize: vertical;
       min-height: 70px;
@@ -2238,10 +2251,11 @@
       min-width: 0;
       min-height: 28px;
       height: 28px;
-      padding: 4px 9px;
+      padding: 4px 28px 4px 9px;
       border-radius: 10px;
-      border: 1px solid rgba(31, 41, 55, 0.18);
-      background: rgba(255, 255, 255, 0.64);
+      border: 1px solid var(--border-strong);
+      background-color: rgba(255, 255, 255, 0.84);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
       text-align: center;
       text-align-last: center;
     }
@@ -2866,16 +2880,15 @@
       max-width: 100%;
       min-height: 24px;
       height: 24px;
-      padding: 2px 26px 2px 9px;
+      padding: 2px 28px 2px 9px;
       font-size: 0.68rem;
       font-weight: 700;
       line-height: 1.2;
       color: #475569;
       border-radius: 999px;
-      border: 1px solid rgba(211, 203, 190, 0.8);
-      background: rgba(255, 255, 255, 0.82);
-      appearance: auto;
-      -webkit-appearance: menulist;
+      border: 1px solid var(--border-strong);
+      background-color: rgba(255, 255, 255, 0.84);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
       direction: rtl;
     }
 
@@ -3225,11 +3238,12 @@
       min-width: 0;
       min-height: 26px;
       height: 26px;
-      padding: 4px 7px;
+      padding: 4px 28px 4px 7px;
       font-size: 0.72rem;
       border-radius: var(--compact-radius);
-      border: 1px solid rgba(31, 41, 55, 0.24);
-      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border-strong);
+      background-color: rgba(255, 255, 255, 0.84);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
     }
 
     .assignee-select {
@@ -3237,17 +3251,13 @@
       min-width: 0;
       min-height: 28px;
       height: 28px;
-      padding-inline: 8px;
+      padding: 4px 28px 4px 8px;
       font-size: 0.72rem;
       line-height: 1.2;
       direction: rtl;
       text-align: center;
       text-align-last: center;
       white-space: nowrap;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: none;
     }
 
     .icon-btn {

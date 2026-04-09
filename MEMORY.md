@@ -1225,3 +1225,7 @@
 ## 2026-04-09 18:39 IDT
 
 - Refined the `מכתבים` task-form UI again: the main `סוג` dropdown is now simple again, and choosing `מכתבים` reveals a compact second dropdown inline beside it in the same row, so the subtype stays separate without pushing date/time into a lower row.
+
+## 2026-04-09 19:33 IDT
+
+- Unified the visual styling of the site’s real dropdown selects by giving them one shared chevron, border, background, and focus language, while preserving the smaller compact sizes used inside task rows and inline list editors.
