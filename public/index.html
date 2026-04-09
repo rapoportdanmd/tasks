@@ -178,7 +178,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 0;
     }
 
     .hero-workspace-btn {
@@ -4290,12 +4290,12 @@
         <p>תצוגה יומית קומפקטית לפי תאריך, מטופל וסוג משימה.</p>
         <div class="hero-status-row">
           <span class="hero-status-chip" id="live-sync-status" hidden>סנכרון חי לא פעיל</span>
-        </div>
-        <div class="hero-workspace-actions" id="hero-workspace-actions">
-          <button class="hero-workspace-btn" type="button" data-workspace-panel="new-task-panel" onclick="toggleWorkspacePopup('new-task-panel')">משימה חדשה</button>
-          <button class="hero-workspace-btn" type="button" data-workspace-panel="infected-panel" onclick="toggleWorkspacePopup('infected-panel')">רשימת מזוהמים</button>
-          <button class="hero-workspace-btn" type="button" data-workspace-panel="er-panel" onclick="toggleWorkspacePopup('er-panel')">מיונים/יעוצים</button>
-          <button class="hero-workspace-btn" type="button" data-workspace-panel="surgery-prep-panel" onclick="toggleWorkspacePopup('surgery-prep-panel')">רשימת הכנות ניתוחים</button>
+          <div class="hero-workspace-actions" id="hero-workspace-actions">
+            <button class="hero-workspace-btn" type="button" data-workspace-panel="new-task-panel" onclick="toggleWorkspacePopup('new-task-panel')">משימה חדשה</button>
+            <button class="hero-workspace-btn" type="button" data-workspace-panel="infected-panel" onclick="toggleWorkspacePopup('infected-panel')">רשימת מזוהמים</button>
+            <button class="hero-workspace-btn" type="button" data-workspace-panel="er-panel" onclick="toggleWorkspacePopup('er-panel')">מיונים/יעוצים</button>
+            <button class="hero-workspace-btn" type="button" data-workspace-panel="surgery-prep-panel" onclick="toggleWorkspacePopup('surgery-prep-panel')">רשימת הכנות ניתוחים</button>
+          </div>
         </div>
       </div>
       <div class="hero-menu">

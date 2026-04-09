@@ -1298,3 +1298,7 @@
 ## 2026-04-09 22:47 IDT
 
 - Removed the helper subtitle line from the `סינון ותצוגה` header so that panel title area matches the cleaner top-level card style.
+
+## 2026-04-09 22:48 IDT
+
+- Moved the desktop popup-launcher buttons into the same header row as the live-sync marker, so the green hero bar reads as one cleaner action/status strip.
