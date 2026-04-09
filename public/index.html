@@ -1463,6 +1463,14 @@
       outline: none;
     }
 
+    .task-inline-date {
+      outline: none;
+    }
+
+    .task-inline-date[aria-expanded="true"] {
+      z-index: 30;
+    }
+
     .date-display {
       width: 100%;
       min-height: 38px;
@@ -1524,6 +1532,12 @@
       backdrop-filter: blur(20px) saturate(155%);
       cursor: default;
       z-index: 28;
+    }
+
+    .task-inline-date-popover {
+      right: 0;
+      min-width: 292px;
+      max-width: min(320px, calc(100vw - 32px));
     }
 
     .filter-date-popover-head {
@@ -5146,11 +5160,13 @@
     let selectedPatientFilterDates = [];
     let filterCalendarMonth = getDefaultFilterDate().slice(0, 7);
     let inputCalendarMonth = getDefaultNewTaskDate().slice(0, 7);
+    let taskInlineCalendarMonth = '';
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
     let currentEditingSurgeryPrepEntryId = null;
     let openStatusPickerTaskId = null;
+    let openTaskInlineDatePopoverTaskId = null;
     let taskCategoryMenuOpen = false;
     let taskTalkFreeformMode = false;
     let activeWorkspacePopupPanelId = null;
@@ -8114,6 +8130,7 @@
     function closeAllCustomDatePopovers() {
       closeFilterDatePopover();
       closeInputDatePopover();
+      closeTaskInlineDatePopover();
     }
 
     function toggleFilterDatePopover() {
@@ -8329,6 +8346,162 @@
       event?.stopPropagation?.();
       await applyInputDateSelection(getTodayString(), { keepOpen: true });
       renderInputDatePopover();
+    }
+
+    function isTaskInlineDatePopoverOpen(taskId = null) {
+      if (taskId === null || typeof taskId === 'undefined') {
+        return openTaskInlineDatePopoverTaskId !== null;
+      }
+
+      return Number(openTaskInlineDatePopoverTaskId) === Number(taskId);
+    }
+
+    function getTaskInlineDatePopoverTask(taskId = openTaskInlineDatePopoverTaskId) {
+      const normalizedTaskId = Number(taskId);
+      if (!Number.isFinite(normalizedTaskId)) {
+        return null;
+      }
+
+      return allTasks.find((task) => Number(task.id) === normalizedTaskId) || null;
+    }
+
+    function openTaskInlineDatePopover(taskId) {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      const task = getTaskInlineDatePopoverTask(taskId);
+      if (!task) {
+        return;
+      }
+
+      openTaskInlineDatePopoverTaskId = Number(task.id);
+      taskInlineCalendarMonth = getMonthKeyFromDate(task.task_date || getTodayString());
+      renderTasks();
+    }
+
+    function closeTaskInlineDatePopover() {
+      if (openTaskInlineDatePopoverTaskId === null) {
+        return;
+      }
+
+      openTaskInlineDatePopoverTaskId = null;
+      taskInlineCalendarMonth = '';
+      renderTasks();
+    }
+
+    function toggleTaskInlineDatePopover(taskId) {
+      if (isTaskInlineDatePopoverOpen(taskId)) {
+        closeTaskInlineDatePopover();
+      } else {
+        openTaskInlineDatePopover(taskId);
+      }
+    }
+
+    function canUseTaskInlineDate(date, currentTaskDate) {
+      return date === currentTaskDate || canUseTaskCreationDate(date);
+    }
+
+    function renderTaskInlineDatePopover(task) {
+      if (!task || isPhoneLayout || !isTaskInlineDatePopoverOpen(task.id)) {
+        return '';
+      }
+
+      const selectedDate = task.task_date || getTodayString();
+      const monthKey = taskInlineCalendarMonth || getMonthKeyFromDate(selectedDate);
+      taskInlineCalendarMonth = monthKey;
+
+      const monthDate = parseMonthKey(monthKey);
+      const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+      const gridStart = new Date(monthStart);
+      gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+      const today = getTodayString();
+      const monthLabel = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' }).format(monthStart);
+
+      const gridMarkup = Array.from({ length: 42 }, (_, index) => {
+        const cellDate = new Date(gridStart);
+        cellDate.setDate(gridStart.getDate() + index);
+        const dateKey = formatDateKey(cellDate);
+        const isCurrentMonth = cellDate.getMonth() === monthStart.getMonth();
+        const isSelected = dateKey === selectedDate;
+        const isDisabled = !canUseTaskInlineDate(dateKey, selectedDate);
+        const classes = [
+          'filter-date-cell',
+          isCurrentMonth ? '' : 'is-outside-month',
+          dateKey === today ? 'is-today' : '',
+          isSelected ? 'is-selected' : '',
+          isDisabled ? 'is-disabled' : ''
+        ].filter(Boolean).join(' ');
+
+        return `
+          <button
+            type="button"
+            class="${classes}"
+            onclick="selectTaskInlineCalendarDate(${task.id}, '${escJs(dateKey)}', event)"
+            aria-pressed="${isSelected ? 'true' : 'false'}"
+            ${isDisabled ? 'disabled' : ''}
+          >${cellDate.getDate()}</button>
+        `;
+      }).join('');
+
+      return `
+        <div class="filter-date-popover task-inline-date-popover" role="dialog" aria-label="בחירת תאריך למשימה">
+          <div class="filter-date-popover-head">
+            <button type="button" class="filter-date-nav-btn" aria-label="חודש קודם" onclick="shiftTaskInlineCalendarMonth(-1, event)">‹</button>
+            <div class="filter-date-month-label">${escHtml(monthLabel)}</div>
+            <button type="button" class="filter-date-nav-btn" aria-label="חודש הבא" onclick="shiftTaskInlineCalendarMonth(1, event)">›</button>
+          </div>
+          <div class="filter-date-meta-row">
+            <button type="button" class="filter-date-meta-btn" onclick="resetTaskInlineDateCalendarToToday(${task.id}, event)">היום</button>
+          </div>
+          <div class="filter-date-weekdays">
+            <span class="filter-date-weekday">א</span>
+            <span class="filter-date-weekday">ב</span>
+            <span class="filter-date-weekday">ג</span>
+            <span class="filter-date-weekday">ד</span>
+            <span class="filter-date-weekday">ה</span>
+            <span class="filter-date-weekday">ו</span>
+            <span class="filter-date-weekday">ש</span>
+          </div>
+          <div class="filter-date-grid">${gridMarkup}</div>
+        </div>
+      `;
+    }
+
+    function shiftTaskInlineCalendarMonth(delta, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      taskInlineCalendarMonth = shiftMonthKey(taskInlineCalendarMonth, delta);
+      renderTasks();
+    }
+
+    async function applyTaskInlineDateSelection(taskId, date, options = {}) {
+      const { keepOpen = false } = options;
+      const task = getTaskInlineDatePopoverTask(taskId);
+      if (!task || !date || !canUseTaskInlineDate(date, task.task_date || '')) {
+        return;
+      }
+
+      if (!keepOpen) {
+        openTaskInlineDatePopoverTaskId = null;
+        taskInlineCalendarMonth = '';
+      } else {
+        taskInlineCalendarMonth = getMonthKeyFromDate(date);
+      }
+
+      await updateTask(task.id, { task_date: date });
+    }
+
+    async function selectTaskInlineCalendarDate(taskId, date, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      await applyTaskInlineDateSelection(taskId, date);
+    }
+
+    async function resetTaskInlineDateCalendarToToday(taskId, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      await applyTaskInlineDateSelection(taskId, getTodayString(), { keepOpen: true });
     }
 
     function shiftFilterCalendarMonth(delta, event) {
@@ -8715,6 +8888,10 @@
       if (openStatusPickerTaskId && !filteredTasks.some((task) => task.id === openStatusPickerTaskId)) {
         openStatusPickerTaskId = null;
       }
+      if (openTaskInlineDatePopoverTaskId && !filteredTasks.some((task) => task.id === openTaskInlineDatePopoverTaskId)) {
+        openTaskInlineDatePopoverTaskId = null;
+        taskInlineCalendarMonth = '';
+      }
 
       if (isPhoneLayout) {
         renderPhoneTaskBoard(groupsContainer, mainTasks, nightShiftTasks);
@@ -8990,6 +9167,7 @@
           `
         : metaLines.map((line) => `<span>${line}</span>`).join('');
       const statusPickerOpen = openStatusPickerTaskId === task.id;
+      const taskDatePopoverOpen = isTaskInlineDatePopoverOpen(task.id);
       const rowClasses = [
         'task-row',
         `status-${task.status}`,
@@ -9033,14 +9211,24 @@
             <span class="task-desc-hint" aria-hidden="true">✎</span>
           </div>
           <div class="task-datetime-box">
-            <div class="date-control task-inline-date" aria-label="עדכון תאריך משימה">
+            <div
+              class="date-control task-inline-date"
+              data-task-id="${task.id}"
+              aria-label="עדכון תאריך משימה"
+              role="button"
+              tabindex="0"
+              aria-haspopup="dialog"
+              aria-expanded="${taskDatePopoverOpen ? 'true' : 'false'}"
+            >
               <div class="date-display">${escHtml(formatControlDate(task.task_date))}</div>
               <input
                 class="date-native task-inline-date-input"
                 type="date"
                 value="${escAttr(task.task_date)}"
-                onchange="updateTask(${task.id}, { task_date: this.value })"
+                tabindex="-1"
+                aria-hidden="true"
               />
+              ${renderTaskInlineDatePopover(task)}
             </div>
             <input
               class="task-inline-time"
@@ -11459,6 +11647,9 @@
         if (!event.target.closest('.input-date-control')) {
           closeInputDatePopover();
         }
+        if (!event.target.closest('.task-inline-date')) {
+          closeTaskInlineDatePopover();
+        }
         if (!event.target.closest('.task-form-category-control')) {
           closeTaskCategoryMenu();
         }
@@ -12136,6 +12327,8 @@
       currentEditingErPatientEntryId = null;
       currentEditingSurgeryPrepEntryId = null;
       openStatusPickerTaskId = null;
+      openTaskInlineDatePopoverTaskId = null;
+      taskInlineCalendarMonth = '';
       resetTaskForm();
       resetInfectedEntryForm();
       resetErPatientForm();
@@ -12159,11 +12352,14 @@
 
     function syncDateLimits() {
       const today = getTodayString();
-      document.getElementById('input-date').min = isWithinTaskPreviousDaySelectionWindow()
+      const activeMinimum = isWithinTaskPreviousDaySelectionWindow()
         ? getPreviousTaskDateOption()
         : today;
+      document.getElementById('input-date').min = activeMinimum;
       document.querySelectorAll('.task-inline-date-input').forEach((input) => {
-        input.min = today;
+        input.min = input.value && input.value < activeMinimum
+          ? input.value
+          : activeMinimum;
       });
     }
 
@@ -12203,6 +12399,74 @@
 
             if (event.key === 'Escape') {
               closePopover();
+            }
+          });
+          return;
+        }
+
+        if (control.classList.contains('task-inline-date')) {
+          control.addEventListener('click', (event) => {
+            if (event.target.closest('.filter-date-popover')) {
+              return;
+            }
+
+            const taskId = Number(control.dataset.taskId);
+            if (!Number.isFinite(taskId)) {
+              return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (isPhoneLayout) {
+              const input = control.querySelector('.date-native');
+              if (!input) {
+                return;
+              }
+
+              if (typeof input.showPicker === 'function') {
+                input.showPicker();
+                return;
+              }
+
+              input.focus();
+              input.click();
+              return;
+            }
+
+            toggleTaskInlineDatePopover(taskId);
+          });
+          control.addEventListener('keydown', (event) => {
+            const taskId = Number(control.dataset.taskId);
+            if (!Number.isFinite(taskId)) {
+              return;
+            }
+
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+
+              if (isPhoneLayout) {
+                const input = control.querySelector('.date-native');
+                if (!input) {
+                  return;
+                }
+
+                if (typeof input.showPicker === 'function') {
+                  input.showPicker();
+                  return;
+                }
+
+                input.focus();
+                input.click();
+                return;
+              }
+
+              toggleTaskInlineDatePopover(taskId);
+              return;
+            }
+
+            if (event.key === 'Escape') {
+              closeTaskInlineDatePopover();
             }
           });
           return;

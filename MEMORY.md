@@ -1331,3 +1331,7 @@
 ## 2026-04-09 23:49 IDT
 
 - Let `תורנות` and `משימות` panels overflow visibly, with matching clipped top accents, so inline task dropdowns such as the `שיחות` senior-doctor picker are no longer cut off by the task-board panel boundaries.
+
+## 2026-04-10 00:00 IDT
+
+- Replaced the task-row date picker with the same custom in-app calendar style used by the new-task form, so task-bar date edits no longer rely on the browser’s native calendar and now share the same visual language and date rules.
