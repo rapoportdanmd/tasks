@@ -1343,3 +1343,7 @@
 ## 2026-04-10 00:03 IDT
 
 - Refreshed the account/login popup to match the newer frosted-glass visual language of the rest of the app, and raised its overlay above the header so it behaves like a proper frontmost dialog instead of an older leftover screen.
+
+## 2026-04-10 00:18 IDT
+
+- Standardized the app’s dropdown visual system through shared CSS tokens, so native selects, suggestion menus, category submenus, the hero menu, date popovers, and inline compact dropdowns now share the same surface, border, spacing, hover state, and focus treatment instead of drifting apart visually.

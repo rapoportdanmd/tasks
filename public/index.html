@@ -38,6 +38,21 @@
       --compact-radius: 14px;
       --compact-pill-height: 30px;
       --task-action-size: 22px;
+      --dropdown-surface: rgba(255, 255, 255, 0.86);
+      --dropdown-surface-strong: rgba(255, 255, 255, 0.94);
+      --dropdown-border: rgba(255, 255, 255, 0.92);
+      --dropdown-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+      --dropdown-radius: 20px;
+      --dropdown-item-radius: 14px;
+      --dropdown-item-height: 36px;
+      --dropdown-item-padding: 8px 11px;
+      --dropdown-hover-bg: rgba(15, 118, 110, 0.08);
+      --dropdown-hover-border: rgba(15, 118, 110, 0.18);
+      --dropdown-active-bg: rgba(15, 118, 110, 0.12);
+      --dropdown-active-border: rgba(15, 118, 110, 0.24);
+      --dropdown-control-bg: rgba(255, 255, 255, 0.84);
+      --dropdown-control-border: rgba(145, 160, 183, 0.32);
+      --dropdown-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
       --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5 6 7.5l3-3' stroke='%23738495' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
@@ -315,10 +330,10 @@
       min-width: 260px;
       max-width: min(320px, calc(100vw - 24px));
       padding: 10px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 28px 56px rgba(15, 23, 42, 0.14);
+      border-radius: var(--dropdown-radius);
+      background: var(--dropdown-surface);
+      border: 1px solid var(--dropdown-border);
+      box-shadow: var(--dropdown-shadow);
       display: grid;
       gap: 6px;
       backdrop-filter: blur(20px) saturate(155%);
@@ -351,16 +366,16 @@
 
     .hero-menu-item {
       width: 100%;
-      min-height: 40px;
+      min-height: var(--dropdown-item-height);
       border: 1px solid transparent;
-      border-radius: 14px;
-      background: transparent;
+      border-radius: var(--dropdown-item-radius);
+      background: rgba(255, 255, 255, 0.68);
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: flex-start;
       gap: 10px;
-      padding: 8px 10px;
+      padding: var(--dropdown-item-padding);
       text-align: right;
       cursor: pointer;
       transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
@@ -368,8 +383,8 @@
 
     .hero-menu-item:hover,
     .hero-menu-item:focus-visible {
-      background: rgba(15, 118, 110, 0.08);
-      border-color: rgba(15, 118, 110, 0.16);
+      background: var(--dropdown-hover-bg);
+      border-color: var(--dropdown-hover-border);
       transform: translateY(-1px);
       outline: none;
     }
@@ -1259,10 +1274,10 @@
       min-width: 196px;
       max-width: min(260px, calc(100vw - 40px));
       padding: 7px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.92);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12);
+      border-radius: var(--dropdown-radius);
+      border: 1px solid var(--dropdown-border);
+      background: var(--dropdown-surface);
+      box-shadow: var(--dropdown-shadow);
       backdrop-filter: blur(18px) saturate(150%);
       z-index: 26;
     }
@@ -1283,14 +1298,14 @@
 
     .task-form-category-menu-item {
       width: 100%;
-      min-height: 34px;
-      padding: 7px 10px;
+      min-height: var(--dropdown-item-height);
+      padding: var(--dropdown-item-padding);
       border: 1px solid transparent;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.72);
+      border-radius: var(--dropdown-item-radius);
+      background: rgba(255, 255, 255, 0.68);
       color: var(--ink);
       font: inherit;
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       font-weight: 800;
       text-align: right;
       cursor: pointer;
@@ -1305,16 +1320,16 @@
     .task-form-category-menu-item:focus-visible,
     .task-form-category-branch:hover > .task-form-category-branch-trigger,
     .task-form-category-branch.is-open > .task-form-category-branch-trigger {
-      background: rgba(15, 118, 110, 0.08);
-      border-color: rgba(15, 118, 110, 0.18);
+      background: var(--dropdown-hover-bg);
+      border-color: var(--dropdown-hover-border);
       color: var(--teal-strong);
       outline: none;
     }
 
     .task-form-category-menu-item.is-selected,
     .task-form-category-branch.is-selected > .task-form-category-branch-trigger {
-      background: rgba(15, 118, 110, 0.12);
-      border-color: rgba(15, 118, 110, 0.22);
+      background: var(--dropdown-active-bg);
+      border-color: var(--dropdown-active-border);
       color: var(--teal-strong);
     }
 
@@ -1336,10 +1351,10 @@
       overscroll-behavior: contain;
       scrollbar-width: thin;
       padding: 7px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.92);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12);
+      border-radius: var(--dropdown-radius);
+      border: 1px solid var(--dropdown-border);
+      background: var(--dropdown-surface);
+      box-shadow: var(--dropdown-shadow);
       backdrop-filter: blur(18px) saturate(150%);
       z-index: 27;
       display: none;
@@ -1408,10 +1423,10 @@
       max-height: min(240px, 38vh);
       overflow: auto;
       padding: 7px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.92);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12);
+      border-radius: var(--dropdown-radius);
+      border: 1px solid var(--dropdown-border);
+      background: var(--dropdown-surface);
+      box-shadow: var(--dropdown-shadow);
       backdrop-filter: blur(18px) saturate(150%);
     }
 
@@ -1421,14 +1436,14 @@
 
     .patient-suggestion-option {
       width: 100%;
-      min-height: 34px;
-      padding: 7px 10px;
+      min-height: var(--dropdown-item-height);
+      padding: var(--dropdown-item-padding);
       border: 1px solid transparent;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.72);
+      border-radius: var(--dropdown-item-radius);
+      background: rgba(255, 255, 255, 0.68);
       color: var(--ink);
       font: inherit;
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       font-weight: 800;
       text-align: right;
       cursor: pointer;
@@ -1437,8 +1452,8 @@
 
     .patient-suggestion-option:hover,
     .patient-suggestion-option:focus-visible {
-      background: rgba(240, 253, 250, 0.98);
-      border-color: rgba(15, 118, 110, 0.16);
+      background: var(--dropdown-hover-bg);
+      border-color: var(--dropdown-hover-border);
       transform: translateY(-1px);
       outline: none;
     }
@@ -1547,10 +1562,10 @@
       min-width: 300px;
       max-width: min(340px, calc(100vw - 32px));
       padding: 12px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.84);
-      border: 1px solid rgba(255, 255, 255, 0.92);
-      box-shadow: 0 28px 56px rgba(15, 23, 42, 0.14);
+      border-radius: var(--dropdown-radius);
+      background: var(--dropdown-surface);
+      border: 1px solid var(--dropdown-border);
+      box-shadow: var(--dropdown-shadow);
       display: grid;
       gap: 10px;
       backdrop-filter: blur(20px) saturate(155%);
@@ -1581,9 +1596,9 @@
     .filter-date-nav-btn,
     .filter-date-meta-btn {
       min-height: 32px;
-      border: 1px solid rgba(205, 216, 229, 0.84);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--dropdown-control-border);
+      border-radius: var(--dropdown-item-radius);
+      background: rgba(255, 255, 255, 0.7);
       color: var(--text);
       display: inline-flex;
       align-items: center;
@@ -1768,6 +1783,18 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
+    .task-form-category-trigger,
+    select,
+    .task-meta-select,
+    .task-meta-input,
+    .list-inline-select,
+    .inline-select,
+    .assignee-select {
+      border-color: var(--dropdown-control-border);
+      background-color: var(--dropdown-control-bg);
+      box-shadow: var(--dropdown-control-shadow);
+    }
+
     select {
       appearance: none;
       -webkit-appearance: none;
@@ -1806,6 +1833,19 @@
       border-color: var(--teal);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .task-form-category-trigger:focus-visible,
+    .task-meta-select:focus,
+    .task-meta-input:focus,
+    .list-inline-select:focus,
+    .inline-select:focus,
+    .assignee-select:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow:
+        var(--dropdown-control-shadow),
         0 0 0 4px rgba(15, 118, 110, 0.1);
     }
 
@@ -2580,16 +2620,11 @@
       height: 28px;
       padding: 4px 28px 4px 9px;
       border-radius: 10px;
-      border: 1px solid var(--border-strong);
-      background-color: rgba(255, 255, 255, 0.84);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
       text-align: center;
       text-align-last: center;
     }
 
     .list-inline-select:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
       background: rgba(255, 255, 255, 0.9);
     }
 
@@ -3238,9 +3273,6 @@
       line-height: 1.2;
       color: #475569;
       border-radius: 999px;
-      border: 1px solid var(--border-strong);
-      background-color: rgba(255, 255, 255, 0.84);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
       direction: rtl;
     }
 
@@ -3256,8 +3288,6 @@
       line-height: 1.2;
       color: #475569;
       border-radius: 999px;
-      border: 1px solid rgba(211, 203, 190, 0.8);
-      background: rgba(255, 255, 255, 0.82);
       direction: rtl;
     }
 
@@ -3543,11 +3573,11 @@
       align-items: center;
       gap: 6px;
       padding: 6px 8px 6px 12px;
-      border: 1px solid rgba(211, 203, 190, 0.96);
+      border: 1px solid var(--dropdown-border);
       border-radius: 999px;
-      background: rgba(255, 252, 247, 0.98);
-      box-shadow: 0 10px 22px rgba(31, 41, 55, 0.12);
-      backdrop-filter: blur(12px);
+      background: var(--dropdown-surface-strong);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(16px) saturate(150%);
       z-index: 6;
       animation: statusDrawerIn 0.16s ease-out;
     }
@@ -3611,9 +3641,6 @@
       padding: 4px 28px 4px 7px;
       font-size: 0.72rem;
       border-radius: var(--compact-radius);
-      border: 1px solid var(--border-strong);
-      background-color: rgba(255, 255, 255, 0.84);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
     }
 
     .assignee-select {
