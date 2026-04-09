@@ -778,10 +778,30 @@
 
     [data-layout-id="night-shift-panel"] {
       --panel-accent: rgba(79, 70, 229, 0.84);
+      overflow: visible;
+      z-index: 3;
     }
 
     [data-layout-id="tasks-panel"] {
       --panel-accent: rgba(15, 118, 110, 0.88);
+      overflow: visible;
+      z-index: 2;
+    }
+
+    [data-layout-id="night-shift-panel"]::before,
+    [data-layout-id="tasks-panel"]::before {
+      inset: 0 0 auto 0;
+      height: calc(var(--radius) - 1px);
+      background:
+        linear-gradient(90deg, var(--panel-accent), transparent 72%)
+        top left / 100% 2px no-repeat;
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+    }
+
+    [data-layout-id="night-shift-panel"] .panel-body,
+    [data-layout-id="tasks-panel"] .panel-body {
+      overflow: visible;
     }
 
     .panel-head {
@@ -2691,7 +2711,7 @@
     .task-groups {
       display: grid;
       gap: 14px;
-      overflow-x: auto;
+      overflow: visible;
       padding-bottom: 4px;
       position: relative;
       z-index: 1;

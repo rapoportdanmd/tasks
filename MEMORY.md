@@ -1327,3 +1327,7 @@
 ## 2026-04-09 23:40 IDT
 
 - Strengthened the dropdown stacking fix by lifting the entire header above focused panels and lifting focused task groups above neighboring groups, specifically to keep the book menu and inline `שיחות` senior-doctor dropdown in front.
+
+## 2026-04-09 23:49 IDT
+
+- Let `תורנות` and `משימות` panels overflow visibly, with matching clipped top accents, so inline task dropdowns such as the `שיחות` senior-doctor picker are no longer cut off by the task-board panel boundaries.
