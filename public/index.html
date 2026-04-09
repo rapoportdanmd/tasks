@@ -1174,7 +1174,7 @@
       top: -6px;
       right: calc(100% + 6px);
       min-width: 176px;
-      max-height: min(196px, 34vh);
+      max-height: min(164px, 28vh);
       overflow-y: auto;
       overflow-x: hidden;
       overscroll-behavior: contain;
@@ -4332,7 +4332,7 @@
                   >
                     <span id="task-category-trigger-text">בחר סוג</span>
                   </button>
-                  <div class="task-form-category-popover" id="task-category-popover" role="menu" hidden>
+                  <div class="task-form-category-popover" id="task-category-popover" role="menu" hidden onmouseleave="closeAllTaskCategorySubmenus()">
                     <div class="task-form-category-menu-list" id="task-category-menu-list"></div>
                   </div>
                   <select id="input-category" hidden></select>
@@ -7253,6 +7253,7 @@
           <button
             type="button"
             class="task-form-category-menu-item ${currentCategory === category ? 'is-selected' : ''}"
+            onmouseenter="closeAllTaskCategorySubmenus()"
             onclick="selectTaskCategoryOption('${escJs(category)}', '', event)"
           >${escHtml(category)}</button>
         `;
@@ -11895,6 +11896,11 @@
       setTaskCategoryBranchOpen('task-category-letters-branch', true);
     }
 
+    function closeAllTaskCategorySubmenus() {
+      closeTaskCategoryLettersSubmenu();
+      closeTaskCategoryTalksSubmenu();
+    }
+
     function closeTaskCategoryTalksSubmenu() {
       setTaskCategoryBranchOpen('task-category-talks-branch', false);
     }
@@ -11911,8 +11917,7 @@
 
       taskCategoryMenuOpen = false;
       popover.hidden = true;
-      closeTaskCategoryLettersSubmenu();
-      closeTaskCategoryTalksSubmenu();
+      closeAllTaskCategorySubmenus();
       syncTaskCategoryControl();
     }
 
@@ -11931,17 +11936,13 @@
     function toggleTaskCategoryLettersSubmenu(event) {
       event.preventDefault();
       event.stopPropagation();
-      const branch = document.getElementById('task-category-letters-branch');
-      const nextOpen = !branch?.classList.contains('is-open');
-      setTaskCategoryBranchOpen('task-category-letters-branch', nextOpen);
+      openTaskCategoryLettersSubmenu();
     }
 
     function toggleTaskCategoryTalksSubmenu(event) {
       event.preventDefault();
       event.stopPropagation();
-      const branch = document.getElementById('task-category-talks-branch');
-      const nextOpen = !branch?.classList.contains('is-open');
-      setTaskCategoryBranchOpen('task-category-talks-branch', nextOpen);
+      openTaskCategoryTalksSubmenu();
     }
 
     function handleTaskCategoryTriggerKeydown(event) {

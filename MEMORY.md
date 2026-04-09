@@ -1257,3 +1257,7 @@
 ## 2026-04-09 20:07 IDT
 
 - Tightened the cascading task-category submenu behavior in the main new-task form: `מכתבים` and `שיחות` now close as soon as hover/focus leaves their branch, only one submenu can stay open at a time, and the long senior-name submenu is capped to a shorter height with internal scrolling so it no longer stretches the whole popover.
+
+## 2026-04-09 20:16 IDT
+
+- Tightened the cascading category menu further after follow-up review: the side submenus no longer behave like sticky toggles, leaving the overall category popover now collapses any open branch submenu, hovering a plain category closes branch submenus immediately, and the long `שיחות` names submenu was shortened further so the internal scroll is obvious and reliable.
