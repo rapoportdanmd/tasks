@@ -1302,3 +1302,7 @@
 ## 2026-04-09 22:48 IDT
 
 - Moved the desktop popup-launcher buttons into the same header row as the live-sync marker, so the green hero bar reads as one cleaner action/status strip.
+
+## 2026-04-09 22:52 IDT
+
+- Made the main UI font consistent across devices by explicitly loading `Heebo` as a web font and using it as the primary body font, instead of depending on whichever Hebrew fonts happen to be installed locally.
