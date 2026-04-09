@@ -1335,3 +1335,7 @@
 ## 2026-04-10 00:00 IDT
 
 - Replaced the task-row date picker with the same custom in-app calendar style used by the new-task form, so task-bar date edits no longer rely on the browser’s native calendar and now share the same visual language and date rules.
+
+## 2026-04-10 00:01 IDT
+
+- Raised the desktop workspace popup overlay above the top hero/header layer so the new popup workspaces no longer appear behind the green banner.
