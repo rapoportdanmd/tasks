@@ -420,22 +420,37 @@
     .auth-overlay {
       position: fixed;
       inset: 0;
-      z-index: 40;
+      z-index: 92;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: rgba(10, 18, 28, 0.36);
-      backdrop-filter: blur(12px);
+      padding: 24px;
+      background: rgba(10, 18, 28, 0.24);
+      backdrop-filter: blur(18px) saturate(135%);
     }
 
     .auth-card {
-      width: min(420px, 100%);
-      background: linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(252, 248, 242, 0.96));
-      border: 1px solid rgba(220, 212, 199, 0.96);
-      border-radius: 24px;
-      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.16);
-      padding: 20px 20px 18px;
+      width: min(448px, 100%);
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(246, 250, 254, 0.7)),
+        linear-gradient(135deg, rgba(218, 240, 233, 0.34), rgba(229, 236, 250, 0.16));
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      box-shadow: 0 30px 70px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(20px) saturate(150%);
+      padding: 22px 22px 18px;
+    }
+
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(15, 118, 110, 0.82), transparent 72%);
+      opacity: 0.84;
+      pointer-events: none;
     }
 
     .workspace-popup-overlay {
@@ -461,23 +476,24 @@
     }
 
     .auth-card h2 {
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       font-weight: 900;
-      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
     }
 
     .auth-card p {
-      color: var(--muted-strong);
-      font-size: 0.86rem;
-      line-height: 1.5;
-      margin-bottom: 14px;
+      color: rgba(71, 85, 105, 0.94);
+      font-size: 0.84rem;
+      line-height: 1.55;
+      margin-bottom: 16px;
     }
 
     .auth-actions {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 16px;
       flex-wrap: wrap;
     }
 
@@ -485,6 +501,7 @@
       width: 100%;
       justify-content: space-between;
       flex-wrap: nowrap;
+      align-items: flex-end;
     }
 
     .auth-mode-switch {
@@ -492,43 +509,47 @@
       direction: rtl;
       gap: 6px;
       flex-wrap: wrap;
-      padding: 4px;
+      padding: 5px;
       border-radius: 999px;
-      background: rgba(15, 118, 110, 0.06);
-      border: 1px solid rgba(15, 118, 110, 0.12);
-      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px) saturate(140%);
     }
 
     .auth-mode-btn {
-      min-height: 32px;
-      padding: 0 12px;
+      min-height: 34px;
+      padding: 0 14px;
       border: none;
       border-radius: 999px;
       background: transparent;
       color: var(--muted-strong);
-      font-size: 0.78rem;
+      font-size: 0.79rem;
       font-weight: 800;
       cursor: pointer;
-      transition: background 0.14s ease, color 0.14s ease, transform 0.14s ease;
+      transition: background 0.14s ease, color 0.14s ease, transform 0.14s ease, box-shadow 0.14s ease;
     }
 
     .auth-mode-btn:hover,
     .auth-mode-btn:focus-visible {
+      background: rgba(255, 255, 255, 0.74);
       transform: translateY(-1px);
       outline: none;
     }
 
     .auth-mode-btn.active {
-      background: linear-gradient(180deg, #14897f, var(--teal));
+      background: linear-gradient(180deg, rgba(21, 128, 61, 0.92), rgba(15, 118, 110, 0.96));
       color: white;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
     }
 
     .auth-status {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 0.8rem;
-      min-height: 1.2em;
+      min-height: 1.3em;
       color: #b42318;
+      line-height: 1.45;
     }
 
     .auth-status[data-kind="success"] {
@@ -550,6 +571,9 @@
       line-height: 1;
       font-weight: 900;
       flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.74);
+      border-color: rgba(205, 216, 229, 0.9);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
     }
 
     .modal-overlay {

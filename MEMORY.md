@@ -1339,3 +1339,7 @@
 ## 2026-04-10 00:01 IDT
 
 - Raised the desktop workspace popup overlay above the top hero/header layer so the new popup workspaces no longer appear behind the green banner.
+
+## 2026-04-10 00:03 IDT
+
+- Refreshed the account/login popup to match the newer frosted-glass visual language of the rest of the app, and raised its overlay above the header so it behaves like a proper frontmost dialog instead of an older leftover screen.
