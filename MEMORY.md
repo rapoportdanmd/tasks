@@ -1315,3 +1315,7 @@
 
 - Applied a first real macOS-inspired visual pass to the live app without changing workflows: cooler layered background, glassier titlebar/hero, lighter frosted panels and popovers, softer buttons/chips, and more floating task cards.
 - Kept the underlying layout and interactions intact on purpose, so this is a styling shift toward the Apple-like concept rather than a full structural redesign.
+
+## 2026-04-09 23:31 IDT
+
+- Normalized the custom clipped accent lines on `משימה חדשה` and `סינון ותצוגה` so their top strokes match the thinner line weight used by the other panels.
