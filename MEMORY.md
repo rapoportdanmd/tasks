@@ -1347,3 +1347,7 @@
 ## 2026-04-10 00:18 IDT
 
 - Standardized the app’s dropdown visual system through shared CSS tokens, so native selects, suggestion menus, category submenus, the hero menu, date popovers, and inline compact dropdowns now share the same surface, border, spacing, hover state, and focus treatment instead of drifting apart visually.
+
+## 2026-04-10 00:20 IDT
+
+- Shifted the shared dropdown/calendar accent toward blue for a clearer, more consistent menu theme, and raised the inline task-row calendar above the task-row stack so the task-bar date popover no longer opens behind neighboring task content.

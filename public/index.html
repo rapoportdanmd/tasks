@@ -46,10 +46,12 @@
       --dropdown-item-radius: 14px;
       --dropdown-item-height: 36px;
       --dropdown-item-padding: 8px 11px;
-      --dropdown-hover-bg: rgba(15, 118, 110, 0.08);
-      --dropdown-hover-border: rgba(15, 118, 110, 0.18);
-      --dropdown-active-bg: rgba(15, 118, 110, 0.12);
-      --dropdown-active-border: rgba(15, 118, 110, 0.24);
+      --dropdown-accent: #2563eb;
+      --dropdown-accent-strong: #1d4ed8;
+      --dropdown-hover-bg: rgba(59, 130, 246, 0.08);
+      --dropdown-hover-border: rgba(59, 130, 246, 0.18);
+      --dropdown-active-bg: rgba(59, 130, 246, 0.12);
+      --dropdown-active-border: rgba(59, 130, 246, 0.24);
       --dropdown-control-bg: rgba(255, 255, 255, 0.84);
       --dropdown-control-border: rgba(145, 160, 183, 0.32);
       --dropdown-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -1256,10 +1258,10 @@
 
     .task-form-category-trigger:hover,
     .task-form-category-trigger:focus-visible {
-      border-color: var(--teal);
+      border-color: var(--dropdown-accent);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        0 0 0 4px rgba(15, 118, 110, 0.1);
+        0 0 0 4px rgba(59, 130, 246, 0.12);
       outline: none;
     }
 
@@ -1577,6 +1579,7 @@
       right: 0;
       min-width: 292px;
       max-width: min(320px, calc(100vw - 32px));
+      z-index: 56;
     }
 
     .filter-date-popover-head {
@@ -1612,8 +1615,8 @@
     .filter-date-nav-btn:focus-visible,
     .filter-date-meta-btn:hover,
     .filter-date-meta-btn:focus-visible {
-      background: rgba(15, 118, 110, 0.08);
-      border-color: rgba(15, 118, 110, 0.24);
+      background: var(--dropdown-hover-bg);
+      border-color: rgba(59, 130, 246, 0.24);
       transform: translateY(-1px);
       outline: none;
     }
@@ -1685,8 +1688,8 @@
 
     .filter-date-cell:hover,
     .filter-date-cell:focus-visible {
-      background: rgba(15, 118, 110, 0.08);
-      border-color: rgba(15, 118, 110, 0.22);
+      background: var(--dropdown-hover-bg);
+      border-color: rgba(59, 130, 246, 0.22);
       transform: translateY(-1px);
       outline: none;
     }
@@ -1729,9 +1732,9 @@
     }
 
     .filter-date-cell.is-selected {
-      border-color: rgba(15, 118, 110, 0.34);
-      background: rgba(15, 118, 110, 0.14);
-      color: var(--teal-strong);
+      border-color: rgba(59, 130, 246, 0.34);
+      background: rgba(59, 130, 246, 0.14);
+      color: var(--dropdown-accent-strong);
       font-weight: 900;
     }
 
@@ -1753,7 +1756,7 @@
     .filter-date-cell.is-selected.is-today.has-tasks,
     .filter-date-cell.is-selected.is-today.is-default {
       border-color: rgba(59, 130, 246, 0.44);
-      background: linear-gradient(180deg, rgba(59, 130, 246, 0.18), rgba(15, 118, 110, 0.14));
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.2), rgba(147, 197, 253, 0.18));
       color: #1d4ed8;
       box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.16);
     }
@@ -1830,10 +1833,10 @@
     select:focus,
     textarea:focus {
       outline: none;
-      border-color: var(--teal);
+      border-color: var(--dropdown-accent);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        0 0 0 4px rgba(15, 118, 110, 0.1);
+        0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
     .task-form-category-trigger:focus-visible,
@@ -1843,10 +1846,10 @@
     .inline-select:focus,
     .assignee-select:focus {
       outline: none;
-      border-color: var(--teal);
+      border-color: var(--dropdown-accent);
       box-shadow:
         var(--dropdown-control-shadow),
-        0 0 0 4px rgba(15, 118, 110, 0.1);
+        0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
     .clearable-control {
@@ -3008,6 +3011,10 @@
       z-index: 24;
     }
 
+    .task-row.date-popover-open {
+      z-index: 34;
+    }
+
     .task-row.high-priority {
       border-color: rgba(217, 119, 6, 0.42);
       box-shadow:
@@ -3328,6 +3335,13 @@
       align-items: center;
       min-width: 0;
       width: 100%;
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    .task-row.date-popover-open .task-datetime-box {
+      z-index: 12;
     }
 
     .task-inline-date {
@@ -9223,6 +9237,7 @@
         'task-row',
         `status-${task.status}`,
         task.high_priority ? 'high-priority' : '',
+        taskDatePopoverOpen ? 'date-popover-open' : '',
         isPhoneLayout ? 'phone-task-row' : ''
       ].filter(Boolean).join(' ');
 
