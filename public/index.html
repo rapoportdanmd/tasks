@@ -7483,16 +7483,12 @@
 
     function renderOnCallSelects() {
       const assignmentDate = getEffectiveOnCallDate();
-      const dateLabel = formatControlDate(assignmentDate) || 'Today';
       const note = document.getElementById('on-call-note');
-      const isCarryoverWindow = assignmentDate !== getTodayString();
 
       if (note) {
         note.textContent = onCallRoles.length === 0
           ? 'אין כרגע תפקידי כוננות זמינים.'
-          : isCarryoverWindow
-            ? `הבחירות הפעילות נשמרות עבור ${dateLabel} עד ${ON_CALL_CUTOFF_LABEL} בבוקר.`
-            : `הבחירות נשמרות עבור ${dateLabel} עד ${ON_CALL_CUTOFF_LABEL} למחרת.`;
+          : '';
       }
 
       onCallRoles.forEach((role) => {

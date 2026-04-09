@@ -1241,3 +1241,7 @@
 ## 2026-04-09 19:50 IDT
 
 - Extended the same cascading task-category menu to `שיחות`: it now opens a side submenu with common `רופא בכיר` choices, keeps a no-selection path because that subtype is optional, and preserves custom free-text entry through a dedicated submenu action instead of forcing the extra field every time.
+
+## 2026-04-09 19:51 IDT
+
+- Removed the rotating explanatory carryover sentence from the `ניהול אנשי צוות` on-call area, while keeping the empty-state warning if no on-call roles are available at all.
