@@ -1265,3 +1265,7 @@
 ## 2026-04-09 20:27 IDT
 
 - Smoothed the cascading category submenu interaction again: the side submenu now overlaps its parent trigger slightly and uses a transparent hover bridge so moving the mouse into it is much easier, and the branch highlight no longer sticks just because the trigger kept focus after a click.
+
+## 2026-04-09 20:33 IDT
+
+- Added a small inline clear `X` to the `שיחות` task-row `רופא בכיר` field, using the app’s existing clear-button language so the senior-doctor name can be removed quickly and the suggestion menu reopens immediately for choosing a replacement.

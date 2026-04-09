@@ -3084,6 +3084,17 @@
       width: 100%;
     }
 
+    .task-meta-suggestion-field.clearable-shell .task-meta-input {
+      padding-left: 30px;
+    }
+
+    .task-meta-suggestion-field .clear-field-btn {
+      left: 5px;
+      width: 18px;
+      height: 18px;
+      font-size: 0.74rem;
+    }
+
     .task-meta-suggestion-field .patient-suggestion-menu {
       min-width: 180px;
       inset-inline: auto 0;
@@ -8604,7 +8615,7 @@
           `
         : isTalkTask
           ? `
-            <div class="suggestion-field task-meta-suggestion-field">
+            <div class="suggestion-field task-meta-suggestion-field clearable-shell ${task.subcategory ? 'has-value' : ''}">
               <input
                 class="task-meta-input"
                 id="task-talk-subcategory-${task.id}"
@@ -8620,6 +8631,12 @@
                 oninput="renderTalkSeniorSuggestionMenu(${task.id})"
                 onkeydown="if (event.key === 'Escape') { closeTalkSeniorSuggestionMenu(${task.id}); } else if (event.key === 'Enter') { closeTalkSeniorSuggestionMenu(${task.id}); this.blur(); }"
               />
+              <button
+                type="button"
+                class="clear-field-btn"
+                aria-label="נקה רופא בכיר"
+                onclick="clearTaskTalkSubcategory(${task.id}, event)"
+              >×</button>
               <div class="patient-suggestion-menu" id="task-talk-subcategory-suggestions-${task.id}" hidden></div>
             </div>
           `
@@ -9581,6 +9598,34 @@
 
       closeTalkSeniorSuggestionMenu(normalizedTaskId);
       updateTask(normalizedTaskId, { subcategory: name });
+    }
+
+    function clearTaskTalkSubcategory(taskId, event = null) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      const normalizedTaskId = Number(taskId);
+      if (!Number.isFinite(normalizedTaskId)) {
+        return;
+      }
+
+      const { input } = getTalkSeniorSuggestionElements(normalizedTaskId);
+      if (input) {
+        input.value = '';
+        input.closest('.clearable-shell')?.classList.remove('has-value');
+      }
+
+      closeTalkSeniorSuggestionMenu(normalizedTaskId);
+      updateTask(normalizedTaskId, { subcategory: null });
+
+      window.setTimeout(() => {
+        const refreshedInput = document.getElementById(`task-talk-subcategory-${normalizedTaskId}`);
+        if (!refreshedInput) {
+          return;
+        }
+        refreshedInput.focus();
+        openTalkSeniorSuggestionMenu(normalizedTaskId);
+      }, 0);
     }
 
     function bindTalkSeniorSuggestionInput() {
