@@ -1294,3 +1294,7 @@
 ## 2026-04-09 22:42 IDT
 
 - Removed the descriptive subtitle line from the `ניהול אנשי צוות` header to keep that panel title area cleaner.
+
+## 2026-04-09 22:47 IDT
+
+- Removed the helper subtitle line from the `סינון ותצוגה` header so that panel title area matches the cleaner top-level card style.
