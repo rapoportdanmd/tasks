@@ -690,7 +690,12 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.82);
       backdrop-filter: blur(18px) saturate(145%);
+      z-index: 1;
       overflow: hidden;
+    }
+
+    .panel:focus-within {
+      z-index: 24;
     }
 
     .panel::before {
@@ -2896,7 +2901,7 @@
     }
 
     .task-row:focus-within {
-      z-index: 8;
+      z-index: 24;
     }
 
     .task-row.high-priority {
@@ -3191,6 +3196,13 @@
       position: relative;
       min-width: 0;
       width: 100%;
+    }
+
+    .task-meta-suggestion-field:focus-within,
+    .suggestion-field:focus-within,
+    .date-control[aria-expanded="true"],
+    .status-picker-shell:focus-within {
+      z-index: 26;
     }
 
     .task-meta-suggestion-field.clearable-shell .task-meta-input {

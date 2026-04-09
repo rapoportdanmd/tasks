@@ -1319,3 +1319,7 @@
 ## 2026-04-09 23:31 IDT
 
 - Normalized the custom clipped accent lines on `משימה חדשה` and `סינון ותצוגה` so their top strokes match the thinner line weight used by the other panels.
+
+## 2026-04-09 23:35 IDT
+
+- Fixed dropdown stacking after the glass redesign by raising the active panel and active task row while suggestion menus, date popovers, and inline task dropdowns are open, so they render in front of neighboring items instead of behind them.
