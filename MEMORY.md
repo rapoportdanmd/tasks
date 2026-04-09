@@ -1323,3 +1323,7 @@
 ## 2026-04-09 23:35 IDT
 
 - Fixed dropdown stacking after the glass redesign by raising the active panel and active task row while suggestion menus, date popovers, and inline task dropdowns are open, so they render in front of neighboring items instead of behind them.
+
+## 2026-04-09 23:40 IDT
+
+- Strengthened the dropdown stacking fix by lifting the entire header above focused panels and lifting focused task groups above neighboring groups, specifically to keep the book menu and inline `שיחות` senior-doctor dropdown in front.

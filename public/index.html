@@ -101,6 +101,8 @@
 
     header {
       padding: 16px 18px 10px;
+      position: relative;
+      z-index: 48;
     }
 
     .hero {
@@ -120,6 +122,7 @@
       gap: 12px;
       align-items: center;
       position: relative;
+      z-index: 1;
       overflow: visible;
     }
 
@@ -281,7 +284,7 @@
     .hero-menu {
       position: relative;
       flex: 0 0 auto;
-      z-index: 12;
+      z-index: 60;
     }
 
     .hero-menu-button {
@@ -319,7 +322,7 @@
       display: grid;
       gap: 6px;
       backdrop-filter: blur(20px) saturate(155%);
-      z-index: 25;
+      z-index: 72;
     }
 
     .hero-menu-header {
@@ -2690,11 +2693,15 @@
       gap: 14px;
       overflow-x: auto;
       padding-bottom: 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .task-group {
       display: grid;
       gap: 7px;
+      position: relative;
+      z-index: 1;
       min-width: 1020px;
       padding: 12px 14px 14px;
       border-radius: 22px;
@@ -2702,6 +2709,10 @@
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(244, 248, 252, 0.54));
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84), 0 14px 28px rgba(15, 23, 42, 0.06);
       backdrop-filter: blur(12px);
+    }
+
+    .task-group:focus-within {
+      z-index: 28;
     }
 
     .task-group-head {
