@@ -174,6 +174,40 @@
       flex-wrap: wrap;
     }
 
+    .hero-workspace-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .hero-workspace-btn {
+      min-height: 34px;
+      padding: 0 13px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 0.78rem;
+      font-weight: 800;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-workspace-btn:hover,
+    .hero-workspace-btn:focus-visible {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.22);
+      outline: none;
+    }
+
+    .hero-workspace-btn.is-active {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--teal-strong);
+      border-color: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 10px 22px rgba(10, 18, 28, 0.16);
+    }
+
     .hero-status-chip {
       display: inline-flex;
       align-items: center;
@@ -390,6 +424,28 @@
       border-radius: 24px;
       box-shadow: 0 28px 60px rgba(15, 23, 42, 0.16);
       padding: 20px 20px 18px;
+    }
+
+    .workspace-popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 36;
+      padding: 96px 18px 28px;
+      background: rgba(10, 18, 28, 0.28);
+      backdrop-filter: blur(10px);
+      overflow: auto;
+    }
+
+    .workspace-popup-stage {
+      width: min(1120px, calc(100vw - 56px));
+      margin: 0 auto;
+      display: grid;
+    }
+
+    .workspace-popup-stage > .panel {
+      width: 100%;
+      margin: 0;
+      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
     }
 
     .auth-card h2 {
@@ -725,6 +781,20 @@
       flex: 0 0 auto;
     }
 
+    .workspace-popup-close-btn {
+      display: none;
+      min-width: 34px;
+      padding-inline: 0;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .workspace-popup-active .workspace-popup-close-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .panel-head > div:first-child {
       display: grid;
       gap: 4px;
@@ -1018,6 +1088,28 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       align-items: stretch;
+    }
+
+    body:not(.phone-layout) .top-grid.workspace-popup-source {
+      display: block;
+      height: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      gap: 0;
+    }
+
+    body:not(.phone-layout) .top-grid.workspace-popup-source > .panel {
+      display: none;
+    }
+
+    body:not(.phone-layout) .top-grid.workspace-popup-source > .panel.workspace-popup-active {
+      display: block;
+    }
+
+    body.workspace-popup-open:not(.phone-layout) {
+      overflow: hidden;
     }
 
     .top-grid > .panel {
@@ -3961,6 +4053,10 @@
         margin-top: 6px;
       }
 
+      .hero-workspace-actions {
+        display: none;
+      }
+
       .hero-status-chip {
         min-height: 24px;
         padding: 0 9px;
@@ -3980,6 +4076,10 @@
       .management-grid,
       .top-grid {
         grid-template-columns: 1fr;
+      }
+
+      .workspace-popup-overlay {
+        display: none !important;
       }
 
       .panel-head,
@@ -4180,6 +4280,9 @@
   </div>
   <div class="patient-history-tooltip" id="patient-history-tooltip" role="tooltip" hidden></div>
   <div class="patient-history-tooltip inline-value-tooltip" id="inline-value-tooltip" role="tooltip" hidden></div>
+  <div class="workspace-popup-overlay" id="workspace-popup-overlay" hidden onclick="handleWorkspacePopupOverlayClick(event)">
+    <div class="workspace-popup-stage" id="workspace-popup-stage"></div>
+  </div>
   <header>
     <div class="hero">
       <div>
@@ -4187,6 +4290,12 @@
         <p>תצוגה יומית קומפקטית לפי תאריך, מטופל וסוג משימה.</p>
         <div class="hero-status-row">
           <span class="hero-status-chip" id="live-sync-status" hidden>סנכרון חי לא פעיל</span>
+        </div>
+        <div class="hero-workspace-actions" id="hero-workspace-actions">
+          <button class="hero-workspace-btn" type="button" data-workspace-panel="new-task-panel" onclick="toggleWorkspacePopup('new-task-panel')">משימה חדשה</button>
+          <button class="hero-workspace-btn" type="button" data-workspace-panel="infected-panel" onclick="toggleWorkspacePopup('infected-panel')">רשימת מזוהמים</button>
+          <button class="hero-workspace-btn" type="button" data-workspace-panel="er-panel" onclick="toggleWorkspacePopup('er-panel')">מיונים/יעוצים</button>
+          <button class="hero-workspace-btn" type="button" data-workspace-panel="surgery-prep-panel" onclick="toggleWorkspacePopup('surgery-prep-panel')">רשימת הכנות ניתוחים</button>
         </div>
       </div>
       <div class="hero-menu">
@@ -4310,12 +4419,22 @@
       </div>
     </section>
 
-    <section class="top-grid layout-item layout-container" data-layout-id="daily-panels" data-layout-label="לוחות כניסה" data-layout-container="top-grid" data-layout-axis="x">
+    <section class="top-grid workspace-popup-source layout-item layout-container" data-layout-id="daily-panels" data-layout-label="לוחות כניסה" data-layout-container="top-grid" data-layout-axis="x">
       <section class="panel layout-item" data-layout-id="new-task-panel" data-layout-label="משימה חדשה">
         <div class="panel-head">
           <div>
             <h2>משימה חדשה</h2>
             <p id="new-task-subtitle">ברירת המחדל היא תאריך של היום. שנה תאריך רק אם המשימה שייכת ליום אחר.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button
+              class="btn secondary compact workspace-popup-close-btn"
+              type="button"
+              aria-label="סגור חלון"
+              data-ui-tooltip="סגור חלון"
+              data-ui-tooltip-ready="true"
+              onclick="closeWorkspacePopup()"
+            >×</button>
           </div>
         </div>
         <div class="panel-body layout-container" data-layout-container="new-task-panel-content" data-layout-axis="y">
@@ -4449,6 +4568,14 @@
           </div>
           <div class="panel-head-actions">
             <button
+              class="btn secondary compact workspace-popup-close-btn"
+              type="button"
+              aria-label="סגור חלון"
+              data-ui-tooltip="סגור חלון"
+              data-ui-tooltip-ready="true"
+              onclick="closeWorkspacePopup()"
+            >×</button>
+            <button
               class="btn secondary compact panel-collapse-btn phone-only-panel-toggle"
               id="infected-panel-toggle"
               type="button"
@@ -4512,6 +4639,14 @@
             <p>רשימה חיה של מטופלים במיון עם סטטוס והערה.</p>
           </div>
           <div class="panel-head-actions">
+            <button
+              class="btn secondary compact workspace-popup-close-btn"
+              type="button"
+              aria-label="סגור חלון"
+              data-ui-tooltip="סגור חלון"
+              data-ui-tooltip-ready="true"
+              onclick="closeWorkspacePopup()"
+            >×</button>
             <button
               class="btn secondary compact panel-collapse-btn phone-only-panel-toggle"
               id="er-panel-toggle"
@@ -4578,6 +4713,14 @@
             <p>רשימת מעקב קצרה לפי סוג ניתוח ומוכנות.</p>
           </div>
           <div class="panel-head-actions">
+            <button
+              class="btn secondary compact workspace-popup-close-btn"
+              type="button"
+              aria-label="סגור חלון"
+              data-ui-tooltip="סגור חלון"
+              data-ui-tooltip-ready="true"
+              onclick="closeWorkspacePopup()"
+            >×</button>
             <button
               class="btn secondary compact panel-collapse-btn phone-only-panel-toggle"
               id="surgery-prep-panel-toggle"
@@ -4902,6 +5045,14 @@
       'surgery-prep-form-block': '.field',
       'filters-grid-block': '.field'
     };
+    const DESKTOP_WORKSPACE_PANEL_IDS = ['new-task-panel', 'infected-panel', 'er-panel', 'surgery-prep-panel'];
+    const WORKSPACE_CONTROL_PANEL_MAP = {
+      'task-category-trigger': 'new-task-panel',
+      'input-patient': 'new-task-panel',
+      'infected-patient': 'infected-panel',
+      'er-patient-name': 'er-panel',
+      'surgery-prep-patient': 'surgery-prep-panel'
+    };
     const nativeFetch = window.fetch.bind(window);
     const PHONE_LAYOUT_BREAKPOINT = 760;
     const PHONE_READONLY_PANEL_IDS = ['infected-panel', 'er-panel', 'surgery-prep-panel'];
@@ -4944,6 +5095,8 @@
     let openStatusPickerTaskId = null;
     let taskCategoryMenuOpen = false;
     let taskTalkFreeformMode = false;
+    let activeWorkspacePopupPanelId = null;
+    const workspacePopupPlaceholders = {};
     let patientSuggestionMenuState = {
       task: false,
       infected: false,
@@ -5234,6 +5387,142 @@
       logoutButton.disabled = !authEnabled || !authenticated;
       feedbackInboxButton.disabled = !authenticated || !isAdmin;
       sendSuggestionButton.disabled = authEnabled && !authenticated;
+    }
+
+    function getWorkspacePopupPanelElement(panelId) {
+      if (!DESKTOP_WORKSPACE_PANEL_IDS.includes(panelId)) {
+        return null;
+      }
+
+      return document.querySelector(`[data-layout-id="${panelId}"]`);
+    }
+
+    function syncWorkspacePopupUi() {
+      const overlay = document.getElementById('workspace-popup-overlay');
+      const shouldShowOverlay = !isPhoneLayout && Boolean(activeWorkspacePopupPanelId);
+
+      if (overlay) {
+        overlay.hidden = !shouldShowOverlay;
+      }
+
+      document.body.classList.toggle('workspace-popup-open', shouldShowOverlay);
+
+      document.querySelectorAll('.hero-workspace-btn').forEach((button) => {
+        const isActive = !isPhoneLayout && button.dataset.workspacePanel === activeWorkspacePopupPanelId;
+        button.classList.toggle('is-active', isActive);
+      });
+
+      DESKTOP_WORKSPACE_PANEL_IDS.forEach((panelId) => {
+        const panel = getWorkspacePopupPanelElement(panelId);
+        if (!panel) {
+          return;
+        }
+
+        panel.classList.toggle('workspace-popup-active', !isPhoneLayout && panelId === activeWorkspacePopupPanelId);
+      });
+    }
+
+    function restoreWorkspacePopupPanel(panelId) {
+      const panel = getWorkspacePopupPanelElement(panelId);
+      const placeholder = workspacePopupPlaceholders[panelId];
+
+      if (panel && placeholder?.parentNode) {
+        placeholder.replaceWith(panel);
+      }
+
+      delete workspacePopupPlaceholders[panelId];
+    }
+
+    function focusWorkspacePopupControl(controlId) {
+      const control = document.getElementById(controlId);
+      if (!control) {
+        return;
+      }
+
+      const scrollTarget = control.closest('[data-layout-id], .panel, .layout-item, .field') || control;
+      scrollTarget.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
+      window.setTimeout(() => {
+        control.focus({ preventScroll: true });
+        if (typeof control.select === 'function' && (control.tagName === 'INPUT' || control.tagName === 'TEXTAREA')) {
+          control.select();
+        }
+      }, 220);
+    }
+
+    function openWorkspacePopup(panelId, options = {}) {
+      const { focusControlId = '' } = options;
+
+      if (isPhoneLayout || !DESKTOP_WORKSPACE_PANEL_IDS.includes(panelId)) {
+        return;
+      }
+
+      const stage = document.getElementById('workspace-popup-stage');
+      const panel = getWorkspacePopupPanelElement(panelId);
+      if (!stage || !panel) {
+        return;
+      }
+
+      if (activeWorkspacePopupPanelId && activeWorkspacePopupPanelId !== panelId) {
+        restoreWorkspacePopupPanel(activeWorkspacePopupPanelId);
+      }
+
+      if (activeWorkspacePopupPanelId !== panelId) {
+        const placeholder = document.createElement('div');
+        placeholder.hidden = true;
+        placeholder.dataset.workspacePlaceholder = panelId;
+        panel.parentNode.insertBefore(placeholder, panel);
+        workspacePopupPlaceholders[panelId] = placeholder;
+        stage.appendChild(panel);
+        activeWorkspacePopupPanelId = panelId;
+      }
+
+      closeHeroMenu();
+      closeStatusPicker();
+      closeAllCustomDatePopovers();
+      closeAllPatientSuggestionMenus();
+      closeAllTalkSeniorSuggestionMenus();
+      syncWorkspacePopupUi();
+
+      if (focusControlId) {
+        window.setTimeout(() => focusWorkspacePopupControl(focusControlId), 20);
+      }
+    }
+
+    function closeWorkspacePopup() {
+      if (!activeWorkspacePopupPanelId) {
+        return;
+      }
+
+      closeStatusPicker();
+      closeAllCustomDatePopovers();
+      closeAllPatientSuggestionMenus();
+      closeAllTalkSeniorSuggestionMenus();
+      restoreWorkspacePopupPanel(activeWorkspacePopupPanelId);
+      activeWorkspacePopupPanelId = null;
+      syncWorkspacePopupUi();
+    }
+
+    function toggleWorkspacePopup(panelId) {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      if (activeWorkspacePopupPanelId === panelId) {
+        closeWorkspacePopup();
+        return;
+      }
+
+      openWorkspacePopup(panelId);
+    }
+
+    function handleWorkspacePopupOverlayClick(event) {
+      if (event.target?.id === 'workspace-popup-overlay') {
+        closeWorkspacePopup();
+      }
     }
 
     function syncAuthUi() {
@@ -9748,6 +10037,12 @@
     }
 
     function scrollEditorIntoView(controlId) {
+      const workspacePanelId = !isPhoneLayout ? WORKSPACE_CONTROL_PANEL_MAP[controlId] : null;
+      if (workspacePanelId && activeWorkspacePopupPanelId !== workspacePanelId) {
+        openWorkspacePopup(workspacePanelId, { focusControlId: controlId });
+        return;
+      }
+
       const control = document.getElementById(controlId);
       if (!control) {
         return;
@@ -11126,6 +11421,7 @@
         closeBookmarkModal();
         closeSuggestionModal();
         closeAdminSuggestionsModal();
+        closeWorkspacePopup();
         closeStatusPicker();
         closeTaskCategoryMenu();
         closeAllCustomDatePopovers();
@@ -11167,6 +11463,7 @@
       const { rerender = true } = options;
       const wasPhoneLayout = document.body.classList.contains('phone-layout');
       isPhoneLayout = phoneLayoutMediaQuery.matches;
+      closeWorkspacePopup();
       closeAllCustomDatePopovers();
       document.body.classList.toggle('phone-layout', isPhoneLayout);
       const newTaskSubtitle = document.getElementById('new-task-subtitle');
@@ -11191,6 +11488,7 @@
       syncAllDateDisplays();
       renderMobileOnCallPanel();
       applyCollapsedPanelState();
+      syncWorkspacePopupUi();
 
       if (rerender) {
         handleFiltersChanged();

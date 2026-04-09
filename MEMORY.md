@@ -1281,3 +1281,12 @@
 ## 2026-04-09 21:17 IDT
 
 - Moved the night-shift carryover cutoff from `07:15` to `06:00`, updating both the actual filter logic and the visible `תורנות` wording so the UI still matches the real behavior.
+
+## 2026-04-09 21:28 IDT
+
+- Created an offline visual mockup for a possible future UX change: moving `משימה חדשה` plus the three side lists into one popup workspace launched from a button on the large green header bar, without changing the live app yet.
+
+## 2026-04-09 21:53 IDT
+
+- Moved the desktop `משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, and `רשימת הכנות ניתוחים` panels behind separate launcher buttons in the green hero bar, reusing the live panels inside a popup overlay instead of duplicating them.
+- Kept the phone layout unchanged and wired the existing editor-jump shortcuts to open the correct popup automatically when those forms are needed.
