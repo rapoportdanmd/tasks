@@ -1277,3 +1277,7 @@
 ## 2026-04-09 20:53 IDT
 
 - Simplified the `שיחות` branch in the cascading new-task category menu: clicking the main `שיחות` row now selects plain `שיחות` immediately, while the side submenu remains available only as an optional hover path for choosing a `רופא בכיר`.
+
+## 2026-04-09 21:17 IDT
+
+- Moved the night-shift carryover cutoff from `07:15` to `06:00`, updating both the actual filter logic and the visible `תורנות` wording so the UI still matches the real behavior.
