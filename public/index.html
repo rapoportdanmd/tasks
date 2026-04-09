@@ -7243,7 +7243,7 @@
                 aria-haspopup="menu"
                 aria-expanded="false"
                 onfocus="openTaskCategoryTalksSubmenu()"
-                onclick="toggleTaskCategoryTalksSubmenu(event)"
+                onclick="selectTaskCategoryOption('${escJs(category)}', '', event)"
               >
                 <span>${escHtml(category)}</span>
                 <span class="task-form-category-branch-arrow" aria-hidden="true">›</span>

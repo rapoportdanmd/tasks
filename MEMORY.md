@@ -1273,3 +1273,7 @@
 ## 2026-04-09 20:43 IDT
 
 - Relaxed the `מכתבים` new-task form behavior so the task-header shortcut can leave the category on plain `מכתבים` without auto-filling the first letter subtype; the hidden subtype control now supports an empty value behind the scenes while the visible UI stays unchanged.
+
+## 2026-04-09 20:53 IDT
+
+- Simplified the `שיחות` branch in the cascading new-task category menu: clicking the main `שיחות` row now selects plain `שיחות` immediately, while the side submenu remains available only as an optional hover path for choosing a `רופא בכיר`.
