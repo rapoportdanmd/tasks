@@ -1035,6 +1035,21 @@
       align-items: end;
     }
 
+    .task-form-category-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .task-form-category-row.has-inline-subcategory {
+      grid-template-columns: minmax(132px, 0.9fr) minmax(0, 1fr);
+    }
+
+    .task-form-category-row .task-form-letter-subcategory[hidden] {
+      display: none;
+    }
+
     .task-form-grid .task-form-subcategory,
     .task-form-grid .task-form-assignee {
       grid-column: span 2;
@@ -4136,11 +4151,19 @@
             </div>
             <div class="field task-form-category">
               <label for="input-category">סוג</label>
-              <select id="input-category"></select>
+              <div class="task-form-category-row" id="task-form-category-row">
+                <select
+                  id="input-subcategory"
+                  class="task-form-letter-subcategory"
+                  aria-label="תת-סוג מכתב"
+                  hidden
+                  disabled
+                ></select>
+                <select id="input-category"></select>
+              </div>
             </div>
             <div class="field task-form-subcategory suggestion-field" id="subcategory-field" hidden>
               <label for="input-subcategory-freeform" id="subcategory-label">רופא בכיר</label>
-              <select id="input-subcategory" hidden disabled></select>
               <input
                 type="text"
                 id="input-subcategory-freeform"
@@ -4599,7 +4622,6 @@
     const NIGHT_SHIFT_CUTOFF_LABEL = '07:15';
     const LETTERS_CATEGORY = 'מכתבים';
     const TALKS_CATEGORY = 'שיחות';
-    const LETTER_CATEGORY_OPTION_PREFIX = '__letters__:';
     const ON_CALL_CUTOFF_HOUR = 6;
     const ON_CALL_CUTOFF_MINUTE = 0;
     const ON_CALL_CUTOFF_LABEL = '06:00';
@@ -6920,65 +6942,10 @@
       }
     }
 
-    function buildTaskFormCategoryOptionValue(category, subcategory = '') {
-      if (category === LETTERS_CATEGORY && subcategory) {
-        return `${LETTER_CATEGORY_OPTION_PREFIX}${subcategory}`;
-      }
-      return category;
-    }
-
-    function parseTaskFormCategorySelection(rawValue) {
-      const normalizedValue = String(rawValue || '');
-      if (normalizedValue.startsWith(LETTER_CATEGORY_OPTION_PREFIX)) {
-        const subcategory = normalizedValue.slice(LETTER_CATEGORY_OPTION_PREFIX.length).trim();
-        return {
-          category: LETTERS_CATEGORY,
-          subcategory: subcategory || null
-        };
-      }
-      return {
-        category: normalizedValue,
-        subcategory: null
-      };
-    }
-
-    function getTaskFormCategorySelection() {
-      return parseTaskFormCategorySelection(document.getElementById('input-category').value);
-    }
-
-    function setTaskFormCategorySelection(category, subcategory = '') {
-      const select = document.getElementById('input-category');
-      const hasKnownLetterSubtype = category === LETTERS_CATEGORY && letterSubcategories.includes(subcategory);
-      select.value = hasKnownLetterSubtype
-        ? buildTaskFormCategoryOptionValue(category, subcategory)
-        : (category || '');
-    }
-
     function renderTaskCategoryInput() {
-      const categoryOptions = taskCategories.map((category) => {
-        if (category !== LETTERS_CATEGORY) {
-          return `<option value="${escAttr(category)}">${escHtml(category)}</option>`;
-        }
-
-        if (!letterSubcategories.length) {
-          return `<option value="${escAttr(category)}">${escHtml(category)}</option>`;
-        }
-
-        return `
-          <optgroup label="${escAttr(category)}">
-            ${letterSubcategories.map((subcategory) => `
-              <option value="${escAttr(buildTaskFormCategoryOptionValue(category, subcategory))}">
-                ${escHtml(`${category} · ${subcategory}`)}
-              </option>
-            `).join('')}
-          </optgroup>
-          <option value="${escAttr(category)}" hidden>${escHtml(category)}</option>
-        `;
-      }).join('');
-
       document.getElementById('input-category').innerHTML = `
         <option value="">בחר סוג</option>
-        ${categoryOptions}
+        ${taskCategories.map((category) => `<option value="${escAttr(category)}">${escHtml(category)}</option>`).join('')}
       `;
       syncSubcategoryVisibility();
     }
@@ -9443,7 +9410,7 @@
 
       currentEditingTaskId = id;
       document.getElementById('input-patient').value = task.patient_name;
-      setTaskFormCategorySelection(task.category, task.subcategory || '');
+      document.getElementById('input-category').value = task.category;
       syncSubcategoryVisibility();
       setTaskFormSubcategory(task.category, task.subcategory || '');
       document.getElementById('input-date').value = task.task_date;
@@ -9551,7 +9518,7 @@
 
     async function addTask() {
       const patient = document.getElementById('input-patient').value.trim();
-      const { category } = getTaskFormCategorySelection();
+      const category = document.getElementById('input-category').value;
       const subcategory = getTaskFormSubcategory();
       const description = document.getElementById('input-desc').value.trim();
       const taskDate = isPhoneLayout
@@ -9603,7 +9570,7 @@
 
     async function updateExistingTask(id) {
       const patient = document.getElementById('input-patient').value.trim();
-      const { category } = getTaskFormCategorySelection();
+      const category = document.getElementById('input-category').value;
       const subcategory = getTaskFormSubcategory();
       const description = document.getElementById('input-desc').value.trim();
       const comment = document.getElementById('input-comment').value.trim();
@@ -9662,7 +9629,7 @@
       setTaskFormPatientValue(preservePatient);
       document.getElementById('input-desc').value = '';
       document.getElementById('input-comment').value = '';
-      setTaskFormCategorySelection('', '');
+      document.getElementById('input-category').value = '';
       setTaskFormSubcategory('', '');
       document.getElementById('input-assignee').value = '';
       document.getElementById('input-date').value = nextDate;
@@ -11520,11 +11487,11 @@
     }
 
     function getTaskFormSubcategory() {
-      const selection = getTaskFormCategorySelection();
-      if (selection.category === LETTERS_CATEGORY) {
-        return selection.subcategory || null;
+      const category = document.getElementById('input-category').value;
+      if (category === LETTERS_CATEGORY) {
+        return document.getElementById('input-subcategory').value || null;
       }
-      if (selection.category === TALKS_CATEGORY) {
+      if (category === TALKS_CATEGORY) {
         const value = document.getElementById('input-subcategory-freeform').value.trim();
         return value || null;
       }
@@ -11537,7 +11504,7 @@
       const freeformInput = document.getElementById('input-subcategory-freeform');
 
       if (category === LETTERS_CATEGORY) {
-        setTaskFormCategorySelection(category, normalizedValue);
+        select.value = normalizedValue;
         freeformInput.value = '';
         return;
       }
@@ -11553,10 +11520,12 @@
     }
 
     function syncSubcategoryVisibility() {
-      const selection = getTaskFormCategorySelection();
-      const isTalks = selection.category === TALKS_CATEGORY;
+      const category = document.getElementById('input-category').value;
+      const isLetters = category === LETTERS_CATEGORY;
+      const isTalks = category === TALKS_CATEGORY;
       const field = document.getElementById('subcategory-field');
       const label = document.getElementById('subcategory-label');
+      const categoryRow = document.getElementById('task-form-category-row');
       const select = document.getElementById('input-subcategory');
       const freeformInput = document.getElementById('input-subcategory-freeform');
 
@@ -11564,12 +11533,19 @@
       label.textContent = 'רופא בכיר';
       label.htmlFor = 'input-subcategory-freeform';
 
-      select.hidden = true;
-      select.disabled = true;
+      categoryRow.classList.toggle('has-inline-subcategory', isLetters);
+      select.hidden = !isLetters;
+      select.disabled = !isLetters;
       freeformInput.hidden = !isTalks;
       freeformInput.disabled = !isTalks;
 
-      select.value = '';
+      if (isLetters && !select.value && select.options.length) {
+        select.value = select.options[0].value;
+      }
+
+      if (!isLetters) {
+        select.value = '';
+      }
 
       if (!isTalks) {
         closeTalkSeniorSuggestionMenu();

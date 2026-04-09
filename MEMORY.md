@@ -1221,3 +1221,7 @@
 ## 2026-04-09 18:34 IDT
 
 - Reworked the `מכתבים` flow in the main task form so the subtype is now chosen directly inside the same `סוג` dropdown as combined options like `מכתבים · שחרור`, removing the extra field and keeping the create/edit row stable while still saving the same underlying category-plus-subtype data.
+
+## 2026-04-09 18:39 IDT
+
+- Refined the `מכתבים` task-form UI again: the main `סוג` dropdown is now simple again, and choosing `מכתבים` reveals a compact second dropdown inline beside it in the same row, so the subtype stays separate without pushing date/time into a lower row.
