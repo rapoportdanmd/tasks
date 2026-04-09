@@ -1253,3 +1253,7 @@
 ## 2026-04-09 19:58 IDT
 
 - Removed the same overnight carryover sentence from the `מנהל יום` note area too, leaving only the useful warning shown when no approved team members exist yet.
+
+## 2026-04-09 20:07 IDT
+
+- Tightened the cascading task-category submenu behavior in the main new-task form: `מכתבים` and `שיחות` now close as soon as hover/focus leaves their branch, only one submenu can stay open at a time, and the long senior-name submenu is capped to a shorter height with internal scrolling so it no longer stretches the whole popover.

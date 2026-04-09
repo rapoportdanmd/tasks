@@ -1174,6 +1174,11 @@
       top: -6px;
       right: calc(100% + 6px);
       min-width: 176px;
+      max-height: min(196px, 34vh);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
       padding: 7px;
       border-radius: 16px;
       border: 1px solid rgba(210, 221, 229, 0.95);
@@ -1184,8 +1189,6 @@
       display: none;
     }
 
-    .task-form-category-branch:hover > .task-form-category-submenu,
-    .task-form-category-branch:focus-within > .task-form-category-submenu,
     .task-form-category-branch.is-open > .task-form-category-submenu {
       display: grid;
     }
@@ -7173,13 +7176,15 @@
             <div
               class="task-form-category-branch ${currentCategory === LETTERS_CATEGORY ? 'is-selected' : ''}"
               id="task-category-letters-branch"
+              onmouseenter="openTaskCategoryLettersSubmenu()"
+              onmouseleave="closeTaskCategoryLettersSubmenu()"
+              onfocusout="handleTaskCategoryBranchFocusOut('task-category-letters-branch', event)"
             >
               <button
                 type="button"
                 class="task-form-category-menu-item task-form-category-branch-trigger ${currentCategory === LETTERS_CATEGORY ? 'is-selected' : ''}"
                 aria-haspopup="menu"
                 aria-expanded="false"
-                onmouseenter="openTaskCategoryLettersSubmenu()"
                 onfocus="openTaskCategoryLettersSubmenu()"
                 onclick="toggleTaskCategoryLettersSubmenu(event)"
               >
@@ -7206,13 +7211,15 @@
             <div
               class="task-form-category-branch ${currentCategory === TALKS_CATEGORY ? 'is-selected' : ''}"
               id="task-category-talks-branch"
+              onmouseenter="openTaskCategoryTalksSubmenu()"
+              onmouseleave="closeTaskCategoryTalksSubmenu()"
+              onfocusout="handleTaskCategoryBranchFocusOut('task-category-talks-branch', event)"
             >
               <button
                 type="button"
                 class="task-form-category-menu-item task-form-category-branch-trigger ${currentCategory === TALKS_CATEGORY ? 'is-selected' : ''}"
                 aria-haspopup="menu"
                 aria-expanded="false"
-                onmouseenter="openTaskCategoryTalksSubmenu()"
                 onfocus="openTaskCategoryTalksSubmenu()"
                 onclick="toggleTaskCategoryTalksSubmenu(event)"
               >
@@ -11848,8 +11855,36 @@
         return;
       }
 
+      if (isOpen) {
+        ['task-category-letters-branch', 'task-category-talks-branch']
+          .filter((id) => id !== branchId)
+          .forEach((id) => {
+            const otherBranch = document.getElementById(id);
+            if (!otherBranch) {
+              return;
+            }
+
+            otherBranch.classList.remove('is-open');
+            otherBranch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', 'false');
+          });
+      }
+
       branch.classList.toggle('is-open', isOpen);
       branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    function handleTaskCategoryBranchFocusOut(branchId, event) {
+      const branch = document.getElementById(branchId);
+      if (!branch) {
+        return;
+      }
+
+      const nextFocused = event?.relatedTarget;
+      if (nextFocused && branch.contains(nextFocused)) {
+        return;
+      }
+
+      setTaskCategoryBranchOpen(branchId, false);
     }
 
     function closeTaskCategoryLettersSubmenu() {
