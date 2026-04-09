@@ -1217,3 +1217,7 @@
 ## 2026-04-09 18:29 IDT
 
 - Fixed the `משימה חדשה` panel’s decorative accent line after making that panel overflow visibly for the custom calendar: the top teal line is now clipped to the rounded corners like the filter panel instead of leaking past the left corner.
+
+## 2026-04-09 18:34 IDT
+
+- Reworked the `מכתבים` flow in the main task form so the subtype is now chosen directly inside the same `סוג` dropdown as combined options like `מכתבים · שחרור`, removing the extra field and keeping the create/edit row stable while still saving the same underlying category-plus-subtype data.
