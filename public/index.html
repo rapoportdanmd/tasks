@@ -7380,16 +7380,11 @@
     }
 
     function renderDailyAdminSelect() {
-      const assignmentDate = getEffectiveOnCallDate();
       const select = document.getElementById('daily-admin-select');
-      const dateLabel = formatControlDate(assignmentDate) || 'Today';
-      const isCarryoverWindow = assignmentDate !== getTodayString();
 
       document.getElementById('daily-admin-note').textContent = teamMembers.length === 0
         ? 'יש ליצור ולאשר חשבון צוות לפני שבוחרים מנהל יום.'
-        : isCarryoverWindow
-          ? `הבחירה הפעילה נשמרת עבור ${dateLabel} עד ${ON_CALL_CUTOFF_LABEL} בבוקר.`
-          : `הבחירה נשמרת עבור ${dateLabel} עד ${ON_CALL_CUTOFF_LABEL} למחרת.`;
+        : '';
 
       select.innerHTML = `
         <option value="">ללא אחראי/ת</option>

@@ -1249,3 +1249,7 @@
 ## 2026-04-09 19:54 IDT
 
 - Flipped the custom side-opening task-category submenus so the `מכתבים` and `שיחות` option panels now open to the left of the main menu instead of to the right.
+
+## 2026-04-09 19:58 IDT
+
+- Removed the same overnight carryover sentence from the `מנהל יום` note area too, leaving only the useful warning shown when no approved team members exist yet.
