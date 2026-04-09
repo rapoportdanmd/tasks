@@ -2811,6 +2811,10 @@
       z-index: 28;
     }
 
+    .task-group.has-floating-overlay {
+      z-index: 38;
+    }
+
     .task-group-head {
       display: flex;
       justify-content: space-between;
@@ -3013,6 +3017,10 @@
 
     .task-row.date-popover-open {
       z-index: 34;
+    }
+
+    .task-row.date-popover-open > * {
+      z-index: 2;
     }
 
     .task-row.high-priority {
@@ -3347,6 +3355,11 @@
     .task-inline-date {
       flex: 1 1 auto;
       min-width: 0;
+    }
+
+    .task-row.date-popover-open .task-inline-date,
+    .task-inline-date[aria-expanded="true"] {
+      z-index: 24;
     }
 
     .task-inline-date .date-display {
@@ -9051,8 +9064,11 @@
 
       return Array.from(grouped.entries())
         .filter(([, groupedTasks]) => groupedTasks.length > 0)
-        .map(([category, groupedTasks]) => `
-          <section class="task-group">
+        .map(([category, groupedTasks]) => {
+          const groupHasFloatingOverlay = groupedTasks.some((task) => isTaskInlineDatePopoverOpen(task.id));
+
+          return `
+          <section class="task-group ${groupHasFloatingOverlay ? 'has-floating-overlay' : ''}">
             <div class="task-group-head">
               <h3>
                 <button
@@ -9065,7 +9081,8 @@
             </div>
             ${renderTaskRowsForCategory(category, groupedTasks, scopeKey)}
           </section>
-        `)
+        `;
+        })
         .join('');
     }
 

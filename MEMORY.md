@@ -1351,3 +1351,7 @@
 ## 2026-04-10 00:20 IDT
 
 - Shifted the shared dropdown/calendar accent toward blue for a clearer, more consistent menu theme, and raised the inline task-row calendar above the task-row stack so the task-bar date popover no longer opens behind neighboring task content.
+
+## 2026-04-10 00:28 IDT
+
+- Strengthened the task-row calendar layering again by lifting the entire active task group, the open task row, and the inline date control together, so the task-bar calendar can sit in front of surrounding task rows and category blocks instead of hiding behind them.
