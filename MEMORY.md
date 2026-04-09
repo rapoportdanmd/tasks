@@ -1269,3 +1269,7 @@
 ## 2026-04-09 20:33 IDT
 
 - Added a small inline clear `X` to the `שיחות` task-row `רופא בכיר` field, using the app’s existing clear-button language so the senior-doctor name can be removed quickly and the suggestion menu reopens immediately for choosing a replacement.
+
+## 2026-04-09 20:43 IDT
+
+- Relaxed the `מכתבים` new-task form behavior so the task-header shortcut can leave the category on plain `מכתבים` without auto-filling the first letter subtype; the hidden subtype control now supports an empty value behind the scenes while the visible UI stays unchanged.

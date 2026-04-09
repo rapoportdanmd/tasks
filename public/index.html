@@ -7307,6 +7307,7 @@
 
     function renderTaskSubcategoryInput() {
       document.getElementById('input-subcategory').innerHTML = `
+        <option value=""></option>
         ${letterSubcategories.map((subcategory) => `<option value="${escAttr(subcategory)}">${escHtml(subcategory)}</option>`).join('')}
       `;
       renderTalkSeniorSuggestionMenu();
@@ -12029,8 +12030,7 @@
       taskTalkFreeformMode = false;
 
       if (category === LETTERS_CATEGORY) {
-        const fallbackSubcategory = letterSubcategories[0] || '';
-        subcategoryInput.value = subcategory || fallbackSubcategory;
+        subcategoryInput.value = subcategory || '';
         talkInput.value = '';
       } else if (category === TALKS_CATEGORY) {
         subcategoryInput.value = '';
@@ -12114,10 +12114,6 @@
       select.disabled = !isLetters;
       freeformInput.hidden = !showTalkFreeform;
       freeformInput.disabled = !showTalkFreeform;
-
-      if (isLetters && !select.value && select.options.length) {
-        select.value = select.options[0].value;
-      }
 
       if (!isLetters) {
         select.value = '';
