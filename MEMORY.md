@@ -1290,3 +1290,7 @@
 
 - Moved the desktop `משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, and `רשימת הכנות ניתוחים` panels behind separate launcher buttons in the green hero bar, reusing the live panels inside a popup overlay instead of duplicating them.
 - Kept the phone layout unchanged and wired the existing editor-jump shortcuts to open the correct popup automatically when those forms are needed.
+
+## 2026-04-09 22:42 IDT
+
+- Removed the descriptive subtitle line from the `ניהול אנשי צוות` header to keep that panel title area cleaner.
