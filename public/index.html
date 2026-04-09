@@ -2446,6 +2446,13 @@
     }
 
     .task-group-head h3 {
+      margin: 0;
+    }
+
+    .task-group-title-btn {
+      border: none;
+      background: transparent;
+      padding: 0;
       font-size: 1.16rem;
       font-weight: 900;
       color: #17324d;
@@ -2453,9 +2460,11 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
+      transition: color 0.14s ease, transform 0.14s ease;
     }
 
-    .task-group-head h3::before {
+    .task-group-title-btn::before {
       content: "";
       width: 10px;
       height: 10px;
@@ -2463,6 +2472,13 @@
       background: var(--panel-accent);
       box-shadow: 0 0 0 6px rgba(15, 118, 110, 0.08);
       flex: 0 0 auto;
+    }
+
+    .task-group-title-btn:hover,
+    .task-group-title-btn:focus-visible {
+      color: var(--teal-strong);
+      transform: translateY(-1px);
+      outline: none;
     }
 
     .task-group-head span {
@@ -3441,12 +3457,12 @@
       gap: 6px;
     }
 
-    body.phone-layout .task-group-head h3 {
+    body.phone-layout .task-group-title-btn {
       font-size: 0.82rem;
       gap: 6px;
     }
 
-    body.phone-layout .task-group-head h3::before {
+    body.phone-layout .task-group-title-btn::before {
       width: 7px;
       height: 7px;
       box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
@@ -8151,7 +8167,13 @@
         .map(([category, groupedTasks]) => `
           <section class="task-group">
             <div class="task-group-head">
-              <h3>${escHtml(category)}</h3>
+              <h3>
+                <button
+                  type="button"
+                  class="task-group-title-btn"
+                  onclick="startNewTaskForCategory('${escJs(category)}')"
+                >${escHtml(category)}</button>
+              </h3>
               <span>${groupedTasks.length} משימות</span>
             </div>
             ${renderTaskRowsForCategory(category, groupedTasks, scopeKey)}
@@ -9376,6 +9398,20 @@
       });
       document.getElementById('task-form-mode').textContent = `מוסיף כעת משימה חדשה עבור ${name}.`;
       scrollEditorIntoView('input-category');
+    }
+
+    function startNewTaskForCategory(category) {
+      if (!taskCategories.includes(category)) {
+        return;
+      }
+
+      currentEditingTaskId = null;
+      resetTaskForm();
+      document.getElementById('input-category').value = category;
+      syncSubcategoryVisibility();
+      document.getElementById('task-form-mode').textContent = `מוסיף כעת משימה חדשה מסוג ${category}.`;
+      scrollEditorIntoView('input-patient');
+      document.getElementById('input-patient').focus();
     }
 
     function scrollEditorIntoView(controlId) {

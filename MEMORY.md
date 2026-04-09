@@ -1229,3 +1229,7 @@
 ## 2026-04-09 19:33 IDT
 
 - Unified the visual styling of the site’s real dropdown selects by giving them one shared chevron, border, background, and focus language, while preserving the smaller compact sizes used inside task rows and inline list editors.
+
+## 2026-04-09 19:35 IDT
+
+- Made task-category headers inside both `משימות` and `תורנות` clickable shortcuts: pressing a category title now jumps to the main new-task form, exits edit mode if needed, and preselects that category so a new task can be added there faster.
