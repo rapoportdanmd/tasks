@@ -1245,3 +1245,7 @@
 ## 2026-04-09 19:51 IDT
 
 - Removed the rotating explanatory carryover sentence from the `ניהול אנשי צוות` on-call area, while keeping the empty-state warning if no on-call roles are available at all.
+
+## 2026-04-09 19:54 IDT
+
+- Flipped the custom side-opening task-category submenus so the `מכתבים` and `שיחות` option panels now open to the left of the main menu instead of to the right.
