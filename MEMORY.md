@@ -1237,3 +1237,7 @@
 ## 2026-04-09 19:46 IDT
 
 - Replaced the plain `סוג` select in the main task form with a custom cascading menu so `מכתבים` now opens its subtype options as a submenu to the right inside the same dropdown interaction, while the hidden saved values still remain the same category-plus-subtype pair.
+
+## 2026-04-09 19:50 IDT
+
+- Extended the same cascading task-category menu to `שיחות`: it now opens a side submenu with common `רופא בכיר` choices, keeps a no-selection path because that subtype is optional, and preserves custom free-text entry through a dedicated submenu action instead of forcing the extra field every time.

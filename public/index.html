@@ -4918,6 +4918,7 @@
     let currentEditingSurgeryPrepEntryId = null;
     let openStatusPickerTaskId = null;
     let taskCategoryMenuOpen = false;
+    let taskTalkFreeformMode = false;
     let patientSuggestionMenuState = {
       task: false,
       infected: false,
@@ -7129,22 +7130,37 @@
 
     function getTaskCategoryDisplayLabel() {
       const category = document.getElementById('input-category').value;
-      const subcategory = document.getElementById('input-subcategory').value;
+      const letterSubcategory = document.getElementById('input-subcategory').value;
+      const talkSubcategory = document.getElementById('input-subcategory-freeform').value.trim();
 
       if (!category) {
         return 'בחר סוג';
       }
 
-      if (category === LETTERS_CATEGORY && subcategory) {
-        return `${category} · ${subcategory}`;
+      if (category === LETTERS_CATEGORY && letterSubcategory) {
+        return `${category} · ${letterSubcategory}`;
+      }
+
+      if (category === TALKS_CATEGORY && talkSubcategory) {
+        return `${category} · ${talkSubcategory}`;
       }
 
       return category;
     }
 
+    function isKnownTalkSubcategory(value) {
+      const normalized = String(value || '').trim();
+      if (!normalized) {
+        return false;
+      }
+
+      return getOrderedTalkSeniorSuggestions().includes(normalized);
+    }
+
     function renderTaskCategoryMenu() {
       const currentCategory = document.getElementById('input-category').value;
-      const currentSubcategory = document.getElementById('input-subcategory').value;
+      const currentLetterSubcategory = document.getElementById('input-subcategory').value;
+      const currentTalkSubcategory = document.getElementById('input-subcategory-freeform').value.trim();
       const list = document.getElementById('task-category-menu-list');
 
       if (!list) {
@@ -7174,10 +7190,53 @@
                 ${letterSubcategories.map((subcategory) => `
                   <button
                     type="button"
-                    class="task-form-category-menu-item ${currentCategory === LETTERS_CATEGORY && currentSubcategory === subcategory ? 'is-selected' : ''}"
+                    class="task-form-category-menu-item ${currentCategory === LETTERS_CATEGORY && currentLetterSubcategory === subcategory ? 'is-selected' : ''}"
                     onclick="selectTaskCategoryOption('${escJs(category)}', '${escJs(subcategory)}', event)"
                   >${escHtml(subcategory)}</button>
                 `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        if (category === TALKS_CATEGORY) {
+          const talkSuggestions = getOrderedTalkSeniorSuggestions();
+          const hasCustomTalkSubcategory = currentTalkSubcategory && !isKnownTalkSubcategory(currentTalkSubcategory);
+          return `
+            <div
+              class="task-form-category-branch ${currentCategory === TALKS_CATEGORY ? 'is-selected' : ''}"
+              id="task-category-talks-branch"
+            >
+              <button
+                type="button"
+                class="task-form-category-menu-item task-form-category-branch-trigger ${currentCategory === TALKS_CATEGORY ? 'is-selected' : ''}"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                onmouseenter="openTaskCategoryTalksSubmenu()"
+                onfocus="openTaskCategoryTalksSubmenu()"
+                onclick="toggleTaskCategoryTalksSubmenu(event)"
+              >
+                <span>${escHtml(category)}</span>
+                <span class="task-form-category-branch-arrow" aria-hidden="true">›</span>
+              </button>
+              <div class="task-form-category-submenu" role="menu">
+                <button
+                  type="button"
+                  class="task-form-category-menu-item ${currentCategory === TALKS_CATEGORY && !currentTalkSubcategory ? 'is-selected' : ''}"
+                  onclick="selectTaskCategoryOption('${escJs(category)}', '', event)"
+                >ללא רופא בכיר</button>
+                ${talkSuggestions.map((name) => `
+                  <button
+                    type="button"
+                    class="task-form-category-menu-item ${currentCategory === TALKS_CATEGORY && currentTalkSubcategory === name ? 'is-selected' : ''}"
+                    onclick="selectTaskTalkSeniorOption('${escJs(name)}', event)"
+                  >${escHtml(name)}</button>
+                `).join('')}
+                <button
+                  type="button"
+                  class="task-form-category-menu-item ${currentCategory === TALKS_CATEGORY && hasCustomTalkSubcategory ? 'is-selected' : ''}"
+                  onclick="selectTaskTalkFreeformOption(event)"
+                >טקסט חופשי…</button>
               </div>
             </div>
           `;
@@ -9526,6 +9585,7 @@
       input.addEventListener('input', () => {
         talkSeniorSuggestionMenuOpen = document.activeElement === input;
         renderTalkSeniorSuggestionMenu();
+        syncTaskCategoryControl();
       });
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
@@ -11791,20 +11851,30 @@
       syncTaskCategoryControl();
     }
 
-    function closeTaskCategoryLettersSubmenu() {
-      const branch = document.getElementById('task-category-letters-branch');
-      if (branch) {
-        branch.classList.remove('is-open');
-        branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', 'false');
+    function setTaskCategoryBranchOpen(branchId, isOpen) {
+      const branch = document.getElementById(branchId);
+      if (!branch) {
+        return;
       }
+
+      branch.classList.toggle('is-open', isOpen);
+      branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    function closeTaskCategoryLettersSubmenu() {
+      setTaskCategoryBranchOpen('task-category-letters-branch', false);
     }
 
     function openTaskCategoryLettersSubmenu() {
-      const branch = document.getElementById('task-category-letters-branch');
-      if (branch) {
-        branch.classList.add('is-open');
-        branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', 'true');
-      }
+      setTaskCategoryBranchOpen('task-category-letters-branch', true);
+    }
+
+    function closeTaskCategoryTalksSubmenu() {
+      setTaskCategoryBranchOpen('task-category-talks-branch', false);
+    }
+
+    function openTaskCategoryTalksSubmenu() {
+      setTaskCategoryBranchOpen('task-category-talks-branch', true);
     }
 
     function closeTaskCategoryMenu() {
@@ -11816,6 +11886,7 @@
       taskCategoryMenuOpen = false;
       popover.hidden = true;
       closeTaskCategoryLettersSubmenu();
+      closeTaskCategoryTalksSubmenu();
       syncTaskCategoryControl();
     }
 
@@ -11835,13 +11906,16 @@
       event.preventDefault();
       event.stopPropagation();
       const branch = document.getElementById('task-category-letters-branch');
-      if (!branch) {
-        return;
-      }
+      const nextOpen = !branch?.classList.contains('is-open');
+      setTaskCategoryBranchOpen('task-category-letters-branch', nextOpen);
+    }
 
-      const nextOpen = !branch.classList.contains('is-open');
-      branch.classList.toggle('is-open', nextOpen);
-      branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+    function toggleTaskCategoryTalksSubmenu(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const branch = document.getElementById('task-category-talks-branch');
+      const nextOpen = !branch?.classList.contains('is-open');
+      setTaskCategoryBranchOpen('task-category-talks-branch', nextOpen);
     }
 
     function handleTaskCategoryTriggerKeydown(event) {
@@ -11867,17 +11941,48 @@
 
       const categoryInput = document.getElementById('input-category');
       const subcategoryInput = document.getElementById('input-subcategory');
+      const talkInput = document.getElementById('input-subcategory-freeform');
       categoryInput.value = category || '';
+      taskTalkFreeformMode = false;
 
       if (category === LETTERS_CATEGORY) {
         const fallbackSubcategory = letterSubcategories[0] || '';
         subcategoryInput.value = subcategory || fallbackSubcategory;
+        talkInput.value = '';
+      } else if (category === TALKS_CATEGORY) {
+        subcategoryInput.value = '';
+        talkInput.value = subcategory || '';
       } else {
         subcategoryInput.value = '';
+        talkInput.value = '';
       }
 
       syncSubcategoryVisibility();
       closeTaskCategoryMenu();
+    }
+
+    function selectTaskTalkSeniorOption(name, event = null) {
+      selectTaskCategoryOption(TALKS_CATEGORY, name, event);
+    }
+
+    function selectTaskTalkFreeformOption(event = null) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      document.getElementById('input-category').value = TALKS_CATEGORY;
+      document.getElementById('input-subcategory').value = '';
+      taskTalkFreeformMode = true;
+      syncSubcategoryVisibility();
+      closeTaskCategoryMenu();
+
+      window.setTimeout(() => {
+        const input = document.getElementById('input-subcategory-freeform');
+        if (!input) {
+          return;
+        }
+        input.focus();
+        input.select?.();
+      }, 0);
     }
 
     function setTaskFormSubcategory(category, value) {
@@ -11888,6 +11993,7 @@
       if (category === LETTERS_CATEGORY) {
         select.value = normalizedValue;
         freeformInput.value = '';
+        taskTalkFreeformMode = false;
         syncTaskCategoryControl();
         return;
       }
@@ -11895,12 +12001,14 @@
       if (category === TALKS_CATEGORY) {
         freeformInput.value = normalizedValue;
         select.value = '';
+        taskTalkFreeformMode = Boolean(normalizedValue) && !isKnownTalkSubcategory(normalizedValue);
         syncTaskCategoryControl();
         return;
       }
 
       select.value = '';
       freeformInput.value = '';
+      taskTalkFreeformMode = false;
       syncTaskCategoryControl();
     }
 
@@ -11912,15 +12020,17 @@
       const label = document.getElementById('subcategory-label');
       const select = document.getElementById('input-subcategory');
       const freeformInput = document.getElementById('input-subcategory-freeform');
+      const talkValue = freeformInput.value.trim();
+      const showTalkFreeform = isTalks && (taskTalkFreeformMode || (talkValue && !isKnownTalkSubcategory(talkValue)));
 
-      field.hidden = !isTalks;
+      field.hidden = !showTalkFreeform;
       label.textContent = 'רופא בכיר';
       label.htmlFor = 'input-subcategory-freeform';
 
       select.hidden = true;
       select.disabled = !isLetters;
-      freeformInput.hidden = !isTalks;
-      freeformInput.disabled = !isTalks;
+      freeformInput.hidden = !showTalkFreeform;
+      freeformInput.disabled = !showTalkFreeform;
 
       if (isLetters && !select.value && select.options.length) {
         select.value = select.options[0].value;
@@ -11933,6 +12043,11 @@
       if (!isTalks) {
         closeTalkSeniorSuggestionMenu();
         freeformInput.value = '';
+        taskTalkFreeformMode = false;
+      }
+
+      if (isTalks && !showTalkFreeform) {
+        closeTalkSeniorSuggestionMenu();
       }
 
       syncTaskCategoryControl();
