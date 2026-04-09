@@ -1058,7 +1058,6 @@ app.patch('/api/tasks/:id', (req, res) => {
   let nextDescription = existingTask.description;
   let nextTaskDate = existingTask.task_date;
   let nextRecurringFollowupId = existingTask.recurring_followup_id || null;
-  const existingAnyNextDayCopy = getAnyNextDayCopyForTask(existingTask);
 
   if (Object.prototype.hasOwnProperty.call(req.body, 'patient_name')) {
     const patientName = normalizeText(req.body.patient_name);
@@ -1173,16 +1172,14 @@ app.patch('/api/tasks/:id', (req, res) => {
 
   const willBeFollowup = nextCategory === FOLLOWUP_CATEGORY;
   const hadFollowupSeries = Boolean(existingTask.recurring_followup_id);
+  const shouldCollapseOldFollowupCopies = hadFollowupSeries
+    && existingTask.category === FOLLOWUP_CATEGORY
+    && !willBeFollowup;
 
   if (willBeFollowup && !hadFollowupSeries) {
     nextRecurringFollowupId = randomUUID();
     updates.push('recurring_followup_id = ?');
     values.push(nextRecurringFollowupId);
-  }
-
-  if (!willBeFollowup && hadFollowupSeries && !existingAnyNextDayCopy) {
-    updates.push('recurring_followup_id = ?');
-    values.push(null);
   }
 
   if (updates.length === 0) {
@@ -1197,14 +1194,39 @@ app.patch('/api/tasks/:id', (req, res) => {
       WHERE id = ?
     `).run(...values);
 
-    const task = getTaskById(req.params.id);
+    let task = getTaskById(req.params.id);
 
-    if (!willBeFollowup && hadFollowupSeries && !existingAnyNextDayCopy) {
+    if (shouldCollapseOldFollowupCopies) {
       db.prepare(`
         DELETE FROM tasks
         WHERE recurring_followup_id = ?
           AND task_date > ?
-      `).run(existingTask.recurring_followup_id, task.task_date);
+          AND category = ?
+      `).run(
+        existingTask.recurring_followup_id,
+        existingTask.task_date,
+        existingTask.category
+      );
+
+      const remainingLinkedTask = db.prepare(`
+        SELECT id
+        FROM tasks
+        WHERE recurring_followup_id = ?
+          AND id != ?
+        LIMIT 1
+      `).get(existingTask.recurring_followup_id, task.id);
+
+      if (!remainingLinkedTask) {
+        db.prepare(`
+          UPDATE tasks
+          SET recurring_followup_id = NULL,
+              updated_at = CURRENT_TIMESTAMP,
+              updated_by_name = ?
+          WHERE id = ?
+        `).run(editorName, task.id);
+
+        task = getTaskById(req.params.id);
+      }
     }
 
     syncNextDayCopyFromSource(task, editorName, {
@@ -3689,26 +3711,6 @@ function getExactNextDayCopyForTask(task) {
     task.recurring_followup_id,
     addDays(task.task_date, 1),
     task.category,
-    task.id
-  ) || null;
-}
-
-function getAnyNextDayCopyForTask(task) {
-  if (!task?.recurring_followup_id || !task?.task_date) {
-    return null;
-  }
-
-  return db.prepare(`
-    SELECT *
-    FROM tasks
-    WHERE recurring_followup_id = ?
-      AND task_date = ?
-      AND id != ?
-    ORDER BY id DESC
-    LIMIT 1
-  `).get(
-    task.recurring_followup_id,
-    addDays(task.task_date, 1),
     task.id
   ) || null;
 }

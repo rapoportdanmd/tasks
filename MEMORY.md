@@ -1359,3 +1359,7 @@
 ## 2026-04-10 01:04 IDT
 
 - Tightened the overnight `תורנות` filter logic so an explicitly chosen filter date now shows only that exact date’s tasks, instead of silently pulling in the previous day’s night-shift tasks after midnight.
+
+## 2026-04-10 01:29 IDT
+
+- Fixed the `העבר למחר` labs/followups edge case so moving a copied task out of `מעקבים` now removes stale future `מעקבים` copies, while still preserving the earlier `מעבדות -> מעקבים -> מעבדות` return-path behavior when tomorrow already has a linked `מעבדות` row.
