@@ -1148,7 +1148,7 @@
     .task-form-category-menu-item:hover,
     .task-form-category-menu-item:focus-visible,
     .task-form-category-branch:hover > .task-form-category-branch-trigger,
-    .task-form-category-branch:focus-within > .task-form-category-branch-trigger {
+    .task-form-category-branch.is-open > .task-form-category-branch-trigger {
       background: rgba(15, 118, 110, 0.08);
       border-color: rgba(15, 118, 110, 0.18);
       color: var(--teal-strong);
@@ -1172,7 +1172,7 @@
     .task-form-category-submenu {
       position: absolute;
       top: -6px;
-      right: calc(100% + 6px);
+      right: calc(100% - 2px);
       min-width: 176px;
       max-height: min(164px, 28vh);
       overflow-y: auto;
@@ -1187,6 +1187,17 @@
       backdrop-filter: blur(10px);
       z-index: 27;
       display: none;
+    }
+
+    .task-form-category-branch.is-open::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      bottom: -10px;
+      right: calc(100% - 10px);
+      width: 14px;
+      background: transparent;
+      z-index: 26;
     }
 
     .task-form-category-branch.is-open > .task-form-category-submenu {

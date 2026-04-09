@@ -1261,3 +1261,7 @@
 ## 2026-04-09 20:16 IDT
 
 - Tightened the cascading category menu further after follow-up review: the side submenus no longer behave like sticky toggles, leaving the overall category popover now collapses any open branch submenu, hovering a plain category closes branch submenus immediately, and the long `שיחות` names submenu was shortened further so the internal scroll is obvious and reliable.
+
+## 2026-04-09 20:27 IDT
+
+- Smoothed the cascading category submenu interaction again: the side submenu now overlaps its parent trigger slightly and uses a transparent hover bridge so moving the mouse into it is much easier, and the branch highlight no longer sticks just because the trigger kept focus after a click.
