@@ -1306,3 +1306,12 @@
 ## 2026-04-09 22:52 IDT
 
 - Made the main UI font consistent across devices by explicitly loading `Heebo` as a web font and using it as the primary body font, instead of depending on whichever Hebrew fonts happen to be installed locally.
+
+## 2026-04-09 22:58 IDT
+
+- Created an offline macOS-style UI concept mockup to explore a softer Apple-like desktop direction without changing the live app yet.
+
+## 2026-04-09 23:10 IDT
+
+- Applied a first real macOS-inspired visual pass to the live app without changing workflows: cooler layered background, glassier titlebar/hero, lighter frosted panels and popovers, softer buttons/chips, and more floating task cards.
+- Kept the underlying layout and interactions intact on purpose, so this is a styling shift toward the Apple-like concept rather than a full structural redesign.
