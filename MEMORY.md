@@ -1355,3 +1355,7 @@
 ## 2026-04-10 00:28 IDT
 
 - Strengthened the task-row calendar layering again by lifting the entire active task group, the open task row, and the inline date control together, so the task-bar calendar can sit in front of surrounding task rows and category blocks instead of hiding behind them.
+
+## 2026-04-10 01:04 IDT
+
+- Tightened the overnight `תורנות` filter logic so an explicitly chosen filter date now shows only that exact date’s tasks, instead of silently pulling in the previous day’s night-shift tasks after midnight.

@@ -11970,10 +11970,6 @@
 
       dates.add(filterDate);
 
-      if (filterDate === getTodayString() && isBeforeNightShiftCutoff()) {
-        dates.add(addDaysString(filterDate, -1));
-      }
-
       return dates;
     }
 
