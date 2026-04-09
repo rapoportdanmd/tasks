@@ -1037,18 +1037,157 @@
     }
 
     .task-form-category-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 8px;
+      position: relative;
+      display: block;
+    }
+
+    .task-form-category-control {
+      position: relative;
+      width: 100%;
+    }
+
+    .task-form-category-trigger {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.84);
+      border-radius: 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+      padding: 8px 34px 8px 10px;
+      color: var(--text);
+      text-align: right;
+      cursor: pointer;
+      position: relative;
+      display: flex;
       align-items: center;
+      justify-content: flex-start;
+      transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
     }
 
-    .task-form-category-row.has-inline-subcategory {
-      grid-template-columns: minmax(132px, 0.9fr) minmax(0, 1fr);
+    .task-form-category-trigger::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      background-image: var(--select-chevron);
+      background-repeat: no-repeat;
+      background-size: 12px 12px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      transition: transform 0.14s ease;
     }
 
-    .task-form-category-row .task-form-letter-subcategory[hidden] {
+    .task-form-category-trigger[aria-expanded="true"]::before {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .task-form-category-trigger:hover,
+    .task-form-category-trigger:focus-visible {
+      border-color: var(--teal);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 4px rgba(15, 118, 110, 0.1);
+      outline: none;
+    }
+
+    .task-form-category-trigger.is-placeholder {
+      color: #94a3b8;
+    }
+
+    .task-form-category-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 196px;
+      max-width: min(260px, calc(100vw - 40px));
+      padding: 7px;
+      border-radius: 16px;
+      border: 1px solid rgba(210, 221, 229, 0.95);
+      background: rgba(255, 253, 250, 0.98);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(10px);
+      z-index: 26;
+    }
+
+    .task-form-category-popover[hidden] {
       display: none;
+    }
+
+    .task-form-category-menu-list,
+    .task-form-category-submenu {
+      display: grid;
+      gap: 4px;
+    }
+
+    .task-form-category-branch {
+      position: relative;
+    }
+
+    .task-form-category-menu-item {
+      width: 100%;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-align: right;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.14s ease;
+    }
+
+    .task-form-category-menu-item:hover,
+    .task-form-category-menu-item:focus-visible,
+    .task-form-category-branch:hover > .task-form-category-branch-trigger,
+    .task-form-category-branch:focus-within > .task-form-category-branch-trigger {
+      background: rgba(15, 118, 110, 0.08);
+      border-color: rgba(15, 118, 110, 0.18);
+      color: var(--teal-strong);
+      outline: none;
+    }
+
+    .task-form-category-menu-item.is-selected,
+    .task-form-category-branch.is-selected > .task-form-category-branch-trigger {
+      background: rgba(15, 118, 110, 0.12);
+      border-color: rgba(15, 118, 110, 0.22);
+      color: var(--teal-strong);
+    }
+
+    .task-form-category-branch-arrow {
+      color: rgba(100, 116, 139, 0.9);
+      font-size: 0.86rem;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .task-form-category-submenu {
+      position: absolute;
+      top: -6px;
+      left: calc(100% + 6px);
+      min-width: 176px;
+      padding: 7px;
+      border-radius: 16px;
+      border: 1px solid rgba(210, 221, 229, 0.95);
+      background: rgba(255, 253, 250, 0.98);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(10px);
+      z-index: 27;
+      display: none;
+    }
+
+    .task-form-category-branch:hover > .task-form-category-submenu,
+    .task-form-category-branch:focus-within > .task-form-category-submenu,
+    .task-form-category-branch.is-open > .task-form-category-submenu {
+      display: grid;
     }
 
     .task-form-grid .task-form-subcategory,
@@ -4176,16 +4315,26 @@
               <div class="patient-bar" id="phone-input-patient-bar"></div>
             </div>
             <div class="field task-form-category">
-              <label for="input-category">סוג</label>
+              <label for="task-category-trigger">סוג</label>
               <div class="task-form-category-row" id="task-form-category-row">
-                <select
-                  id="input-subcategory"
-                  class="task-form-letter-subcategory"
-                  aria-label="תת-סוג מכתב"
-                  hidden
-                  disabled
-                ></select>
-                <select id="input-category"></select>
+                <div class="task-form-category-control" id="task-form-category-control">
+                  <button
+                    type="button"
+                    class="task-form-category-trigger is-placeholder"
+                    id="task-category-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleTaskCategoryMenu(event)"
+                    onkeydown="handleTaskCategoryTriggerKeydown(event)"
+                  >
+                    <span id="task-category-trigger-text">בחר סוג</span>
+                  </button>
+                  <div class="task-form-category-popover" id="task-category-popover" role="menu" hidden>
+                    <div class="task-form-category-menu-list" id="task-category-menu-list"></div>
+                  </div>
+                  <select id="input-category" hidden></select>
+                  <select id="input-subcategory" hidden></select>
+                </div>
               </div>
             </div>
             <div class="field task-form-subcategory suggestion-field" id="subcategory-field" hidden>
@@ -4768,6 +4917,7 @@
     let currentEditingErPatientEntryId = null;
     let currentEditingSurgeryPrepEntryId = null;
     let openStatusPickerTaskId = null;
+    let taskCategoryMenuOpen = false;
     let patientSuggestionMenuState = {
       task: false,
       infected: false,
@@ -6973,7 +7123,74 @@
         <option value="">בחר סוג</option>
         ${taskCategories.map((category) => `<option value="${escAttr(category)}">${escHtml(category)}</option>`).join('')}
       `;
+      renderTaskCategoryMenu();
       syncSubcategoryVisibility();
+    }
+
+    function getTaskCategoryDisplayLabel() {
+      const category = document.getElementById('input-category').value;
+      const subcategory = document.getElementById('input-subcategory').value;
+
+      if (!category) {
+        return 'בחר סוג';
+      }
+
+      if (category === LETTERS_CATEGORY && subcategory) {
+        return `${category} · ${subcategory}`;
+      }
+
+      return category;
+    }
+
+    function renderTaskCategoryMenu() {
+      const currentCategory = document.getElementById('input-category').value;
+      const currentSubcategory = document.getElementById('input-subcategory').value;
+      const list = document.getElementById('task-category-menu-list');
+
+      if (!list) {
+        return;
+      }
+
+      list.innerHTML = taskCategories.map((category) => {
+        if (category === LETTERS_CATEGORY) {
+          return `
+            <div
+              class="task-form-category-branch ${currentCategory === LETTERS_CATEGORY ? 'is-selected' : ''}"
+              id="task-category-letters-branch"
+            >
+              <button
+                type="button"
+                class="task-form-category-menu-item task-form-category-branch-trigger ${currentCategory === LETTERS_CATEGORY ? 'is-selected' : ''}"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                onmouseenter="openTaskCategoryLettersSubmenu()"
+                onfocus="openTaskCategoryLettersSubmenu()"
+                onclick="toggleTaskCategoryLettersSubmenu(event)"
+              >
+                <span>${escHtml(category)}</span>
+                <span class="task-form-category-branch-arrow" aria-hidden="true">›</span>
+              </button>
+              <div class="task-form-category-submenu" role="menu">
+                ${letterSubcategories.map((subcategory) => `
+                  <button
+                    type="button"
+                    class="task-form-category-menu-item ${currentCategory === LETTERS_CATEGORY && currentSubcategory === subcategory ? 'is-selected' : ''}"
+                    onclick="selectTaskCategoryOption('${escJs(category)}', '${escJs(subcategory)}', event)"
+                  >${escHtml(subcategory)}</button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <button
+            type="button"
+            class="task-form-category-menu-item ${currentCategory === category ? 'is-selected' : ''}"
+            onclick="selectTaskCategoryOption('${escJs(category)}', '', event)"
+          >${escHtml(category)}</button>
+        `;
+      }).join('');
     }
 
     function getTalkSeniorNameSuggestions() {
@@ -9397,7 +9614,7 @@
         preserveDate: nextDate
       });
       document.getElementById('task-form-mode').textContent = `מוסיף כעת משימה חדשה עבור ${name}.`;
-      scrollEditorIntoView('input-category');
+      scrollEditorIntoView('task-category-trigger');
     }
 
     function startNewTaskForCategory(category) {
@@ -9610,7 +9827,7 @@
       }
 
       resetTaskForm({ preservePatient: patient });
-      document.getElementById('input-category').focus();
+      document.getElementById('task-category-trigger').focus();
       await reloadAll();
     }
 
@@ -10773,6 +10990,9 @@
         if (!event.target.closest('.input-date-control')) {
           closeInputDatePopover();
         }
+        if (!event.target.closest('.task-form-category-control')) {
+          closeTaskCategoryMenu();
+        }
         if (!event.target.closest('.hero-menu')) {
           closeHeroMenu();
         }
@@ -10791,6 +11011,7 @@
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeStatusPicker();
+        closeTaskCategoryMenu();
         closeAllCustomDatePopovers();
         closeAllPatientSuggestionMenus();
         hidePatientHistoryTooltip();
@@ -11544,6 +11765,121 @@
       return null;
     }
 
+    function syncTaskCategoryControl() {
+      const trigger = document.getElementById('task-category-trigger');
+      const triggerText = document.getElementById('task-category-trigger-text');
+      const category = document.getElementById('input-category').value;
+
+      if (!trigger || !triggerText) {
+        return;
+      }
+
+      triggerText.textContent = getTaskCategoryDisplayLabel();
+      trigger.classList.toggle('is-placeholder', !category);
+      trigger.setAttribute('aria-expanded', taskCategoryMenuOpen ? 'true' : 'false');
+      renderTaskCategoryMenu();
+    }
+
+    function openTaskCategoryMenu() {
+      const popover = document.getElementById('task-category-popover');
+      if (!popover) {
+        return;
+      }
+
+      taskCategoryMenuOpen = true;
+      popover.hidden = false;
+      syncTaskCategoryControl();
+    }
+
+    function closeTaskCategoryLettersSubmenu() {
+      const branch = document.getElementById('task-category-letters-branch');
+      if (branch) {
+        branch.classList.remove('is-open');
+        branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function openTaskCategoryLettersSubmenu() {
+      const branch = document.getElementById('task-category-letters-branch');
+      if (branch) {
+        branch.classList.add('is-open');
+        branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function closeTaskCategoryMenu() {
+      const popover = document.getElementById('task-category-popover');
+      if (!popover) {
+        return;
+      }
+
+      taskCategoryMenuOpen = false;
+      popover.hidden = true;
+      closeTaskCategoryLettersSubmenu();
+      syncTaskCategoryControl();
+    }
+
+    function toggleTaskCategoryMenu(event) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      if (taskCategoryMenuOpen) {
+        closeTaskCategoryMenu();
+        return;
+      }
+
+      openTaskCategoryMenu();
+    }
+
+    function toggleTaskCategoryLettersSubmenu(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const branch = document.getElementById('task-category-letters-branch');
+      if (!branch) {
+        return;
+      }
+
+      const nextOpen = !branch.classList.contains('is-open');
+      branch.classList.toggle('is-open', nextOpen);
+      branch.querySelector('.task-form-category-branch-trigger')?.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+    }
+
+    function handleTaskCategoryTriggerKeydown(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        toggleTaskCategoryMenu(event);
+        return;
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        openTaskCategoryMenu();
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeTaskCategoryMenu();
+      }
+    }
+
+    function selectTaskCategoryOption(category, subcategory = '', event = null) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      const categoryInput = document.getElementById('input-category');
+      const subcategoryInput = document.getElementById('input-subcategory');
+      categoryInput.value = category || '';
+
+      if (category === LETTERS_CATEGORY) {
+        const fallbackSubcategory = letterSubcategories[0] || '';
+        subcategoryInput.value = subcategory || fallbackSubcategory;
+      } else {
+        subcategoryInput.value = '';
+      }
+
+      syncSubcategoryVisibility();
+      closeTaskCategoryMenu();
+    }
+
     function setTaskFormSubcategory(category, value) {
       const normalizedValue = typeof value === 'string' ? value : '';
       const select = document.getElementById('input-subcategory');
@@ -11552,17 +11888,20 @@
       if (category === LETTERS_CATEGORY) {
         select.value = normalizedValue;
         freeformInput.value = '';
+        syncTaskCategoryControl();
         return;
       }
 
       if (category === TALKS_CATEGORY) {
         freeformInput.value = normalizedValue;
         select.value = '';
+        syncTaskCategoryControl();
         return;
       }
 
       select.value = '';
       freeformInput.value = '';
+      syncTaskCategoryControl();
     }
 
     function syncSubcategoryVisibility() {
@@ -11571,7 +11910,6 @@
       const isTalks = category === TALKS_CATEGORY;
       const field = document.getElementById('subcategory-field');
       const label = document.getElementById('subcategory-label');
-      const categoryRow = document.getElementById('task-form-category-row');
       const select = document.getElementById('input-subcategory');
       const freeformInput = document.getElementById('input-subcategory-freeform');
 
@@ -11579,8 +11917,7 @@
       label.textContent = 'רופא בכיר';
       label.htmlFor = 'input-subcategory-freeform';
 
-      categoryRow.classList.toggle('has-inline-subcategory', isLetters);
-      select.hidden = !isLetters;
+      select.hidden = true;
       select.disabled = !isLetters;
       freeformInput.hidden = !isTalks;
       freeformInput.disabled = !isTalks;
@@ -11597,6 +11934,8 @@
         closeTalkSeniorSuggestionMenu();
         freeformInput.value = '';
       }
+
+      syncTaskCategoryControl();
     }
 
     function syncTaskCommentFieldVisibility() {
