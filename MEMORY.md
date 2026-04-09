@@ -1213,3 +1213,7 @@
 ## 2026-04-07 21:52 IDT
 
 - Removed the redundant `כל התאריכים` chip from the task-type filter row, leaving the calendar’s own `כל התאריכים` control as the single source for all-dates patient filtering.
+
+## 2026-04-09 18:29 IDT
+
+- Fixed the `משימה חדשה` panel’s decorative accent line after making that panel overflow visibly for the custom calendar: the top teal line is now clipped to the rounded corners like the filter panel instead of leaking past the left corner.

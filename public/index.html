@@ -653,6 +653,16 @@
       z-index: 5;
     }
 
+    [data-layout-id="new-task-panel"]::before {
+      inset: 0 0 auto 0;
+      height: calc(var(--radius) - 1px);
+      background:
+        linear-gradient(90deg, var(--panel-accent), transparent 72%)
+        top left / 100% 3px no-repeat;
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+    }
+
     [data-layout-id="new-task-panel"] .panel-body {
       overflow: visible;
     }
