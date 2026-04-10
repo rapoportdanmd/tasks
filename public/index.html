@@ -4,14 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>הספר - משימות המחלקה</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/book-logo-user-ultratight.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/book-logo-user-ultratight.png" />
   <link rel="apple-touch-icon" href="/assets/book-logo-user-ultratight.png" />
   <link rel="shortcut icon" href="/assets/book-logo-user-ultratight.png" />
   <style>
+    @font-face {
+      font-family: "Heebo";
+      src: url("/assets/fonts/Heebo-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Heebo";
+      src: url("/assets/fonts/Heebo-500.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Heebo";
+      src: url("/assets/fonts/Heebo-700.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Heebo";
+      src: url("/assets/fonts/Heebo-800.ttf") format("truetype");
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Heebo";
+      src: url("/assets/fonts/Heebo-900.ttf") format("truetype");
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       --bg: #eaf0f6;
       --bg-deep: #dfe7f1;
@@ -58,6 +95,13 @@
       --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5 6 7.5l3-3' stroke='%23738495' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 
+    html {
+      color-scheme: light;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      scrollbar-gutter: stable both-edges;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -91,6 +135,8 @@
 
     body {
       font-family: "Heebo", sans-serif;
+      font-synthesis-weight: none;
+      font-synthesis-style: none;
       position: relative;
       background:
         radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.9), transparent 22%),
@@ -1923,6 +1969,7 @@
     textarea,
     button {
       font: inherit;
+      line-height: 1.2;
     }
 
     button {
@@ -1941,6 +1988,7 @@
       color: var(--text);
       min-height: 38px;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      caret-color: var(--text);
     }
 
     .task-form-category-trigger,
@@ -1976,6 +2024,23 @@
     textarea::placeholder {
       color: #94a3b8;
       font-size: 0.78rem;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 1000px rgba(255, 255, 255, 0.86) inset;
+      transition: background-color 9999s ease-out 0s;
+      caret-color: var(--text);
     }
 
     #infected-agent::placeholder,
@@ -2063,6 +2128,62 @@
     .clearable-shell.has-value .clear-field-btn {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .hero,
+      .panel,
+      .task-group,
+      .auth-card,
+      .modal-card,
+      .filter-date-popover,
+      .time-popover,
+      .task-form-category-popover,
+      .task-form-category-submenu,
+      .patient-suggestion-menu,
+      .hero-menu-popover,
+      .status-picker-drawer {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      .hero,
+      .panel,
+      .task-group,
+      .auth-card,
+      .modal-card {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 253, 0.94)),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(227, 235, 245, 0.56));
+      }
+
+      .filter-date-popover,
+      .time-popover,
+      .task-form-category-popover,
+      .task-form-category-submenu,
+      .patient-suggestion-menu,
+      .status-picker-drawer {
+        background: rgba(252, 255, 255, 0.98);
+      }
+
+      .hero-menu-popover {
+        background: rgba(252, 251, 248, 0.99);
+      }
+
+      .hero-status-chip,
+      .hero-workspace-btn,
+      .hero-menu-button {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .auth-overlay,
+      .workspace-popup-overlay {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(10, 18, 28, 0.34);
+      }
     }
 
     .clear-field-btn:hover,

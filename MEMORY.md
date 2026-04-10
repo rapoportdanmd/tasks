@@ -1395,3 +1395,7 @@
 ## 2026-04-11 18:54 IDT
 
 - Replaced the remaining native desktop time pickers with the same in-app popover language as the custom calendars: the new-task time field and inline task-row time field now use a shared custom time picker with matching styling, spacing, layered popover behavior, and outside-click/escape handling.
+
+## 2026-04-11 19:24 IDT
+
+- Hardened cross-platform consistency by bundling `Heebo` locally instead of depending on Google Fonts at runtime, normalizing text-size and autofill behavior, and adding no-blur fallbacks so browsers without strong `backdrop-filter` support still render a stable, intentional light theme instead of drifting into a different visual style.
