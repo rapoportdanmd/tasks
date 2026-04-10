@@ -359,6 +359,10 @@
       line-height: 1.35;
     }
 
+    .hero-menu-subtitle:empty {
+      display: none;
+    }
+
     .hero-menu-divider {
       height: 1px;
       background: rgba(218, 209, 196, 0.88);
@@ -4464,7 +4468,7 @@
         <div class="hero-menu-popover" id="hero-menu-popover" role="menu" hidden>
           <div class="hero-menu-header">
             <div class="hero-menu-title" id="hero-menu-title">פעולות מהירות</div>
-            <div class="hero-menu-subtitle" id="hero-menu-subtitle">סימנייה, חשבון ופעולות מהירות.</div>
+            <div class="hero-menu-subtitle" id="hero-menu-subtitle"></div>
           </div>
           <div class="hero-menu-divider"></div>
           <button class="hero-menu-item" type="button" role="menuitem" onclick="bookmarkCurrentPage()">
@@ -5523,10 +5527,10 @@
         menuSubtitle.textContent = 'ניהול מהיר, סימנייה, חלונית חשבון ופידבקים.';
       } else if (authenticated && authState.display_name) {
         menuTitle.textContent = `מחובר: ${authState.display_name}`;
-        menuSubtitle.textContent = 'גישה מהירה לסימנייה, חלונית החשבון והצעות.';
+        menuSubtitle.textContent = '';
       } else {
         menuTitle.textContent = 'מחובר: צוות';
-        menuSubtitle.textContent = 'גישה מהירה לסימנייה, חלונית החשבון והצעות.';
+        menuSubtitle.textContent = '';
       }
 
       accountButton.hidden = !authEnabled;

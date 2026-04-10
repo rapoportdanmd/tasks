@@ -1383,3 +1383,7 @@
 ## 2026-04-11 00:01 IDT
 
 - Cleaned up the book-button dropdown menu styling by replacing the heavier frosted transparency with a more solid menu card and crisper item surfaces, so that specific menu reads cleaner and more stable than the glassier version.
+
+## 2026-04-11 00:06 IDT
+
+- Removed the extra helper subtitle from the book-button dropdown for regular signed-in users, and hid the subtitle row automatically when empty so the menu stays compact without awkward blank space.
