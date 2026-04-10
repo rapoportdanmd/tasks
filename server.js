@@ -31,16 +31,16 @@ const SQLITE_BUSY_TIMEOUT_MS = normalizePositiveIntegerEnv(process.env.SQLITE_BU
 const INFECTED_LIST_LABEL = 'רשימת מזוהמים';
 const LEGACY_INFECTED_CATEGORY = 'רשימת חולים מזוהמים';
 const TASK_CATEGORIES = [
+  'קבלות',
   'פרוצדורות',
   'מעבדות',
-  'קבלות',
+  'מעקבים',
   'הדמיות',
   'יעוצים',
   'פיזיותרפיה',
   'שיקום',
   'שיחות',
-  'מכתבים',
-  'מעקבים'
+  'מכתבים'
 ];
 const LETTER_SUBCATEGORIES = [
   'הצגה לשיקום',
@@ -781,16 +781,16 @@ app.get('/api/tasks', (_req, res) => {
     ORDER BY
       tasks.task_date ASC,
       CASE tasks.category
-        WHEN 'פרוצדורות' THEN 1
-        WHEN 'מעבדות' THEN 2
-        WHEN 'קבלות' THEN 3
-        WHEN 'הדמיות' THEN 4
-        WHEN 'יעוצים' THEN 5
-        WHEN 'פיזיותרפיה' THEN 6
-        WHEN 'שיקום' THEN 7
-        WHEN 'שיחות' THEN 8
-        WHEN 'מכתבים' THEN 9
-        WHEN 'מעקבים' THEN 10
+        WHEN 'קבלות' THEN 1
+        WHEN 'פרוצדורות' THEN 2
+        WHEN 'מעבדות' THEN 3
+        WHEN 'מעקבים' THEN 4
+        WHEN 'הדמיות' THEN 5
+        WHEN 'יעוצים' THEN 6
+        WHEN 'פיזיותרפיה' THEN 7
+        WHEN 'שיקום' THEN 8
+        WHEN 'שיחות' THEN 9
+        WHEN 'מכתבים' THEN 10
         ELSE 11
       END,
       CASE tasks.status
