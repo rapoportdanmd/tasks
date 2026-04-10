@@ -1379,3 +1379,7 @@
 ## 2026-04-10 23:50 IDT
 
 - Changed the `העבר למחר` copy/sync rules so the forward-day task no longer inherits `שיוך`, `שעה`, or `עדיפות גבוהה`; linked tomorrow tasks now always reset those fields to empty/normal even when the source task later syncs edits into them.
+
+## 2026-04-11 00:01 IDT
+
+- Cleaned up the book-button dropdown menu styling by replacing the heavier frosted transparency with a more solid menu card and crisper item surfaces, so that specific menu reads cleaner and more stable than the glassier version.
