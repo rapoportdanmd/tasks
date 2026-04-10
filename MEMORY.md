@@ -1375,3 +1375,7 @@
 ## 2026-04-10 23:35 IDT
 
 - Refined the visible `העבר למחר` state again so it stays sticky across source-task category moves, but turns off if the forward-day task is manually moved into a different category and therefore no longer matches the current-day task.
+
+## 2026-04-10 23:50 IDT
+
+- Changed the `העבר למחר` copy/sync rules so the forward-day task no longer inherits `שיוך`, `שעה`, or `עדיפות גבוהה`; linked tomorrow tasks now always reset those fields to empty/normal even when the source task later syncs edits into them.

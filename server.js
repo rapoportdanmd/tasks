@@ -1354,13 +1354,11 @@ app.post('/api/tasks/:id/copy-next-day', (req, res) => {
           normalizeOptionalText(currentSourceTask.comment),
           currentSourceTask.category,
           currentSourceTask.subcategory,
-          normalizeAssigneeId(currentSourceTask.assignee_id),
+          null,
           nextTaskDate,
-          normalizeTaskTime(currentSourceTask.task_time),
-          Number(currentSourceTask.high_priority) === 1 ? 1 : 0,
-          Number(currentSourceTask.high_priority) === 1
-            ? (currentSourceTask.priority_pinned_at || existingNextTask.priority_pinned_at || new Date().toISOString())
-            : null,
+          null,
+          0,
+          null,
           nextStatus,
           editorName,
           existingNextTask.id
@@ -1423,13 +1421,11 @@ app.post('/api/tasks/:id/copy-next-day', (req, res) => {
       normalizeOptionalText(currentSourceTask.comment),
       currentSourceTask.category,
       currentSourceTask.subcategory,
-      normalizeAssigneeId(currentSourceTask.assignee_id),
+      null,
       nextTaskDate,
-      normalizeTaskTime(currentSourceTask.task_time),
-      Number(currentSourceTask.high_priority) === 1 ? 1 : 0,
-      Number(currentSourceTask.high_priority) === 1
-        ? (currentSourceTask.priority_pinned_at || new Date().toISOString())
-        : null,
+      null,
+      0,
+      null,
       recurringFollowupId,
       nextStatus,
       editorName
@@ -3778,9 +3774,6 @@ function syncNextDayCopyFromSource(sourceTask, editorName, options = {}) {
 
   const nextTaskDate = addDays(sourceTask.task_date, 1);
   const nextStatus = getMirroredNextDayStatus(sourceTask.status);
-  const nextPriorityPinnedAt = Number(sourceTask.high_priority) === 1
-    ? (sourceTask.priority_pinned_at || linkedTask.priority_pinned_at || new Date().toISOString())
-    : null;
 
   db.prepare(`
     UPDATE tasks
@@ -3806,11 +3799,11 @@ function syncNextDayCopyFromSource(sourceTask, editorName, options = {}) {
     normalizeOptionalText(sourceTask.comment),
     sourceTask.category,
     sourceTask.subcategory,
-    normalizeAssigneeId(sourceTask.assignee_id),
+    null,
     nextTaskDate,
-    normalizeTaskTime(sourceTask.task_time),
-    Number(sourceTask.high_priority) === 1 ? 1 : 0,
-    nextPriorityPinnedAt,
+    null,
+    0,
+    null,
     nextStatus,
     editorName,
     linkedTask.id
