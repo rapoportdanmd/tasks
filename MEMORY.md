@@ -1367,3 +1367,7 @@
 ## 2026-04-10 01:37 IDT
 
 - Reordered the shared task category source of truth and backend task query sort so the task-board columns now stay in this fixed order: `קבלות`, `פרוצדורות`, `מעבדות`, `מעקבים`, `הדמיות`, `יעוצים`, `פיזיותרפיה`, `שיקום`, `שיחות`, `מכתבים`.
+
+## 2026-04-10 23:28 IDT
+
+- Changed `העבר למחר` into a sticky linked-tomorrow state: once active, the button now stays active until pressed again, and moving the source task between `מעבדות` and `מעקבים` carries the linked next-day task into the matching category instead of turning the button off or leaving a stale mismatched tomorrow row behind.

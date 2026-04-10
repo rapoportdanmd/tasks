@@ -771,7 +771,6 @@ app.get('/api/tasks', (_req, res) => {
           FROM tasks AS next_day_task
           WHERE next_day_task.recurring_followup_id = tasks.recurring_followup_id
             AND next_day_task.task_date = DATE(tasks.task_date, '+1 day')
-            AND next_day_task.category = tasks.category
             AND next_day_task.id != tasks.id
         ) THEN 1
         ELSE 0
@@ -1058,6 +1057,7 @@ app.patch('/api/tasks/:id', (req, res) => {
   let nextDescription = existingTask.description;
   let nextTaskDate = existingTask.task_date;
   let nextRecurringFollowupId = existingTask.recurring_followup_id || null;
+  const existingAnyNextDayCopy = getAnyNextDayCopyForTask(existingTask);
 
   if (Object.prototype.hasOwnProperty.call(req.body, 'patient_name')) {
     const patientName = normalizeText(req.body.patient_name);
@@ -1174,7 +1174,8 @@ app.patch('/api/tasks/:id', (req, res) => {
   const hadFollowupSeries = Boolean(existingTask.recurring_followup_id);
   const shouldCollapseOldFollowupCopies = hadFollowupSeries
     && existingTask.category === FOLLOWUP_CATEGORY
-    && !willBeFollowup;
+    && !willBeFollowup
+    && !existingAnyNextDayCopy;
 
   if (willBeFollowup && !hadFollowupSeries) {
     nextRecurringFollowupId = randomUUID();
@@ -3285,7 +3286,6 @@ function getTaskById(id) {
           FROM tasks AS next_day_task
           WHERE next_day_task.recurring_followup_id = tasks.recurring_followup_id
             AND next_day_task.task_date = DATE(tasks.task_date, '+1 day')
-            AND next_day_task.category = tasks.category
             AND next_day_task.id != tasks.id
         ) THEN 1
         ELSE 0
@@ -3732,17 +3732,35 @@ function getLinkedNextDayCopyForSync(sourceTask, previousTaskDate = null) {
     SELECT *
     FROM tasks
     WHERE recurring_followup_id = ?
-      AND category = ?
       AND id != ?
       AND task_date IN (${placeholders})
     ORDER BY CASE WHEN task_date = ? THEN 0 ELSE 1 END, id DESC
     LIMIT 1
   `).get(
     sourceTask.recurring_followup_id,
-    sourceTask.category,
     sourceTask.id,
     ...uniqueDates,
     addDays(sourceTask.task_date, 1)
+  ) || null;
+}
+
+function getAnyNextDayCopyForTask(task) {
+  if (!task?.recurring_followup_id || !task?.task_date) {
+    return null;
+  }
+
+  return db.prepare(`
+    SELECT *
+    FROM tasks
+    WHERE recurring_followup_id = ?
+      AND task_date = ?
+      AND id != ?
+    ORDER BY id DESC
+    LIMIT 1
+  `).get(
+    task.recurring_followup_id,
+    addDays(task.task_date, 1),
+    task.id
   ) || null;
 }
 
