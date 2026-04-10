@@ -1405,7 +1405,7 @@
       grid-column: span 2;
     }
 
-    .task-form-grid .task-form-time input {
+    .task-form-grid .task-form-time .time-display {
       direction: ltr;
       font-variant-numeric: tabular-nums;
       text-align: center;
@@ -1510,7 +1510,8 @@
       letter-spacing: 0.01em;
     }
 
-    .date-control {
+    .date-control,
+    .time-control {
       position: relative;
       cursor: pointer;
     }
@@ -1519,7 +1520,15 @@
       outline: none;
     }
 
+    .input-time-control {
+      outline: none;
+    }
+
     .input-date-control[aria-expanded="true"] {
+      z-index: 30;
+    }
+
+    .input-time-control[aria-expanded="true"] {
       z-index: 30;
     }
 
@@ -1531,11 +1540,20 @@
       outline: none;
     }
 
+    .task-inline-time {
+      outline: none;
+    }
+
     .task-inline-date[aria-expanded="true"] {
       z-index: 30;
     }
 
-    .date-display {
+    .task-inline-time[aria-expanded="true"] {
+      z-index: 30;
+    }
+
+    .date-display,
+    .time-display {
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--border-strong);
@@ -1553,11 +1571,18 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
-    .date-display.is-empty {
+    .time-display {
+      direction: ltr;
+      letter-spacing: 0.01em;
+    }
+
+    .date-display.is-empty,
+    .time-display.is-empty {
       color: var(--muted);
     }
 
-    .date-native {
+    .date-native,
+    .time-native {
       position: absolute;
       inset: auto;
       width: 1px;
@@ -1566,21 +1591,24 @@
       pointer-events: none;
     }
 
-    .date-control:focus-within .date-display {
+    .date-control:focus-within .date-display,
+    .time-control:focus-within .time-display {
       border-color: var(--teal);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 0 0 4px rgba(15, 118, 110, 0.1);
     }
 
-    .date-control[aria-expanded="true"] .date-display {
+    .date-control[aria-expanded="true"] .date-display,
+    .time-control[aria-expanded="true"] .time-display {
       border-color: var(--teal);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 0 0 4px rgba(15, 118, 110, 0.1);
     }
 
-    .filter-date-popover {
+    .filter-date-popover,
+    .time-popover {
       position: absolute;
       top: calc(100% + 10px);
       right: 0;
@@ -1598,11 +1626,17 @@
       z-index: 28;
     }
 
-    .task-inline-date-popover {
+    .task-inline-date-popover,
+    .task-inline-time-popover {
       right: 0;
       min-width: 292px;
       max-width: min(320px, calc(100vw - 32px));
       z-index: 56;
+    }
+
+    .time-popover {
+      min-width: 292px;
+      max-width: min(332px, calc(100vw - 32px));
     }
 
     .filter-date-popover-head {
@@ -1670,6 +1704,106 @@
       background: rgba(245, 158, 11, 0.14);
       border-color: rgba(245, 158, 11, 0.34);
       color: #9a5a00;
+    }
+
+    .time-popover-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+    }
+
+    .time-popover-title {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .time-popover-selection {
+      min-height: 36px;
+      border: 1px solid rgba(205, 216, 229, 0.56);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      direction: ltr;
+    }
+
+    .time-popover-selection.is-empty {
+      color: var(--muted);
+      letter-spacing: 0;
+      direction: rtl;
+    }
+
+    .time-popover-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .time-popover-column {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .time-popover-column-label {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .time-popover-options {
+      max-height: 184px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      display: grid;
+      gap: 4px;
+      padding-inline-end: 2px;
+    }
+
+    .time-popover-option {
+      min-height: 30px;
+      border: 1px solid rgba(205, 216, 229, 0.56);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      direction: ltr;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.14s ease;
+    }
+
+    .time-popover-option:hover,
+    .time-popover-option:focus-visible {
+      background: var(--dropdown-hover-bg);
+      border-color: rgba(59, 130, 246, 0.22);
+      color: var(--teal-strong);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .time-popover-option.is-selected {
+      background: var(--dropdown-active-bg);
+      border-color: var(--dropdown-active-border);
+      color: var(--teal-strong);
     }
 
     .filter-date-helper {
@@ -3038,11 +3172,13 @@
       z-index: 24;
     }
 
-    .task-row.date-popover-open {
+    .task-row.date-popover-open,
+    .task-row.time-popover-open {
       z-index: 34;
     }
 
-    .task-row.date-popover-open > * {
+    .task-row.date-popover-open > *,
+    .task-row.time-popover-open > * {
       z-index: 2;
     }
 
@@ -3338,6 +3474,7 @@
     .task-meta-suggestion-field:focus-within,
     .suggestion-field:focus-within,
     .date-control[aria-expanded="true"],
+    .time-control[aria-expanded="true"],
     .status-picker-shell:focus-within {
       z-index: 26;
     }
@@ -3371,7 +3508,8 @@
       z-index: 1;
     }
 
-    .task-row.date-popover-open .task-datetime-box {
+    .task-row.date-popover-open .task-datetime-box,
+    .task-row.time-popover-open .task-datetime-box {
       z-index: 12;
     }
 
@@ -3399,16 +3537,20 @@
       flex: 0 0 78px;
       width: 78px;
       min-width: 78px;
-      height: 26px;
+      position: relative;
+    }
+
+    .task-row.time-popover-open .task-inline-time,
+    .task-inline-time[aria-expanded="true"] {
+      z-index: 24;
+    }
+
+    .task-inline-time .time-display {
       min-height: 26px;
       padding: 3px 6px;
       font-size: 0.69rem;
       border-radius: var(--compact-radius);
-      border: 1px solid rgba(31, 41, 55, 0.24);
       background: rgba(255, 255, 255, 0.88);
-      direction: ltr;
-      font-variant-numeric: tabular-nums;
-      text-align: center;
     }
 
     .task-actions {
@@ -4706,7 +4848,38 @@
             </div>
             <div class="field task-form-time">
               <label for="input-time">שעה</label>
-              <input type="time" id="input-time" />
+              <div
+                class="time-control input-time-control"
+                id="input-time-control"
+                role="button"
+                tabindex="0"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+              >
+                <div class="time-display is-empty" id="input-time-display" data-empty-label="ללא שעה">ללא שעה</div>
+                <input class="time-native" type="time" id="input-time" />
+                <div class="time-popover input-time-popover" id="input-time-popover" role="dialog" aria-label="בחירת שעה למשימה" hidden>
+                  <div class="time-popover-head">
+                    <div class="time-popover-title">בחירת שעה</div>
+                  </div>
+                  <div class="filter-date-meta-row">
+                    <button type="button" class="filter-date-meta-btn" onclick="clearInputTimeSelection(event)">ללא שעה</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="setInputTimeSelectionToNow(event)">עכשיו</button>
+                    <button type="button" class="filter-date-meta-btn" onclick="applyInputTimeSelection(event)">אישור</button>
+                  </div>
+                  <div class="time-popover-selection is-empty" id="input-time-selection-preview">ללא שעה</div>
+                  <div class="time-popover-columns">
+                    <div class="time-popover-column">
+                      <div class="time-popover-column-label">שעה</div>
+                      <div class="time-popover-options" id="input-time-hour-options"></div>
+                    </div>
+                    <div class="time-popover-column">
+                      <div class="time-popover-column-label">דקות</div>
+                      <div class="time-popover-options" id="input-time-minute-options"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="field task-form-assignee" id="task-assignee-field" hidden>
               <label for="input-assignee">שיוך</label>
@@ -5274,12 +5447,15 @@
     let filterCalendarMonth = getDefaultFilterDate().slice(0, 7);
     let inputCalendarMonth = getDefaultNewTaskDate().slice(0, 7);
     let taskInlineCalendarMonth = '';
+    let inputTimeSelection = { hour: '', minute: '' };
+    let taskInlineTimeSelection = { hour: '', minute: '' };
     let currentEditingTaskId = null;
     let currentEditingInfectedEntryId = null;
     let currentEditingErPatientEntryId = null;
     let currentEditingSurgeryPrepEntryId = null;
     let openStatusPickerTaskId = null;
     let openTaskInlineDatePopoverTaskId = null;
+    let openTaskInlineTimePopoverTaskId = null;
     let taskCategoryMenuOpen = false;
     let taskTalkFreeformMode = false;
     let activeWorkspacePopupPanelId = null;
@@ -5670,6 +5846,7 @@
       closeHeroMenu();
       closeStatusPicker();
       closeAllCustomDatePopovers();
+      closeAllCustomTimePopovers();
       closeAllPatientSuggestionMenus();
       closeAllTalkSeniorSuggestionMenus();
       syncWorkspacePopupUi();
@@ -5686,6 +5863,7 @@
 
       closeStatusPicker();
       closeAllCustomDatePopovers();
+      closeAllCustomTimePopovers();
       closeAllPatientSuggestionMenus();
       closeAllTalkSeniorSuggestionMenus();
       restoreWorkspacePopupPanel(activeWorkspacePopupPanelId);
@@ -8223,6 +8401,7 @@
         return;
       }
 
+      closeAllCustomTimePopovers();
       filterCalendarMonth = getMonthKeyFromDate(getCurrentFilterDateValue() || getDefaultFilterDate());
       renderFilterDatePopover();
       popover.hidden = false;
@@ -8332,6 +8511,7 @@
         return;
       }
 
+      closeAllCustomTimePopovers();
       inputCalendarMonth = getMonthKeyFromDate(
         document.getElementById('input-date').value || getDefaultNewTaskDate()
       );
@@ -8461,6 +8641,154 @@
       renderInputDatePopover();
     }
 
+    function getTimePopoverOptionMarkup(values, selectedValue, onClickFactory) {
+      return values.map((value) => `
+        <button
+          type="button"
+          class="time-popover-option ${value === selectedValue ? 'is-selected' : ''}"
+          onclick="${onClickFactory(value)}"
+          aria-pressed="${value === selectedValue ? 'true' : 'false'}"
+        >${escHtml(value)}</button>
+      `).join('');
+    }
+
+    function syncTimeDisplay(inputId, displayId) {
+      const input = document.getElementById(inputId);
+      const display = document.getElementById(displayId);
+      if (!input || !display) {
+        return;
+      }
+
+      const emptyLabel = display.dataset.emptyLabel || 'ללא שעה';
+      const displayText = formatControlTime(input.value, emptyLabel);
+      display.textContent = displayText;
+      display.classList.toggle('is-empty', !String(input.value || '').trim());
+    }
+
+    function syncInputTimeDisplay() {
+      syncTimeDisplay('input-time', 'input-time-display');
+    }
+
+    function isInputTimePopoverOpen() {
+      const popover = document.getElementById('input-time-popover');
+      return Boolean(popover) && !popover.hidden;
+    }
+
+    function openInputTimePopover() {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      const control = document.getElementById('input-time-control');
+      const popover = document.getElementById('input-time-popover');
+      const input = document.getElementById('input-time');
+      if (!control || !popover || !input) {
+        return;
+      }
+
+      closeAllCustomDatePopovers();
+      closeTaskInlineTimePopover();
+      inputTimeSelection = parseTimeSelection(input.value);
+      renderInputTimePopover();
+      popover.hidden = false;
+      control.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeInputTimePopover() {
+      const control = document.getElementById('input-time-control');
+      const popover = document.getElementById('input-time-popover');
+      if (!control || !popover) {
+        return;
+      }
+
+      popover.hidden = true;
+      control.setAttribute('aria-expanded', 'false');
+    }
+
+    function closeAllCustomTimePopovers() {
+      closeInputTimePopover();
+      closeTaskInlineTimePopover();
+    }
+
+    function toggleInputTimePopover() {
+      if (isInputTimePopoverOpen()) {
+        closeInputTimePopover();
+      } else {
+        openInputTimePopover();
+      }
+    }
+
+    function renderInputTimePopover() {
+      const preview = document.getElementById('input-time-selection-preview');
+      const hourOptions = document.getElementById('input-time-hour-options');
+      const minuteOptions = document.getElementById('input-time-minute-options');
+      if (!preview || !hourOptions || !minuteOptions) {
+        return;
+      }
+
+      const previewText = buildTimeSelectionValue(inputTimeSelection);
+      preview.textContent = previewText || 'ללא שעה';
+      preview.classList.toggle('is-empty', !previewText);
+      hourOptions.innerHTML = getTimePopoverOptionMarkup(
+        Array.from({ length: 24 }, (_, index) => padTimePart(index)),
+        inputTimeSelection.hour,
+        (value) => `selectInputTimeHour('${escJs(value)}', event)`
+      );
+      minuteOptions.innerHTML = getTimePopoverOptionMarkup(
+        Array.from({ length: 60 }, (_, index) => padTimePart(index)),
+        inputTimeSelection.minute,
+        (value) => `selectInputTimeMinute('${escJs(value)}', event)`
+      );
+    }
+
+    function selectInputTimeHour(hour, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      inputTimeSelection.hour = hour;
+      renderInputTimePopover();
+    }
+
+    function selectInputTimeMinute(minute, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      inputTimeSelection.minute = minute;
+      renderInputTimePopover();
+    }
+
+    function applyInputTimeSelection(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      const input = document.getElementById('input-time');
+      if (!input) {
+        return;
+      }
+
+      input.value = buildTimeSelectionValue(inputTimeSelection);
+      syncInputTimeDisplay();
+      closeInputTimePopover();
+    }
+
+    function clearInputTimeSelection(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      const input = document.getElementById('input-time');
+      if (!input) {
+        return;
+      }
+
+      input.value = '';
+      inputTimeSelection = { hour: '', minute: '' };
+      syncInputTimeDisplay();
+      closeInputTimePopover();
+    }
+
+    function setInputTimeSelectionToNow(event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      inputTimeSelection = parseTimeSelection(getCurrentTimeString());
+      renderInputTimePopover();
+    }
+
     function isTaskInlineDatePopoverOpen(taskId = null) {
       if (taskId === null || typeof taskId === 'undefined') {
         return openTaskInlineDatePopoverTaskId !== null;
@@ -8488,6 +8816,7 @@
         return;
       }
 
+      closeAllCustomTimePopovers();
       openTaskInlineDatePopoverTaskId = Number(task.id);
       taskInlineCalendarMonth = getMonthKeyFromDate(task.task_date || getTodayString());
       renderTasks();
@@ -8508,6 +8837,58 @@
         closeTaskInlineDatePopover();
       } else {
         openTaskInlineDatePopover(taskId);
+      }
+    }
+
+    function isTaskInlineTimePopoverOpen(taskId = null) {
+      if (taskId === null || typeof taskId === 'undefined') {
+        return openTaskInlineTimePopoverTaskId !== null;
+      }
+
+      return Number(openTaskInlineTimePopoverTaskId) === Number(taskId);
+    }
+
+    function getTaskInlineTimePopoverTask(taskId = openTaskInlineTimePopoverTaskId) {
+      const normalizedTaskId = Number(taskId);
+      if (!Number.isFinite(normalizedTaskId)) {
+        return null;
+      }
+
+      return allTasks.find((task) => Number(task.id) === normalizedTaskId) || null;
+    }
+
+    function openTaskInlineTimePopover(taskId) {
+      if (isPhoneLayout) {
+        return;
+      }
+
+      const task = getTaskInlineTimePopoverTask(taskId);
+      if (!task) {
+        return;
+      }
+
+      closeAllCustomDatePopovers();
+      closeInputTimePopover();
+      openTaskInlineTimePopoverTaskId = Number(task.id);
+      taskInlineTimeSelection = parseTimeSelection(task.task_time);
+      renderTasks();
+    }
+
+    function closeTaskInlineTimePopover() {
+      if (openTaskInlineTimePopoverTaskId === null) {
+        return;
+      }
+
+      openTaskInlineTimePopoverTaskId = null;
+      taskInlineTimeSelection = { hour: '', minute: '' };
+      renderTasks();
+    }
+
+    function toggleTaskInlineTimePopover(taskId) {
+      if (isTaskInlineTimePopoverOpen(taskId)) {
+        closeTaskInlineTimePopover();
+      } else {
+        openTaskInlineTimePopover(taskId);
       }
     }
 
@@ -8579,6 +8960,98 @@
           <div class="filter-date-grid">${gridMarkup}</div>
         </div>
       `;
+    }
+
+    function renderTaskInlineTimePopover(task) {
+      if (!task || isPhoneLayout || !isTaskInlineTimePopoverOpen(task.id)) {
+        return '';
+      }
+
+      const previewText = buildTimeSelectionValue(taskInlineTimeSelection);
+
+      return `
+        <div class="time-popover task-inline-time-popover" role="dialog" aria-label="בחירת שעה למשימה">
+          <div class="time-popover-head">
+            <div class="time-popover-title">בחירת שעה</div>
+          </div>
+          <div class="filter-date-meta-row">
+            <button type="button" class="filter-date-meta-btn" onclick="clearTaskInlineTimeSelection(${task.id}, event)">ללא שעה</button>
+            <button type="button" class="filter-date-meta-btn" onclick="setTaskInlineTimeSelectionToNow(${task.id}, event)">עכשיו</button>
+            <button type="button" class="filter-date-meta-btn" onclick="applyTaskInlineTimeSelection(${task.id}, event)">אישור</button>
+          </div>
+          <div class="time-popover-selection ${previewText ? '' : 'is-empty'}">${escHtml(previewText || 'ללא שעה')}</div>
+          <div class="time-popover-columns">
+            <div class="time-popover-column">
+              <div class="time-popover-column-label">שעה</div>
+              <div class="time-popover-options">
+                ${getTimePopoverOptionMarkup(
+                  Array.from({ length: 24 }, (_, index) => padTimePart(index)),
+                  taskInlineTimeSelection.hour,
+                  (value) => `selectTaskInlineTimeHour(${task.id}, '${escJs(value)}', event)`
+                )}
+              </div>
+            </div>
+            <div class="time-popover-column">
+              <div class="time-popover-column-label">דקות</div>
+              <div class="time-popover-options">
+                ${getTimePopoverOptionMarkup(
+                  Array.from({ length: 60 }, (_, index) => padTimePart(index)),
+                  taskInlineTimeSelection.minute,
+                  (value) => `selectTaskInlineTimeMinute(${task.id}, '${escJs(value)}', event)`
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectTaskInlineTimeHour(taskId, hour, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      if (!isTaskInlineTimePopoverOpen(taskId)) {
+        return;
+      }
+
+      taskInlineTimeSelection.hour = hour;
+      renderTasks();
+    }
+
+    function selectTaskInlineTimeMinute(taskId, minute, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      if (!isTaskInlineTimePopoverOpen(taskId)) {
+        return;
+      }
+
+      taskInlineTimeSelection.minute = minute;
+      renderTasks();
+    }
+
+    async function applyTaskInlineTimeSelection(taskId, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      const value = buildTimeSelectionValue(taskInlineTimeSelection);
+      closeTaskInlineTimePopover();
+      await updateTask(taskId, { task_time: value });
+    }
+
+    async function clearTaskInlineTimeSelection(taskId, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      closeTaskInlineTimePopover();
+      await updateTask(taskId, { task_time: '' });
+    }
+
+    function setTaskInlineTimeSelectionToNow(taskId, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      if (!isTaskInlineTimePopoverOpen(taskId)) {
+        return;
+      }
+
+      taskInlineTimeSelection = parseTimeSelection(getCurrentTimeString());
+      renderTasks();
     }
 
     function shiftTaskInlineCalendarMonth(delta, event) {
@@ -9005,6 +9478,10 @@
         openTaskInlineDatePopoverTaskId = null;
         taskInlineCalendarMonth = '';
       }
+      if (openTaskInlineTimePopoverTaskId && !filteredTasks.some((task) => task.id === openTaskInlineTimePopoverTaskId)) {
+        openTaskInlineTimePopoverTaskId = null;
+        taskInlineTimeSelection = { hour: '', minute: '' };
+      }
 
       if (isPhoneLayout) {
         renderPhoneTaskBoard(groupsContainer, mainTasks, nightShiftTasks);
@@ -9016,6 +9493,7 @@
 
       syncDateLimits();
       bindDateControls();
+      bindTimeControls();
       syncTaskDescriptionHeights();
       initializeClearButtons(groupsContainer);
       initializeClearButtons(nightShiftContainer);
@@ -9100,7 +9578,9 @@
       return Array.from(grouped.entries())
         .filter(([, groupedTasks]) => groupedTasks.length > 0)
         .map(([category, groupedTasks]) => {
-          const groupHasFloatingOverlay = groupedTasks.some((task) => isTaskInlineDatePopoverOpen(task.id));
+          const groupHasFloatingOverlay = groupedTasks.some((task) => (
+            isTaskInlineDatePopoverOpen(task.id) || isTaskInlineTimePopoverOpen(task.id)
+          ));
 
           return `
           <section class="task-group ${groupHasFloatingOverlay ? 'has-floating-overlay' : ''}">
@@ -9285,11 +9765,13 @@
         : metaLines.map((line) => `<span>${line}</span>`).join('');
       const statusPickerOpen = openStatusPickerTaskId === task.id;
       const taskDatePopoverOpen = isTaskInlineDatePopoverOpen(task.id);
+      const taskTimePopoverOpen = isTaskInlineTimePopoverOpen(task.id);
       const rowClasses = [
         'task-row',
         `status-${task.status}`,
         task.high_priority ? 'high-priority' : '',
         taskDatePopoverOpen ? 'date-popover-open' : '',
+        taskTimePopoverOpen ? 'time-popover-open' : '',
         isPhoneLayout ? 'phone-task-row' : ''
       ].filter(Boolean).join(' ');
 
@@ -9348,13 +9830,25 @@
               />
               ${renderTaskInlineDatePopover(task)}
             </div>
-            <input
-              class="task-inline-time"
-              type="time"
-              value="${escAttr(task.task_time || '')}"
+            <div
+              class="time-control task-inline-time"
+              data-task-id="${task.id}"
               aria-label="עדכון שעת משימה"
-              onchange="updateTask(${task.id}, { task_time: this.value })"
-            />
+              role="button"
+              tabindex="0"
+              aria-haspopup="dialog"
+              aria-expanded="${isTaskInlineTimePopoverOpen(task.id) ? 'true' : 'false'}"
+            >
+              <div class="time-display ${task.task_time ? '' : 'is-empty'}">${escHtml(formatControlTime(task.task_time, '--:--'))}</div>
+              <input
+                class="time-native task-inline-time-input"
+                type="time"
+                value="${escAttr(task.task_time || '')}"
+                tabindex="-1"
+                aria-hidden="true"
+              />
+              ${renderTaskInlineTimePopover(task)}
+            </div>
           </div>
           <select class="inline-select assignee-select" onchange="updateTask(${task.id}, { assignee_id: this.value })">
             <option value="">ללא שיוך</option>
@@ -11775,6 +12269,12 @@
         if (!event.target.closest('.task-inline-date')) {
           closeTaskInlineDatePopover();
         }
+        if (!event.target.closest('.input-time-control')) {
+          closeInputTimePopover();
+        }
+        if (!event.target.closest('.task-inline-time')) {
+          closeTaskInlineTimePopover();
+        }
         if (!event.target.closest('.task-form-category-control')) {
           closeTaskCategoryMenu();
         }
@@ -11799,6 +12299,7 @@
         closeStatusPicker();
         closeTaskCategoryMenu();
         closeAllCustomDatePopovers();
+        closeAllCustomTimePopovers();
         closeAllPatientSuggestionMenus();
         hidePatientHistoryTooltip();
       });
@@ -11820,6 +12321,7 @@
       window.addEventListener('resize', () => {
         hidePatientHistoryTooltip();
         closeAllCustomDatePopovers();
+        closeAllCustomTimePopovers();
       });
       window.addEventListener('scroll', () => {
         hidePatientHistoryTooltip();
@@ -11831,6 +12333,7 @@
         phoneLayoutMediaQuery.addListener(() => syncPhoneLayoutMode());
       }
       bindDateControls();
+      bindTimeControls();
     }
 
     function syncPhoneLayoutMode(options = {}) {
@@ -11839,6 +12342,7 @@
       isPhoneLayout = phoneLayoutMediaQuery.matches;
       closeWorkspacePopup();
       closeAllCustomDatePopovers();
+      closeAllCustomTimePopovers();
       document.body.classList.toggle('phone-layout', isPhoneLayout);
       const newTaskSubtitle = document.getElementById('new-task-subtitle');
 
@@ -12049,6 +12553,38 @@
       }
 
       return `${day}/${month}/${year.slice(-2)}`;
+    }
+
+    function padTimePart(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function parseTimeSelection(value) {
+      const match = String(value || '').trim().match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+      if (!match) {
+        return { hour: '', minute: '' };
+      }
+
+      return {
+        hour: match[1],
+        minute: match[2]
+      };
+    }
+
+    function buildTimeSelectionValue(selection = {}) {
+      const hour = typeof selection.hour === 'string' ? selection.hour : '';
+      const minute = typeof selection.minute === 'string' ? selection.minute : '';
+      return hour && minute ? `${hour}:${minute}` : '';
+    }
+
+    function formatControlTime(value, emptyLabel = 'ללא שעה') {
+      const formatted = buildTimeSelectionValue(parseTimeSelection(value));
+      return formatted || emptyLabel;
+    }
+
+    function getCurrentTimeString() {
+      const nowParts = getAppDateTimeParts();
+      return `${padTimePart(nowParts.hour)}:${padTimePart(nowParts.minute)}`;
     }
 
     function renderPatientHistoryDataAttrs(entry) {
@@ -12449,7 +12985,10 @@
       currentEditingSurgeryPrepEntryId = null;
       openStatusPickerTaskId = null;
       openTaskInlineDatePopoverTaskId = null;
+      openTaskInlineTimePopoverTaskId = null;
       taskInlineCalendarMonth = '';
+      taskInlineTimeSelection = { hour: '', minute: '' };
+      inputTimeSelection = { hour: '', minute: '' };
       resetTaskForm();
       resetInfectedEntryForm();
       resetErPatientForm();
@@ -12488,6 +13027,7 @@
       syncDateLimits();
       syncDateDisplay('input-date', 'input-date-display');
       syncDateDisplay('filter-date', 'filter-date-display');
+      syncInputTimeDisplay();
     }
 
     function bindDateControls() {
@@ -12606,6 +13146,91 @@
 
           input.focus();
           input.click();
+        });
+      });
+    }
+
+    function bindTimeControls() {
+      document.querySelectorAll('.time-control').forEach((control) => {
+        if (control.dataset.bound === 'true') {
+          return;
+        }
+
+        control.dataset.bound = 'true';
+        const isInputControl = control.id === 'input-time-control';
+        const isTaskInlineControl = control.classList.contains('task-inline-time');
+        const popoverSelector = '.time-popover';
+        const closePopover = isInputControl ? closeInputTimePopover : closeTaskInlineTimePopover;
+
+        const openNativePicker = () => {
+          const input = control.querySelector('.time-native');
+          if (!input) {
+            return;
+          }
+
+          if (typeof input.showPicker === 'function') {
+            input.showPicker();
+            return;
+          }
+
+          input.focus();
+          input.click();
+        };
+
+        control.addEventListener('click', (event) => {
+          if (event.target.closest(popoverSelector)) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (isPhoneLayout) {
+            openNativePicker();
+            return;
+          }
+
+          if (isInputControl) {
+            toggleInputTimePopover();
+            return;
+          }
+
+          if (isTaskInlineControl) {
+            const taskId = Number(control.dataset.taskId);
+            if (!Number.isFinite(taskId)) {
+              return;
+            }
+            toggleTaskInlineTimePopover(taskId);
+          }
+        });
+
+        control.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+
+            if (isPhoneLayout) {
+              openNativePicker();
+              return;
+            }
+
+            if (isInputControl) {
+              toggleInputTimePopover();
+              return;
+            }
+
+            if (isTaskInlineControl) {
+              const taskId = Number(control.dataset.taskId);
+              if (!Number.isFinite(taskId)) {
+                return;
+              }
+              toggleTaskInlineTimePopover(taskId);
+            }
+            return;
+          }
+
+          if (event.key === 'Escape') {
+            closePopover();
+          }
         });
       });
     }

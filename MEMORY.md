@@ -1391,3 +1391,7 @@
 ## 2026-04-11 00:12 IDT
 
 - Made the `משימות` and `תורנות` section titles act as blank new-task shortcuts: clicking either now opens the `משימה חדשה` workspace in a clean new-task state without preselecting any category.
+
+## 2026-04-11 18:54 IDT
+
+- Replaced the remaining native desktop time pickers with the same in-app popover language as the custom calendars: the new-task time field and inline task-row time field now use a shared custom time picker with matching styling, spacing, layered popover behavior, and outside-click/escape handling.
