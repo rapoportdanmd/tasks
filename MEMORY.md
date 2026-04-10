@@ -1371,3 +1371,7 @@
 ## 2026-04-10 23:28 IDT
 
 - Changed `העבר למחר` into a sticky linked-tomorrow state: once active, the button now stays active until pressed again, and moving the source task between `מעבדות` and `מעקבים` carries the linked next-day task into the matching category instead of turning the button off or leaving a stale mismatched tomorrow row behind.
+
+## 2026-04-10 23:35 IDT
+
+- Refined the visible `העבר למחר` state again so it stays sticky across source-task category moves, but turns off if the forward-day task is manually moved into a different category and therefore no longer matches the current-day task.

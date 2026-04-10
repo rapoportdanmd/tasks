@@ -771,6 +771,7 @@ app.get('/api/tasks', (_req, res) => {
           FROM tasks AS next_day_task
           WHERE next_day_task.recurring_followup_id = tasks.recurring_followup_id
             AND next_day_task.task_date = DATE(tasks.task_date, '+1 day')
+            AND next_day_task.category = tasks.category
             AND next_day_task.id != tasks.id
         ) THEN 1
         ELSE 0
@@ -3286,6 +3287,7 @@ function getTaskById(id) {
           FROM tasks AS next_day_task
           WHERE next_day_task.recurring_followup_id = tasks.recurring_followup_id
             AND next_day_task.task_date = DATE(tasks.task_date, '+1 day')
+            AND next_day_task.category = tasks.category
             AND next_day_task.id != tasks.id
         ) THEN 1
         ELSE 0
