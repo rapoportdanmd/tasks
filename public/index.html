@@ -892,6 +892,26 @@
       letter-spacing: -0.01em;
     }
 
+    .panel-head-title-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+      cursor: pointer;
+      transition: color 0.16s ease, transform 0.16s ease;
+    }
+
+    .panel-head-title-btn:hover,
+    .panel-head-title-btn:focus-visible {
+      color: #0f4f8a;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
     .panel-head p,
     .small-note {
       color: var(--muted);
@@ -5020,7 +5040,13 @@
     <section class="panel layout-item" data-layout-id="night-shift-panel" data-layout-label="תורנות">
       <div class="panel-head">
         <div>
-          <h2>תורנות</h2>
+          <h2>
+            <button
+              type="button"
+              class="panel-head-title-btn"
+              onclick="startBlankNewTaskFromBoard()"
+            >תורנות</button>
+          </h2>
           <p id="night-shift-subtitle">משימות שעברו למשמרת לילה ונשארות עם יום המעבר עד 06:00 בבוקר.</p>
         </div>
         <div class="panel-head-actions">
@@ -5044,7 +5070,13 @@
     <section class="panel layout-item" data-layout-id="tasks-panel" data-layout-label="רשימת משימות">
       <div class="panel-head">
         <div>
-          <h2>משימות</h2>
+          <h2>
+            <button
+              type="button"
+              class="panel-head-title-btn"
+              onclick="startBlankNewTaskFromBoard()"
+            >משימות</button>
+          </h2>
           <p id="view-subtitle">מציג את משימות היום בלבד.</p>
         </div>
         <div class="panel-head-actions">
@@ -10366,6 +10398,13 @@
       document.getElementById('task-form-mode').textContent = `מוסיף כעת משימה חדשה מסוג ${category}.`;
       scrollEditorIntoView('input-patient');
       document.getElementById('input-patient').focus();
+    }
+
+    function startBlankNewTaskFromBoard() {
+      currentEditingTaskId = null;
+      resetTaskForm();
+      document.getElementById('task-form-mode').textContent = 'מוסיף כעת משימה חדשה.';
+      scrollEditorIntoView('input-patient');
     }
 
     function scrollEditorIntoView(controlId) {

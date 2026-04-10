@@ -1387,3 +1387,7 @@
 ## 2026-04-11 00:06 IDT
 
 - Removed the extra helper subtitle from the book-button dropdown for regular signed-in users, and hid the subtitle row automatically when empty so the menu stays compact without awkward blank space.
+
+## 2026-04-11 00:12 IDT
+
+- Made the `משימות` and `תורנות` section titles act as blank new-task shortcuts: clicking either now opens the `משימה חדשה` workspace in a clean new-task state without preselecting any category.
