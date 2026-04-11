@@ -866,6 +866,145 @@
       color: var(--ink);
     }
 
+    .guide-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .guide-actions-note {
+      color: var(--muted-strong);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      flex: 1 1 260px;
+      margin: 0;
+    }
+
+    .guide-tour-shell {
+      position: fixed;
+      inset-inline-start: 24px;
+      bottom: 24px;
+      z-index: 126;
+      pointer-events: none;
+    }
+
+    .guide-tour-card {
+      width: min(390px, calc(100vw - 48px));
+      pointer-events: auto;
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 26px;
+      border: 1px solid rgba(202, 214, 230, 0.9);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 250, 255, 0.94)),
+        linear-gradient(135deg, rgba(232, 241, 255, 0.4), rgba(255, 255, 255, 0.16));
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px) saturate(150%);
+    }
+
+    .guide-tour-meta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(232, 241, 255, 0.94);
+      border: 1px solid rgba(154, 181, 255, 0.46);
+      color: #1d4ed8;
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+    }
+
+    .guide-tour-head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .guide-tour-title {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--ink);
+      margin: 0;
+    }
+
+    .guide-tour-body {
+      color: var(--muted-strong);
+      font-size: 0.84rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .guide-tour-preview {
+      border-radius: 22px;
+      border: 1px solid rgba(210, 220, 234, 0.88);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 247, 255, 0.94)),
+        linear-gradient(135deg, rgba(226, 236, 255, 0.22), rgba(255, 255, 255, 0.18));
+      padding: 10px;
+      min-height: 170px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .guide-tour-preview svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .guide-tour-hint {
+      color: var(--muted-strong);
+      font-size: 0.76rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .guide-tour-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .guide-tour-highlight {
+      position: relative !important;
+      z-index: 125 !important;
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.92),
+        0 18px 36px rgba(59, 130, 246, 0.16),
+        0 0 0 9px rgba(191, 219, 254, 0.28) !important;
+      isolation: isolate;
+    }
+
+    #hero-menu-popover.guide-tour-highlight,
+    .hero-menu.guide-tour-highlight,
+    #hero-workspace-actions.guide-tour-highlight {
+      border-radius: 22px;
+    }
+
+    @media (max-width: 920px) {
+      .guide-tour-shell {
+        inset-inline-start: 12px;
+        inset-inline-end: 12px;
+        bottom: 12px;
+      }
+
+      .guide-tour-card {
+        width: auto;
+      }
+    }
+
     @media (max-width: 920px) {
       .system-tools-grid {
         grid-template-columns: 1fr;
@@ -4904,8 +5043,28 @@
           </ul>
         </section>
       </div>
-      <div class="auth-actions">
-        <button class="btn secondary" type="button" onclick="closeGuideModal()">סגור</button>
+      <div class="guide-actions">
+        <p class="guide-actions-note">אם נוח יותר ללמוד דרך המסך עצמו, אפשר לפתוח גם סיור מודרך שמדגיש את הכפתורים והאזורים החשובים ומראה דוגמה קטנה בכל שלב.</p>
+        <div class="auth-actions">
+          <button class="btn" type="button" onclick="startGuideTour()">סיור מודרך</button>
+          <button class="btn secondary" type="button" onclick="closeGuideModal()">סגור</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="guide-tour-shell" id="guide-tour-shell" hidden>
+    <div class="guide-tour-card" role="dialog" aria-modal="false" aria-labelledby="guide-tour-title">
+      <div class="guide-tour-meta" id="guide-tour-meta">סיור מודרך</div>
+      <div class="guide-tour-head">
+        <h3 class="guide-tour-title" id="guide-tour-title">הדרכה אינטראקטיבית</h3>
+        <p class="guide-tour-body" id="guide-tour-body">כאן יופיע הסבר קצר על האזור שמודגש כרגע.</p>
+      </div>
+      <div class="guide-tour-preview" id="guide-tour-preview"></div>
+      <p class="guide-tour-hint" id="guide-tour-hint">הסיור יגלול למסך וידגיש את הכפתור או האזור המתאים.</p>
+      <div class="guide-tour-actions">
+        <button class="btn secondary" type="button" id="guide-tour-prev-btn" onclick="advanceGuideTour(-1)">הקודם</button>
+        <button class="btn secondary" type="button" onclick="endGuideTour()">סגור</button>
+        <button class="btn" type="button" id="guide-tour-next-btn" onclick="advanceGuideTour(1)">הבא</button>
       </div>
     </div>
   </div>
@@ -5899,6 +6058,9 @@
     let patientHistoryTooltipAnchor = null;
     let inlineValueTooltipTimer = null;
     let inlineValueTooltipAnchor = null;
+    let guideTourActive = false;
+    let guideTourStepIndex = -1;
+    let guideTourCollapsedPanelsSnapshot = null;
     let isPhoneLayout = phoneLayoutMediaQuery.matches;
     let serverAccessInfo = {
       request_origin: window.location.origin,
@@ -6624,12 +6786,348 @@
     }
 
     function openGuideModal() {
+      if (guideTourActive) {
+        endGuideTour();
+      }
       closeHeroMenu();
       document.getElementById('guide-modal').hidden = false;
     }
 
     function closeGuideModal() {
       document.getElementById('guide-modal').hidden = true;
+    }
+
+    function getGuideTourPreviewMarkup(kind) {
+      switch (kind) {
+        case 'book':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#eff6ff"/>
+              <rect x="18" y="18" width="284" height="28" rx="14" fill="#dbeafe"/>
+              <circle cx="38" cy="32" r="6" fill="#f87171"/>
+              <circle cx="56" cy="32" r="6" fill="#fbbf24"/>
+              <circle cx="74" cy="32" r="6" fill="#34d399"/>
+              <rect x="28" y="66" width="196" height="78" rx="20" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+              <rect x="44" y="84" width="86" height="12" rx="6" fill="#bfdbfe"/>
+              <rect x="44" y="104" width="148" height="10" rx="5" fill="#e5edff"/>
+              <rect x="44" y="122" width="128" height="10" rx="5" fill="#e5edff"/>
+              <circle cx="256" cy="106" r="28" fill="#1d4ed8"/>
+              <path d="M243 91h24a6 6 0 0 1 6 6v28a0 0 0 0 1 0 0h-30a0 0 0 0 1 0 0V97a6 6 0 0 1 6-6z" fill="#eff6ff"/>
+              <path d="M258 91h9a6 6 0 0 1 6 6v28h-15z" fill="#dbeafe"/>
+              <rect x="250" y="112" width="14" height="2.5" rx="1.25" fill="#1d4ed8"/>
+            </svg>
+          `;
+        case 'workspace':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f4f9ff"/>
+              <rect x="18" y="18" width="284" height="32" rx="16" fill="#dcfce7"/>
+              <rect x="32" y="25" width="48" height="18" rx="9" fill="#bbf7d0"/>
+              <rect x="92" y="25" width="58" height="18" rx="9" fill="#bbf7d0"/>
+              <rect x="162" y="25" width="54" height="18" rx="9" fill="#bbf7d0"/>
+              <rect x="228" y="25" width="60" height="18" rx="9" fill="#86efac"/>
+              <rect x="26" y="72" width="124" height="80" rx="20" fill="#ffffff" stroke="#d9e5f5" stroke-width="2"/>
+              <rect x="170" y="72" width="124" height="80" rx="20" fill="#ffffff" stroke="#d9e5f5" stroke-width="2"/>
+              <rect x="40" y="88" width="72" height="10" rx="5" fill="#bfdbfe"/>
+              <rect x="40" y="108" width="92" height="10" rx="5" fill="#e5edff"/>
+              <rect x="40" y="126" width="82" height="10" rx="5" fill="#e5edff"/>
+              <rect x="184" y="88" width="72" height="10" rx="5" fill="#bbf7d0"/>
+              <rect x="184" y="108" width="92" height="10" rx="5" fill="#dcfce7"/>
+              <rect x="184" y="126" width="82" height="10" rx="5" fill="#dcfce7"/>
+            </svg>
+          `;
+        case 'new-task':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f5faff"/>
+              <rect x="22" y="18" width="276" height="144" rx="24" fill="#ffffff" stroke="#dbe7f6" stroke-width="2"/>
+              <rect x="38" y="38" width="110" height="34" rx="14" fill="#eff6ff" stroke="#c7d2fe" stroke-width="2"/>
+              <rect x="160" y="38" width="122" height="34" rx="14" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="38" y="84" width="74" height="34" rx="14" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="122" y="84" width="74" height="34" rx="14" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="206" y="84" width="76" height="34" rx="14" fill="#e0f2fe" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="38" y="132" width="96" height="18" rx="9" fill="#dbeafe"/>
+            </svg>
+          `;
+        case 'task-actions':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7fbff"/>
+              <rect x="20" y="24" width="280" height="130" rx="22" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <circle cx="44" cy="56" r="10" fill="#a78bfa"/>
+              <rect x="64" y="48" width="94" height="12" rx="6" fill="#c7d2fe"/>
+              <rect x="64" y="68" width="146" height="10" rx="5" fill="#e6edf7"/>
+              <rect x="32" y="100" width="56" height="24" rx="12" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="96" y="100" width="68" height="24" rx="12" fill="#e9d5ff" stroke="#c084fc" stroke-width="2"/>
+              <rect x="172" y="100" width="72" height="24" rx="12" fill="#dcfce7" stroke="#86efac" stroke-width="2"/>
+              <rect x="252" y="100" width="36" height="24" rx="12" fill="#fee2e2" stroke="#fca5a5" stroke-width="2"/>
+              <rect x="32" y="134" width="118" height="10" rx="5" fill="#e6edf7"/>
+            </svg>
+          `;
+        case 'filters':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f4f8ff"/>
+              <rect x="18" y="18" width="284" height="142" rx="24" fill="#ffffff" stroke="#d9e4f5" stroke-width="2"/>
+              <rect x="34" y="38" width="78" height="30" rx="15" fill="#e0f2fe" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="120" y="38" width="78" height="30" rx="15" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="206" y="38" width="80" height="30" rx="15" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="34" y="84" width="116" height="34" rx="15" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+              <rect x="162" y="84" width="124" height="34" rx="15" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="34" y="132" width="252" height="12" rx="6" fill="#dbeafe"/>
+            </svg>
+          `;
+        case 'lists':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7fbff"/>
+              <rect x="24" y="28" width="84" height="114" rx="18" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+              <rect x="118" y="28" width="84" height="114" rx="18" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="212" y="28" width="84" height="114" rx="18" fill="#ecfdf5" stroke="#86efac" stroke-width="2"/>
+              <rect x="38" y="44" width="56" height="10" rx="5" fill="#fdba74"/>
+              <rect x="132" y="44" width="56" height="10" rx="5" fill="#93c5fd"/>
+              <rect x="226" y="44" width="56" height="10" rx="5" fill="#86efac"/>
+              <rect x="38" y="66" width="56" height="8" rx="4" fill="#fed7aa"/>
+              <rect x="132" y="66" width="56" height="8" rx="4" fill="#dbeafe"/>
+              <rect x="226" y="66" width="56" height="8" rx="4" fill="#dcfce7"/>
+              <rect x="38" y="84" width="46" height="8" rx="4" fill="#fed7aa"/>
+              <rect x="132" y="84" width="46" height="8" rx="4" fill="#dbeafe"/>
+              <rect x="226" y="84" width="46" height="8" rx="4" fill="#dcfce7"/>
+              <rect x="38" y="102" width="56" height="8" rx="4" fill="#fed7aa"/>
+              <rect x="132" y="102" width="56" height="8" rx="4" fill="#dbeafe"/>
+              <rect x="226" y="102" width="56" height="8" rx="4" fill="#dcfce7"/>
+            </svg>
+          `;
+        default:
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f8fafc"/>
+              <rect x="36" y="36" width="248" height="108" rx="24" fill="#ffffff" stroke="#dbe2ea" stroke-width="2"/>
+              <rect x="62" y="68" width="196" height="14" rx="7" fill="#dbeafe"/>
+              <rect x="62" y="94" width="168" height="12" rx="6" fill="#e2e8f0"/>
+            </svg>
+          `;
+      }
+    }
+
+    function getGuideTourSteps() {
+      return [
+        {
+          title: 'הספר למעלה',
+          body: 'זה התפריט המהיר של המערכת. מכאן מגיעים לחשבון, סימנייה, גיבוי ושחזור, פידבקים, וגם להדרכה עצמה.',
+          hint: 'הספר עצמו יודגש על המסך, וגם התפריט ייפתח אוטומטית.',
+          preview: getGuideTourPreviewMarkup('book'),
+          prepare() {
+            closeWorkspacePopup();
+            openHeroMenu();
+          },
+          target: () => document.querySelector('.hero-menu')
+        },
+        {
+          title: 'כפתורי העבודה הירוקים',
+          body: 'השורה הזו פותחת מהר את חלון משימה חדשה ואת שלוש הרשימות הצדדיות, בלי להעמיס את המסך הראשי.',
+          hint: 'בשלב הזה יודגשו הכפתורים הירוקים שעל הסרגל העליון.',
+          preview: getGuideTourPreviewMarkup('workspace'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+          },
+          target: () => document.getElementById('hero-workspace-actions')
+        },
+        {
+          title: 'חלון משימה חדשה',
+          body: 'כאן מתחילים רוב העבודה היומית. קודם בוחרים מטופל, ואז ממשיכים לסוג, תאריך ושעה לפי הצורך.',
+          hint: 'הסיור יפתח את חלון משימה חדשה וידגיש את שדה המטופל.',
+          preview: getGuideTourPreviewMarkup('new-task'),
+          prepare() {
+            closeHeroMenu();
+            openWorkspacePopup('new-task-panel');
+          },
+          target: () => document.getElementById('input-patient')?.closest('.field')
+        },
+        {
+          title: 'סוג, תאריך ושעה',
+          body: 'באותו חלון בוחרים את סוג המשימה, ואם צריך גם תאריך ושעה. כללי תורנות וברירת המחדל של הלילה נשמרים כאן אוטומטית.',
+          hint: 'הסיור ידגיש את אזור הטופס הראשי, כדי שיהיה ברור איפה בוחרים את פרטי המשימה.',
+          preview: getGuideTourPreviewMarkup('new-task'),
+          prepare() {
+            closeHeroMenu();
+            openWorkspacePopup('new-task-panel');
+          },
+          target: () => document.querySelector('[data-layout-id="new-task-form-block"]')
+        },
+        {
+          title: 'כפתורי הפעולה בתוך המשימות',
+          body: 'בתוך שורת משימה נמצאים הכפתורים השוטפים כמו עדיפות גבוהה, העברה לתורנות והעברה למחר. הם עובדים מתוך תיבת המשימות עצמה.',
+          hint: 'הסיור ידגיש את אזור המשימות הראשי, והאיור מראה איך שורת משימה טיפוסית נראית.',
+          preview: getGuideTourPreviewMarkup('task-actions'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('tasks-panel');
+          },
+          target: () => document.querySelector('[data-layout-id="tasks-panel"]')
+        },
+        {
+          title: 'סינון ותצוגה',
+          body: 'כאן מסננים לפי תאריך, מטופל, סוג משימה ושיוך. אם מחפשים מטופל, אפשר לראות גם משימות מימים אחרים לפי הצורך.',
+          hint: 'הסיור יפתח את פנל הסינון אם צריך וידגיש אותו.',
+          preview: getGuideTourPreviewMarkup('filters'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('filters-panel');
+          },
+          target: () => document.querySelector('[data-layout-id="filters-panel"]')
+        },
+        {
+          title: 'שלוש הרשימות הצדדיות',
+          body: 'מזוהמים, מיונים/יעוצים והכנות ניתוחים נפתחו עכשיו מכפתורים משלהם. כל אחת נועדה לעבודה מהירה וממוקדת מסוג אחר.',
+          hint: 'הסיור יחזיר אותך לשורת הכפתורים וידגיש את אזור הרשימות.',
+          preview: getGuideTourPreviewMarkup('lists'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+          },
+          target: () => document.getElementById('hero-workspace-actions')
+        }
+      ];
+    }
+
+    function ensureGuideTourPanelOpen(panelId) {
+      if (!panelId) {
+        return;
+      }
+
+      if (Boolean(collapsedPanels[panelId])) {
+        collapsedPanels[panelId] = false;
+        applyCollapsedPanelState();
+        saveCollapsedPanelsState();
+      }
+    }
+
+    function clearGuideTourHighlight() {
+      document.querySelectorAll('.guide-tour-highlight').forEach((element) => {
+        element.classList.remove('guide-tour-highlight');
+      });
+    }
+
+    function syncGuideTourCard(step, totalSteps) {
+      const meta = document.getElementById('guide-tour-meta');
+      const title = document.getElementById('guide-tour-title');
+      const body = document.getElementById('guide-tour-body');
+      const preview = document.getElementById('guide-tour-preview');
+      const hint = document.getElementById('guide-tour-hint');
+      const prevButton = document.getElementById('guide-tour-prev-btn');
+      const nextButton = document.getElementById('guide-tour-next-btn');
+
+      meta.textContent = `סיור מודרך · ${guideTourStepIndex + 1} / ${totalSteps}`;
+      title.textContent = step.title;
+      body.textContent = step.body;
+      preview.innerHTML = step.preview;
+      hint.textContent = step.hint;
+      prevButton.disabled = guideTourStepIndex === 0;
+      nextButton.textContent = guideTourStepIndex >= totalSteps - 1 ? 'סיום' : 'הבא';
+    }
+
+    function focusGuideTourTarget(step, attempt = 0) {
+      const target = typeof step.target === 'function'
+        ? step.target()
+        : document.querySelector(step.target);
+
+      if (!target) {
+        if (attempt < 6) {
+          window.setTimeout(() => focusGuideTourTarget(step, attempt + 1), 120);
+        }
+        return;
+      }
+
+      clearGuideTourHighlight();
+      target.classList.add('guide-tour-highlight');
+
+      const scrollTarget = target.closest('[data-layout-id], .panel, .layout-item, .field, .hero-menu, .hero-status-row') || target;
+      scrollTarget.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+
+    function showGuideTourStep(index) {
+      const steps = getGuideTourSteps();
+      if (!steps.length) {
+        return;
+      }
+
+      if (index < 0) {
+        index = 0;
+      }
+
+      if (index >= steps.length) {
+        endGuideTour();
+        return;
+      }
+
+      guideTourStepIndex = index;
+      const step = steps[index];
+
+      clearGuideTourHighlight();
+      closeHeroMenu();
+      closeTaskCategoryMenu();
+      closeAllCustomDatePopovers();
+      closeAllCustomTimePopovers();
+      closeAllPatientSuggestionMenus();
+      closeAllTalkSeniorSuggestionMenus();
+      closeStatusPicker();
+      syncGuideTourCard(step, steps.length);
+
+      window.setTimeout(() => {
+        step.prepare?.();
+        window.setTimeout(() => focusGuideTourTarget(step), 120);
+      }, 0);
+    }
+
+    function startGuideTour() {
+      guideTourCollapsedPanelsSnapshot = { ...collapsedPanels };
+      guideTourActive = true;
+      closeGuideModal();
+      document.getElementById('guide-tour-shell').hidden = false;
+      showGuideTourStep(0);
+    }
+
+    function advanceGuideTour(direction) {
+      if (!guideTourActive) {
+        return;
+      }
+
+      showGuideTourStep(guideTourStepIndex + direction);
+    }
+
+    function endGuideTour() {
+      if (!guideTourActive) {
+        return;
+      }
+
+      guideTourActive = false;
+      guideTourStepIndex = -1;
+      document.getElementById('guide-tour-shell').hidden = true;
+      clearGuideTourHighlight();
+      closeHeroMenu();
+      closeWorkspacePopup();
+      closeTaskCategoryMenu();
+      closeAllCustomDatePopovers();
+      closeAllCustomTimePopovers();
+      closeAllPatientSuggestionMenus();
+      closeAllTalkSeniorSuggestionMenus();
+      closeStatusPicker();
+
+      if (guideTourCollapsedPanelsSnapshot) {
+        collapsedPanels = {
+          ...guideTourCollapsedPanelsSnapshot
+        };
+        guideTourCollapsedPanelsSnapshot = null;
+        applyCollapsedPanelState();
+        saveCollapsedPanelsState();
+      }
     }
 
     function bookmarkCurrentPage() {
@@ -13108,6 +13606,7 @@
         closeHeroMenu();
         closeBookmarkModal();
         closeGuideModal();
+        endGuideTour();
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeSystemToolsModal();

@@ -1415,3 +1415,7 @@
 ## 2026-04-11 14:09 IDT
 
 - Added a new `הדרכה` item to the book menu that opens a short in-app user guide modal covering the main daily features: creating tasks, high priority, moving tasks to `תורנות` or tomorrow, filtering, the side lists, popup workspace buttons, and the main book-menu tools.
+
+## 2026-04-11 19:17 IDT
+
+- Upgraded the in-app `הדרכה` from a static reading modal into a guided tour: users can now launch a step-by-step interactive walkthrough that jumps to the real controls, opens the needed popup or menu, highlights the live target on screen, and shows a small visual preview card for each major area such as the book menu, workspace buttons, new-task form, task-row actions, filters, and the three side lists.
