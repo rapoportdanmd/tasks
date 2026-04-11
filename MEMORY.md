@@ -1407,3 +1407,7 @@
 ## 2026-04-11 19:53 IDT
 
 - Made the desktop workspace popups reset their form/edit state when closed or when switching to a different popup, so reopening windows like `משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, or `רשימת הכנות ניתוחים` starts clean instead of remembering the previous selections or edit mode.
+
+## 2026-04-11 14:06 IDT
+
+- Added admin-only backup/restore tooling and real error logging: the app can now create manual SQLite backups, auto-create a safety backup before restore or full reset, restore from an existing backup without restarting the server, and download both server-side and browser-side error logs from a new `גיבוי ושחזור` modal in the book menu. Also removed the extra admin subtitle text from the book menu to keep that dropdown cleaner.

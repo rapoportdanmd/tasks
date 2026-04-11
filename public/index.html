@@ -735,6 +735,102 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
     }
 
+    .system-tools-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .system-tools-section {
+      border: 1px solid rgba(220, 212, 199, 0.88);
+      border-radius: 18px;
+      background: rgba(255, 252, 247, 0.9);
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    }
+
+    .system-tools-section h3 {
+      font-size: 0.9rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .system-tools-note {
+      color: var(--muted-strong);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .system-tools-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .system-tools-list {
+      display: grid;
+      gap: 10px;
+      max-height: min(46vh, 420px);
+      overflow: auto;
+      padding-inline-end: 4px;
+    }
+
+    .system-tools-item {
+      border: 1px solid rgba(220, 212, 199, 0.82);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .system-tools-item-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .system-tools-item-title {
+      font-size: 0.84rem;
+      font-weight: 900;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .system-tools-item-meta {
+      color: var(--muted-strong);
+      font-size: 0.76rem;
+      line-height: 1.45;
+      display: grid;
+      gap: 2px;
+    }
+
+    .system-tools-item-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .system-tools-empty {
+      color: var(--muted-strong);
+      font-size: 0.8rem;
+      border: 1px dashed rgba(205, 216, 229, 0.9);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    @media (max-width: 920px) {
+      .system-tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .feedback-admin-head {
       display: flex;
       align-items: flex-start;
@@ -4720,6 +4816,36 @@
       </div>
     </div>
   </div>
+  <div class="modal-overlay" id="system-tools-modal" hidden>
+    <div class="modal-card modal-card-wide">
+      <h2>גיבוי, שחזור ולוגים</h2>
+      <p>כאן אפשר ליצור גיבוי ידני, לשחזר מגיבוי קודם, ולהוריד לוגים של תקלות. לפני שחזור או איפוס מלא המערכת יוצרת קודם גיבוי בטיחות אוטומטי.</p>
+      <div class="modal-status" id="system-tools-status-text"></div>
+      <div class="system-tools-actions">
+        <button class="btn" type="button" id="system-tools-create-backup-btn" onclick="createManualBackup()">צור גיבוי עכשיו</button>
+        <button class="btn secondary" type="button" onclick="loadSystemToolsModal()">רענן</button>
+      </div>
+      <div class="system-tools-grid">
+        <section class="system-tools-section">
+          <h3>גיבויים זמינים</h3>
+          <div class="system-tools-note">אפשר להוריד כל גיבוי, או לשחזר ממנו. השחזור דורש סיסמה ומחזיר את המערכת בדיוק למצב שבו נשמר אותו גיבוי.</div>
+          <div class="system-tools-list" id="system-tools-backups-list">
+            <div class="system-tools-empty">אין כרגע גיבויים להצגה.</div>
+          </div>
+        </section>
+        <section class="system-tools-section">
+          <h3>לוגים</h3>
+          <div class="system-tools-note">לוג השרת שומר תקלות בצד השרת. לוג הדפדפן שומר שגיאות JavaScript של משתמשים, כדי שאפשר יהיה להבין למה משהו נשבר גם אם זה קרה רק במחשב מסוים.</div>
+          <div class="system-tools-list" id="system-tools-logs-list">
+            <div class="system-tools-empty">אין כרגע לוגים להצגה.</div>
+          </div>
+        </section>
+      </div>
+      <div class="auth-actions">
+        <button class="btn secondary" type="button" onclick="closeSystemToolsModal()">סגור</button>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="password-confirm-modal" hidden>
     <div class="modal-card">
       <h2 id="password-confirm-title">אישור סיסמה</h2>
@@ -4784,6 +4910,9 @@
           </button>
           <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-feedback-inbox" onclick="openAdminSuggestionsModal()" hidden>
             <span class="hero-menu-item-main">פידבקים שהתקבלו</span>
+          </button>
+          <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-system-tools" onclick="openSystemToolsModal()" hidden>
+            <span class="hero-menu-item-main">גיבוי ושחזור</span>
           </button>
           <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-send-suggestion" onclick="openSuggestionModal()">
             <span class="hero-menu-item-main">שלח הצעה</span>
@@ -5651,7 +5780,12 @@
     let liveRefreshTimer = null;
     let reloadAllPromise = null;
     let adminSuggestions = [];
+    let systemToolsBackups = [];
+    let systemToolsLogs = [];
     let passwordConfirmationResolver = null;
+    let clientErrorReportCount = 0;
+    let lastClientErrorSignature = '';
+    let lastClientErrorTimestamp = 0;
     let patientHistoryTooltipTimer = null;
     let patientHistoryTooltipAnchor = null;
     let inlineValueTooltipTimer = null;
@@ -5858,6 +5992,7 @@
       const accountButton = document.getElementById('hero-menu-account');
       const logoutButton = document.getElementById('hero-menu-logout');
       const feedbackInboxButton = document.getElementById('hero-menu-feedback-inbox');
+      const systemToolsButton = document.getElementById('hero-menu-system-tools');
       const sendSuggestionButton = document.getElementById('hero-menu-send-suggestion');
       const authEnabled = Boolean(authState.auth_enabled);
       const authenticated = Boolean(authState.authenticated);
@@ -5873,7 +6008,7 @@
         menuSubtitle.textContent = 'אפשר לשמור סימנייה ולפתוח את חלונית החשבון.';
       } else if (authState.role === 'admin') {
         menuTitle.textContent = 'מחובר: מנהל';
-        menuSubtitle.textContent = 'ניהול מהיר, סימנייה, חלונית חשבון ופידבקים.';
+        menuSubtitle.textContent = '';
       } else if (authenticated && authState.display_name) {
         menuTitle.textContent = `מחובר: ${authState.display_name}`;
         menuSubtitle.textContent = '';
@@ -5885,11 +6020,13 @@
       accountButton.hidden = !authEnabled;
       logoutButton.hidden = !authEnabled || !authenticated;
       feedbackInboxButton.hidden = !isAdmin;
+      systemToolsButton.hidden = !isAdmin;
       sendSuggestionButton.hidden = isAdmin || (authEnabled && !authenticated);
 
       accountButton.disabled = !authEnabled;
       logoutButton.disabled = !authEnabled || !authenticated;
       feedbackInboxButton.disabled = !authenticated || !isAdmin;
+      systemToolsButton.disabled = !authenticated || !isAdmin;
       sendSuggestionButton.disabled = authEnabled && !authenticated;
     }
 
@@ -6091,6 +6228,7 @@
       closeBookmarkModal();
       closeSuggestionModal();
       closeAdminSuggestionsModal();
+      closeSystemToolsModal();
       cancelPasswordConfirmationModal();
       setAuthStatus(message, 'info');
       syncAuthUi();
@@ -6583,6 +6721,207 @@
       document.getElementById('admin-suggestions-status-text').textContent = '';
     }
 
+    function setSystemToolsStatus(message = '', kind = '') {
+      const status = document.getElementById('system-tools-status-text');
+      if (!status) {
+        return;
+      }
+
+      status.textContent = message;
+      status.dataset.kind = message ? kind : '';
+    }
+
+    function renderSystemToolsBackups() {
+      const container = document.getElementById('system-tools-backups-list');
+      if (!container) {
+        return;
+      }
+
+      if (!systemToolsBackups.length) {
+        container.innerHTML = '<div class="system-tools-empty">אין כרגע גיבויים להצגה.</div>';
+        return;
+      }
+
+      container.innerHTML = systemToolsBackups.map((backup) => `
+        <article class="system-tools-item">
+          <div class="system-tools-item-head">
+            <div>
+              <div class="system-tools-item-title">${escHtml(backup.filename || 'גיבוי')}</div>
+              <div class="system-tools-item-meta">
+                <div>${escHtml(formatSuggestionTimestamp(backup.updated_at) || 'זמן לא זמין')}</div>
+                <div>${escHtml(backup.size_label || '')}</div>
+              </div>
+            </div>
+          </div>
+          <div class="system-tools-item-buttons">
+            <button class="btn secondary compact" type="button" onclick="downloadSystemToolFile('${escJs(backup.download_url || '')}')">הורד</button>
+            <button class="btn danger compact" type="button" onclick="restoreBackupFile('${escJs(backup.filename || '')}')">שחזר</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderSystemToolsLogs() {
+      const container = document.getElementById('system-tools-logs-list');
+      if (!container) {
+        return;
+      }
+
+      if (!systemToolsLogs.length) {
+        container.innerHTML = '<div class="system-tools-empty">אין כרגע לוגים להצגה.</div>';
+        return;
+      }
+
+      container.innerHTML = systemToolsLogs.map((logFile) => `
+        <article class="system-tools-item">
+          <div class="system-tools-item-head">
+            <div>
+              <div class="system-tools-item-title">${escHtml(logFile.label || logFile.kind || 'לוג')}</div>
+              <div class="system-tools-item-meta">
+                <div>${escHtml(logFile.updated_at ? formatSuggestionTimestamp(logFile.updated_at) : 'עדיין לא נרשמו תקלות')}</div>
+                <div>${escHtml(logFile.size_label || '0 B')}</div>
+              </div>
+            </div>
+          </div>
+          <div class="system-tools-item-buttons">
+            <button class="btn secondary compact" type="button" onclick="downloadSystemToolFile('${escJs(logFile.download_url || '')}')">הורד לוג</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadSystemToolsModal() {
+      const button = document.getElementById('system-tools-create-backup-btn');
+      setSystemToolsStatus('טוען גיבויים ולוגים...', 'info');
+      if (button) {
+        button.disabled = true;
+      }
+
+      try {
+        const res = await fetch('/api/admin/system-tools');
+        const data = await res.json().catch(() => ({ error: 'טעינת כלי המערכת נכשלה.' }));
+
+        if (!res.ok) {
+          setSystemToolsStatus(data.error || 'טעינת כלי המערכת נכשלה.');
+          return;
+        }
+
+        systemToolsBackups = Array.isArray(data.backups) ? data.backups : [];
+        systemToolsLogs = Array.isArray(data.logs) ? data.logs : [];
+        renderSystemToolsBackups();
+        renderSystemToolsLogs();
+        setSystemToolsStatus('');
+      } catch (error) {
+        setSystemToolsStatus('לא הצלחנו לטעון את כלי המערכת כרגע.');
+      } finally {
+        if (button) {
+          button.disabled = false;
+        }
+      }
+    }
+
+    async function openSystemToolsModal() {
+      closeHeroMenu();
+      document.getElementById('system-tools-modal').hidden = false;
+      systemToolsBackups = [];
+      systemToolsLogs = [];
+      renderSystemToolsBackups();
+      renderSystemToolsLogs();
+      await loadSystemToolsModal();
+    }
+
+    function closeSystemToolsModal() {
+      document.getElementById('system-tools-modal').hidden = true;
+      setSystemToolsStatus('');
+    }
+
+    function downloadSystemToolFile(downloadUrl) {
+      if (!downloadUrl) {
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.rel = 'noopener';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    async function createManualBackup() {
+      const button = document.getElementById('system-tools-create-backup-btn');
+      if (button) {
+        button.disabled = true;
+      }
+      setSystemToolsStatus('יוצר גיבוי חדש...', 'info');
+
+      try {
+        const res = await fetch('/api/admin/backups', {
+          method: 'POST'
+        });
+        const data = await res.json().catch(() => ({ error: 'יצירת הגיבוי נכשלה.' }));
+
+        if (!res.ok) {
+          setSystemToolsStatus(data.error || 'יצירת הגיבוי נכשלה.');
+          return;
+        }
+
+        systemToolsBackups = Array.isArray(data.backups) ? data.backups : systemToolsBackups;
+        renderSystemToolsBackups();
+        setSystemToolsStatus(`הגיבוי נשמר: ${data.backup?.filename || 'בוצע בהצלחה.'}`, 'success');
+      } catch (error) {
+        setSystemToolsStatus('לא הצלחנו ליצור גיבוי כרגע.');
+      } finally {
+        if (button) {
+          button.disabled = false;
+        }
+      }
+    }
+
+    async function restoreBackupFile(filename) {
+      if (!filename) {
+        return;
+      }
+
+      if (!confirm(`לשחזר עכשיו את המערכת מהגיבוי ${filename}? הפעולה תחזיר את כל הנתונים למצב הישן של אותו גיבוי.`)) {
+        return;
+      }
+
+      const password = await requestPasswordConfirmation(`שחזור הגיבוי ${filename}`);
+      if (password === null) {
+        return;
+      }
+
+      setSystemToolsStatus('משחזר את הגיבוי שנבחר...', 'info');
+
+      try {
+        const res = await fetch('/api/admin/backups/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename,
+            password
+          })
+        });
+        const data = await res.json().catch(() => ({ error: 'שחזור הגיבוי נכשל.' }));
+
+        if (!res.ok) {
+          setSystemToolsStatus(data.error || 'שחזור הגיבוי נכשל.');
+          return;
+        }
+
+        const safetyBackupName = data.safety_backup?.filename
+          ? ` נוצר גם גיבוי בטיחות: ${data.safety_backup.filename}.`
+          : '';
+        setSystemToolsStatus(`השחזור הושלם.${safetyBackupName}`, 'success');
+        await bootstrapAppData();
+        window.setTimeout(() => window.location.reload(), 900);
+      } catch (error) {
+        setSystemToolsStatus('לא הצלחנו לשחזר את הגיבוי כרגע.');
+      }
+    }
+
     async function submitSuggestion() {
       const textarea = document.getElementById('suggestion-message');
       const status = document.getElementById('suggestion-status-text');
@@ -6666,6 +7005,62 @@
         ? 'כאן אפשר ליצור חשבון, להתחבר עם משתמש אחר או לעבור לחשבון מנהל.'
         : 'כאן אפשר ליצור חשבון, להתחבר או לעבור לחשבון מנהל.';
       openAuthOverlay('user', 'standard', message);
+    }
+
+    function reportClientError(payload = {}) {
+      const message = String(payload.message || '').trim();
+      if (!message) {
+        return;
+      }
+
+      const signature = [
+        payload.type || 'client-error',
+        payload.source || '',
+        message,
+        payload.line || '',
+        payload.column || ''
+      ].join('|');
+      const now = Date.now();
+
+      if (signature === lastClientErrorSignature && (now - lastClientErrorTimestamp) < 4000) {
+        return;
+      }
+
+      if (clientErrorReportCount >= 20) {
+        return;
+      }
+
+      clientErrorReportCount += 1;
+      lastClientErrorSignature = signature;
+      lastClientErrorTimestamp = now;
+
+      const body = JSON.stringify({
+        type: payload.type || 'client-error',
+        message,
+        stack: String(payload.stack || '').trim(),
+        source: String(payload.source || '').trim(),
+        line: Number(payload.line) || null,
+        column: Number(payload.column) || null,
+        page_url: window.location.href,
+        user_agent: navigator.userAgent || ''
+      });
+
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([body], { type: 'application/json' });
+          navigator.sendBeacon('/api/client-errors', blob);
+          return;
+        }
+
+        fetch('/api/client-errors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      } catch (error) {
+        // Ignore client log reporting failures.
+      }
     }
 
     function updateLiveSyncStatus(state, text) {
@@ -12595,6 +12990,7 @@
         closeBookmarkModal();
         closeSuggestionModal();
         closeAdminSuggestionsModal();
+        closeSystemToolsModal();
         cancelPasswordConfirmationModal();
         closeWorkspacePopup();
         closeStatusPicker();
@@ -12619,6 +13015,11 @@
           closeAdminSuggestionsModal();
         }
       });
+      document.getElementById('system-tools-modal').addEventListener('click', (event) => {
+        if (event.target.id === 'system-tools-modal') {
+          closeSystemToolsModal();
+        }
+      });
       document.getElementById('password-confirm-modal').addEventListener('click', (event) => {
         if (event.target.id === 'password-confirm-modal') {
           cancelPasswordConfirmationModal();
@@ -12632,6 +13033,25 @@
       window.addEventListener('scroll', () => {
         hidePatientHistoryTooltip();
       }, true);
+      window.addEventListener('error', (event) => {
+        reportClientError({
+          type: 'window-error',
+          message: event.message,
+          stack: event.error?.stack || '',
+          source: event.filename || '',
+          line: event.lineno,
+          column: event.colno
+        });
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const reason = event.reason;
+        reportClientError({
+          type: 'unhandled-rejection',
+          message: typeof reason === 'string' ? reason : (reason?.message || 'Unhandled promise rejection'),
+          stack: reason?.stack || '',
+          source: 'promise'
+        });
+      });
       window.addEventListener('beforeunload', closeLiveSync);
       if (typeof phoneLayoutMediaQuery.addEventListener === 'function') {
         phoneLayoutMediaQuery.addEventListener('change', () => syncPhoneLayoutMode());

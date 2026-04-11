@@ -20,6 +20,10 @@ const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const DB_PATH = path.resolve(process.env.DB_PATH || path.join(__dirname, 'tasks.db'));
+const BACKUP_DIR = path.resolve(process.env.BACKUP_DIR || path.join(__dirname, 'backups'));
+const LOG_DIR = path.resolve(process.env.LOG_DIR || path.join(__dirname, 'runtime-logs'));
+const SERVER_ERROR_LOG_PATH = path.join(LOG_DIR, 'server-errors.log');
+const CLIENT_ERROR_LOG_PATH = path.join(LOG_DIR, 'client-errors.log');
 const SESSION_COOKIE_SECURE = normalizeBooleanEnv(
   process.env.SESSION_COOKIE_SECURE,
   NODE_ENV === 'production'
@@ -133,6 +137,9 @@ const PATIENT_POOL_HEADER_CANDIDATES = [
 const SESSION_COOKIE_NAME = 'sefer_session';
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const HEARTBEAT_INTERVAL_MS = 25 * 1000;
+const BACKUP_RETENTION_COUNT = normalizePositiveIntegerEnv(process.env.BACKUP_RETENTION_COUNT, 40);
+const LOG_RETENTION_COUNT = normalizePositiveIntegerEnv(process.env.LOG_RETENTION_COUNT, 10);
+const LOG_ROTATION_MAX_BYTES = normalizePositiveIntegerEnv(process.env.LOG_ROTATION_MAX_BYTES, 2 * 1024 * 1024);
 const STAFF_ACCOUNT_STATUS_PENDING = 'pending';
 const STAFF_ACCOUNT_STATUS_APPROVED = 'approved';
 const PUBLIC_ACCESS_CODE = typeof process.env.APP_ACCESS_CODE === 'string'
@@ -151,7 +158,9 @@ const SESSION_SECRET = process.env.APP_SESSION_SECRET || randomBytes(32).toStrin
 const app = express();
 const server = http.createServer(app);
 ensureParentDirectoryExists(DB_PATH);
-const db = new Database(DB_PATH);
+ensureDirectoryExists(BACKUP_DIR);
+ensureDirectoryExists(LOG_DIR);
+let db = openPrimaryDatabase();
 const realtimeServer = new WebSocketServer({ noServer: true });
 const realtimeClients = new Map();
 const excelUpload = multer({
@@ -180,9 +189,14 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 initializeDatabase();
-db.pragma('journal_mode = WAL');
-db.pragma(`busy_timeout = ${SQLITE_BUSY_TIMEOUT_MS}`);
-db.pragma('foreign_keys = ON');
+
+process.on('unhandledRejection', (error) => {
+  logServerError('unhandled-rejection', error);
+});
+
+process.on('uncaughtException', (error) => {
+  logServerError('uncaught-exception', error);
+});
 
 app.get('/api/session', (req, res) => {
   if (!AUTH_ENABLED) {
@@ -412,6 +426,21 @@ app.post('/api/accounts/register', (req, res) => {
   });
 });
 
+app.post('/api/client-errors', (req, res) => {
+  const payload = req.body && typeof req.body === 'object' ? req.body : {};
+  logClientError(req, {
+    type: normalizeText(payload.type) || 'client-error',
+    message: normalizeText(payload.message) || 'Unknown client error',
+    stack: normalizeText(payload.stack),
+    source: normalizeText(payload.source),
+    line: normalizePositiveInteger(payload.line),
+    column: normalizePositiveInteger(payload.column),
+    page_url: normalizeText(payload.page_url),
+    user_agent: normalizeText(payload.user_agent)
+  });
+  res.json({ ok: true });
+});
+
 app.use('/api', requireAuthenticatedSession);
 app.use('/api', requireMutationEditorSession);
 app.use('/download', requireAuthenticatedSession);
@@ -626,6 +655,82 @@ app.delete('/api/suggestions/:id', requireAdminSession, (req, res) => {
 
   db.prepare('DELETE FROM suggestions WHERE id = ?').run(req.params.id);
   return res.json({ ok: true });
+});
+
+app.get('/api/admin/system-tools', requireAdminSession, (_req, res) => {
+  res.json({
+    backups: listDatabaseBackups(),
+    logs: listRuntimeLogs()
+  });
+});
+
+app.post('/api/admin/backups', requireAdminSession, async (req, res) => {
+  try {
+    const backup = await createDatabaseBackup({
+      reason: 'manual',
+      actorName: getAuditActorName(req)
+    });
+
+    return sendMutationResponse(req, res, {
+      ok: true,
+      backup,
+      backups: listDatabaseBackups()
+    });
+  } catch (error) {
+    logServerError('manual-backup-failed', error, {
+      actor: getAuditActorName(req)
+    });
+    return res.status(500).json({ error: 'יצירת הגיבוי נכשלה.' });
+  }
+});
+
+app.post('/api/admin/backups/restore', requireAdminSession, async (req, res) => {
+  const passwordVerification = verifySensitiveActionPassword(req.authSession, req.body?.password);
+  if (!passwordVerification.ok) {
+    return res.status(403).json({ error: passwordVerification.error });
+  }
+
+  const backupPath = resolveBackupPathByFilename(req.body?.filename);
+  if (!backupPath) {
+    return res.status(400).json({ error: 'הגיבוי שנבחר לא נמצא.' });
+  }
+
+  try {
+    const result = await restoreDatabaseFromBackup(backupPath, {
+      actorName: getAuditActorName(req)
+    });
+
+    return sendMutationResponse(req, res, {
+      ok: true,
+      restored_backup: result.restoredBackup,
+      safety_backup: result.safetyBackup,
+      backups: listDatabaseBackups()
+    });
+  } catch (error) {
+    logServerError('backup-restore-failed', error, {
+      actor: getAuditActorName(req),
+      filename: path.basename(backupPath)
+    });
+    return res.status(500).json({ error: 'שחזור הגיבוי נכשל.' });
+  }
+});
+
+app.get('/download/backups/:filename', requireAdminSession, (req, res) => {
+  const backupPath = resolveBackupPathByFilename(req.params.filename);
+  if (!backupPath) {
+    return res.status(404).json({ error: 'קובץ הגיבוי לא נמצא.' });
+  }
+
+  return res.download(backupPath, path.basename(backupPath));
+});
+
+app.get('/download/logs/:kind', requireAdminSession, (req, res) => {
+  const descriptor = getRuntimeLogDescriptor(req.params.kind);
+  if (!descriptor || !fs.existsSync(descriptor.path)) {
+    return res.status(404).json({ error: 'קובץ הלוג לא נמצא.' });
+  }
+
+  return res.download(descriptor.path, path.basename(descriptor.path));
 });
 
 app.get('/api/meta', (_req, res) => {
@@ -1829,33 +1934,45 @@ app.delete('/api/surgery-preps', (req, res) => {
   sendMutationResponse(req, res, { ok: true, deleted: result.changes });
 });
 
-app.post('/api/reset-all', (req, res) => {
+app.post('/api/reset-all', async (req, res) => {
   const passwordVerification = verifySensitiveActionPassword(req.authSession, req.body?.password);
   if (!passwordVerification.ok) {
     return res.status(403).json({ error: passwordVerification.error });
   }
 
-  const summary = db.transaction(() => {
-    const deletedTasks = db.prepare('DELETE FROM tasks').run().changes;
-    const deletedInfected = db.prepare('DELETE FROM infected_list_entries').run().changes;
-    const deletedErPatients = db.prepare('DELETE FROM er_patients').run().changes;
-    const deletedSurgeryPreps = db.prepare('DELETE FROM surgery_preps').run().changes;
-    const deletedDailyAdmins = db.prepare('DELETE FROM daily_admin_assignments').run().changes;
-    const deletedDailyOnCalls = db.prepare('DELETE FROM daily_on_call_assignments').run().changes;
-    const deletedPatientPoolEntries = db.prepare('DELETE FROM daily_patient_pool_entries').run().changes;
+  try {
+    const backup = await createDatabaseBackup({
+      reason: 'pre_reset',
+      actorName: getAuditActorName(req)
+    });
 
-    return {
-      deleted_tasks: deletedTasks,
-      deleted_infected_entries: deletedInfected,
-      deleted_er_patients: deletedErPatients,
-      deleted_surgery_preps: deletedSurgeryPreps,
-      deleted_daily_admin_assignments: deletedDailyAdmins,
-      deleted_daily_on_call_assignments: deletedDailyOnCalls,
-      deleted_daily_patient_pool_entries: deletedPatientPoolEntries
-    };
-  })();
+    const summary = db.transaction(() => {
+      const deletedTasks = db.prepare('DELETE FROM tasks').run().changes;
+      const deletedInfected = db.prepare('DELETE FROM infected_list_entries').run().changes;
+      const deletedErPatients = db.prepare('DELETE FROM er_patients').run().changes;
+      const deletedSurgeryPreps = db.prepare('DELETE FROM surgery_preps').run().changes;
+      const deletedDailyAdmins = db.prepare('DELETE FROM daily_admin_assignments').run().changes;
+      const deletedDailyOnCalls = db.prepare('DELETE FROM daily_on_call_assignments').run().changes;
+      const deletedPatientPoolEntries = db.prepare('DELETE FROM daily_patient_pool_entries').run().changes;
 
-  sendMutationResponse(req, res, { ok: true, ...summary });
+      return {
+        deleted_tasks: deletedTasks,
+        deleted_infected_entries: deletedInfected,
+        deleted_er_patients: deletedErPatients,
+        deleted_surgery_preps: deletedSurgeryPreps,
+        deleted_daily_admin_assignments: deletedDailyAdmins,
+        deleted_daily_on_call_assignments: deletedDailyOnCalls,
+        deleted_daily_patient_pool_entries: deletedPatientPoolEntries
+      };
+    })();
+
+    sendMutationResponse(req, res, { ok: true, backup, ...summary });
+  } catch (error) {
+    logServerError('reset-all-failed', error, {
+      actor: getAuditActorName(req)
+    });
+    return res.status(500).json({ error: 'האיפוס המלא נכשל.' });
+  }
 });
 
 app.get('/api/team-members', (_req, res) => {
@@ -1907,6 +2024,20 @@ app.get('/api/health', (_req, res) => {
     realtime_clients: realtimeClients.size,
     now: new Date().toISOString()
   });
+});
+
+app.use((error, req, res, next) => {
+  logServerError('express-unhandled-error', error, {
+    method: req.method,
+    path: req.originalUrl || req.url,
+    actor: getAuditActorName(req)
+  });
+
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  return res.status(500).json({ error: 'שגיאת שרת פנימית.' });
 });
 
 realtimeServer.on('connection', (socket, request, context = {}) => {
@@ -3013,6 +3144,398 @@ function getServerAccessInfo(requestOrigin = '') {
   };
 }
 
+function openPrimaryDatabase() {
+  ensureParentDirectoryExists(DB_PATH);
+  const database = new Database(DB_PATH);
+  configurePrimaryDatabase(database);
+  return database;
+}
+
+function configurePrimaryDatabase(database) {
+  database.pragma('journal_mode = WAL');
+  database.pragma(`busy_timeout = ${SQLITE_BUSY_TIMEOUT_MS}`);
+  database.pragma('foreign_keys = ON');
+}
+
+function closePrimaryDatabase() {
+  if (!db) {
+    return;
+  }
+
+  try {
+    db.close();
+  } catch (error) {
+    logServerError('database-close-failed', error);
+  }
+}
+
+function reopenPrimaryDatabase() {
+  closePrimaryDatabase();
+  db = openPrimaryDatabase();
+  initializeDatabase();
+}
+
+function ensureDirectoryExists(directoryPath) {
+  fs.mkdirSync(directoryPath, { recursive: true });
+}
+
+function getTimestampSlug() {
+  return new Date().toISOString().replace(/[:.]/g, '-');
+}
+
+function sanitizeFilenameSegment(value, fallback = 'item') {
+  const normalized = normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return normalized || fallback;
+}
+
+function formatByteCount(bytes) {
+  const parsed = Number(bytes);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return '0 B';
+  }
+
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let value = parsed;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  const precision = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(precision)} ${units[unitIndex]}`;
+}
+
+function buildFileDescriptor(filePath, extra = {}) {
+  const stats = fs.statSync(filePath);
+  return {
+    filename: path.basename(filePath),
+    size_bytes: stats.size,
+    size_label: formatByteCount(stats.size),
+    updated_at: stats.mtime.toISOString(),
+    ...extra
+  };
+}
+
+function pruneOldFiles(directoryPath, matcher, keepCount) {
+  const entries = fs.readdirSync(directoryPath, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && matcher(entry.name))
+    .map((entry) => {
+      const filePath = path.join(directoryPath, entry.name);
+      const stats = fs.statSync(filePath);
+      return {
+        filePath,
+        mtimeMs: stats.mtimeMs
+      };
+    })
+    .sort((left, right) => right.mtimeMs - left.mtimeMs);
+
+  entries.slice(Math.max(keepCount, 0)).forEach((entry) => {
+    try {
+      fs.unlinkSync(entry.filePath);
+    } catch (error) {
+      console.error('[file-prune-failed]', error, {
+        file_path: entry.filePath
+      });
+    }
+  });
+}
+
+function finalizeStandaloneBackupDatabase(filePath) {
+  let backupDb = null;
+
+  try {
+    backupDb = new Database(filePath);
+    backupDb.pragma('wal_checkpoint(TRUNCATE)');
+    backupDb.pragma('journal_mode = DELETE');
+  } finally {
+    if (backupDb) {
+      backupDb.close();
+    }
+  }
+
+  removeFileIfExists(`${filePath}-wal`);
+  removeFileIfExists(`${filePath}-shm`);
+}
+
+async function createDatabaseBackup(options = {}) {
+  const { reason = 'manual', actorName = '' } = options;
+  ensureDirectoryExists(BACKUP_DIR);
+  const timestamp = getTimestampSlug();
+  const reasonSegment = sanitizeFilenameSegment(reason, 'manual');
+  const targetPath = path.join(BACKUP_DIR, `tasks_${timestamp}_${reasonSegment}.db`);
+  const tempPath = `${targetPath}.tmp`;
+
+  try {
+    await db.backup(tempPath);
+    finalizeStandaloneBackupDatabase(tempPath);
+    fs.renameSync(tempPath, targetPath);
+  } catch (error) {
+    try {
+      if (fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+      }
+    } catch (cleanupError) {
+      logServerError('backup-temp-cleanup-failed', cleanupError, { temp_path: tempPath });
+    }
+    throw error;
+  }
+
+  pruneOldFiles(BACKUP_DIR, (name) => name.endsWith('.db'), BACKUP_RETENTION_COUNT);
+
+  const descriptor = buildFileDescriptor(targetPath, {
+    reason: reasonSegment,
+    created_by: actorName || null,
+    download_url: `/download/backups/${encodeURIComponent(path.basename(targetPath))}`
+  });
+  appendLogEntry(SERVER_ERROR_LOG_PATH, {
+    level: 'info',
+    type: 'database-backup-created',
+    timestamp: new Date().toISOString(),
+    actor: actorName || null,
+    reason: reasonSegment,
+    filename: descriptor.filename,
+    size_bytes: descriptor.size_bytes
+  });
+  return descriptor;
+}
+
+function resolveBackupPathByFilename(filename) {
+  const normalized = path.basename(normalizeText(filename));
+  if (!normalized || !normalized.endsWith('.db')) {
+    return null;
+  }
+
+  const resolved = path.resolve(BACKUP_DIR, normalized);
+  if (!resolved.startsWith(`${BACKUP_DIR}${path.sep}`)) {
+    return null;
+  }
+
+  return fs.existsSync(resolved) ? resolved : null;
+}
+
+function validateBackupDatabaseFile(filePath) {
+  let validationDb = null;
+
+  try {
+    validationDb = new Database(filePath, { readonly: true, fileMustExist: true });
+    const integrityResult = validationDb.pragma('integrity_check', { simple: true });
+    if (String(integrityResult).toLowerCase() !== 'ok') {
+      throw new Error(`SQLite integrity_check failed: ${integrityResult}`);
+    }
+    validationDb.prepare('SELECT COUNT(*) AS count FROM sqlite_master').get();
+  } finally {
+    if (validationDb) {
+      validationDb.close();
+    }
+  }
+}
+
+async function restoreDatabaseFromBackup(backupPath, options = {}) {
+  const { actorName = '' } = options;
+  validateBackupDatabaseFile(backupPath);
+
+  const safetyBackup = await createDatabaseBackup({
+    reason: 'pre_restore',
+    actorName
+  });
+
+  const tempRestorePath = path.join(path.dirname(DB_PATH), `tasks_restore_${getTimestampSlug()}.db`);
+  const displacedCurrentPath = path.join(path.dirname(DB_PATH), `tasks_displaced_${getTimestampSlug()}.db`);
+
+  fs.copyFileSync(backupPath, tempRestorePath);
+  validateBackupDatabaseFile(tempRestorePath);
+
+  closePrimaryDatabase();
+
+  let restoreSucceeded = false;
+
+  try {
+    removeFileIfExists(`${DB_PATH}-wal`);
+    removeFileIfExists(`${DB_PATH}-shm`);
+
+    if (fs.existsSync(DB_PATH)) {
+      fs.renameSync(DB_PATH, displacedCurrentPath);
+    }
+
+    fs.renameSync(tempRestorePath, DB_PATH);
+    restoreSucceeded = true;
+  } catch (error) {
+    if (!fs.existsSync(DB_PATH) && fs.existsSync(displacedCurrentPath)) {
+      fs.renameSync(displacedCurrentPath, DB_PATH);
+    }
+    throw error;
+  } finally {
+    if (fs.existsSync(tempRestorePath)) {
+      removeFileIfExists(tempRestorePath);
+    }
+    if (restoreSucceeded) {
+      removeFileIfExists(displacedCurrentPath);
+    }
+    reopenPrimaryDatabase();
+  }
+
+  appendLogEntry(SERVER_ERROR_LOG_PATH, {
+    level: 'info',
+    type: 'database-restored',
+    timestamp: new Date().toISOString(),
+    actor: actorName || null,
+    restored_from: path.basename(backupPath),
+    safety_backup: safetyBackup.filename
+  });
+
+  return {
+    restoredBackup: buildFileDescriptor(backupPath, {
+      download_url: `/download/backups/${encodeURIComponent(path.basename(backupPath))}`
+    }),
+    safetyBackup
+  };
+}
+
+function listDatabaseBackups() {
+  ensureDirectoryExists(BACKUP_DIR);
+
+  return fs.readdirSync(BACKUP_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.db'))
+    .map((entry) => buildFileDescriptor(path.join(BACKUP_DIR, entry.name), {
+      download_url: `/download/backups/${encodeURIComponent(entry.name)}`
+    }))
+    .sort((left, right) => String(right.updated_at).localeCompare(String(left.updated_at)));
+}
+
+function getRuntimeLogDescriptor(kind) {
+  const normalizedKind = normalizeText(kind).toLowerCase();
+  if (normalizedKind === 'server') {
+    return {
+      kind: 'server',
+      label: 'לוג שרת',
+      path: SERVER_ERROR_LOG_PATH,
+      download_url: '/download/logs/server'
+    };
+  }
+
+  if (normalizedKind === 'client') {
+    return {
+      kind: 'client',
+      label: 'לוג דפדפן',
+      path: CLIENT_ERROR_LOG_PATH,
+      download_url: '/download/logs/client'
+    };
+  }
+
+  return null;
+}
+
+function listRuntimeLogs() {
+  return ['server', 'client'].map((kind) => {
+    const descriptor = getRuntimeLogDescriptor(kind);
+    if (!descriptor) {
+      return null;
+    }
+
+    if (!fs.existsSync(descriptor.path)) {
+      return {
+        kind: descriptor.kind,
+        label: descriptor.label,
+        size_bytes: 0,
+        size_label: '0 B',
+        updated_at: null,
+        download_url: descriptor.download_url
+      };
+    }
+
+    return {
+      kind: descriptor.kind,
+      label: descriptor.label,
+      ...buildFileDescriptor(descriptor.path, {
+        download_url: descriptor.download_url
+      })
+    };
+  }).filter(Boolean);
+}
+
+function rotateLogFileIfNeeded(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  const stats = fs.statSync(filePath);
+  if (stats.size < LOG_ROTATION_MAX_BYTES) {
+    return;
+  }
+
+  const rotatedPath = path.join(
+    path.dirname(filePath),
+    `${path.basename(filePath, '.log')}_${getTimestampSlug()}.log`
+  );
+  fs.renameSync(filePath, rotatedPath);
+  pruneOldFiles(path.dirname(filePath), (name) => {
+    const prefix = `${path.basename(filePath, '.log')}_`;
+    return name.startsWith(prefix) && name.endsWith('.log');
+  }, LOG_RETENTION_COUNT);
+}
+
+function appendLogEntry(filePath, payload) {
+  ensureParentDirectoryExists(filePath);
+  rotateLogFileIfNeeded(filePath);
+  fs.appendFileSync(filePath, `${JSON.stringify(payload)}\n`, 'utf8');
+}
+
+function serializeErrorForLog(error) {
+  if (!error) {
+    return {
+      message: 'Unknown error'
+    };
+  }
+
+  return {
+    name: normalizeText(error.name) || 'Error',
+    message: normalizeText(error.message) || String(error),
+    stack: normalizeText(error.stack)
+  };
+}
+
+function logServerError(type, error, details = {}) {
+  const serializedError = serializeErrorForLog(error);
+  appendLogEntry(SERVER_ERROR_LOG_PATH, {
+    level: 'error',
+    type: normalizeText(type) || 'server-error',
+    timestamp: new Date().toISOString(),
+    ...details,
+    ...serializedError
+  });
+  console.error(`[${type}]`, error, details);
+}
+
+function logClientError(req, details = {}) {
+  appendLogEntry(CLIENT_ERROR_LOG_PATH, {
+    level: 'error',
+    type: normalizeText(details.type) || 'client-error',
+    timestamp: new Date().toISOString(),
+    message: normalizeText(details.message) || 'Unknown client error',
+    stack: normalizeText(details.stack),
+    source: normalizeText(details.source),
+    line: normalizePositiveInteger(details.line),
+    column: normalizePositiveInteger(details.column),
+    page_url: normalizeText(details.page_url),
+    user_agent: normalizeText(details.user_agent),
+    request_ip: normalizeText(req.headers['x-forwarded-for']) || req.socket?.remoteAddress || null
+  });
+}
+
+function removeFileIfExists(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  fs.unlinkSync(filePath);
+}
+
 function getServerShareUrls() {
   const interfaces = os.networkInterfaces();
   const urls = new Set();
@@ -3949,6 +4472,11 @@ function normalizeBooleanEnv(value, fallback = false) {
 function normalizePositiveIntegerEnv(value, fallback) {
   const parsed = Number.parseInt(String(value ?? '').trim(), 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function normalizePositiveInteger(value) {
+  const parsed = Number.parseInt(String(value ?? '').trim(), 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 function ensureParentDirectoryExists(filePath) {
