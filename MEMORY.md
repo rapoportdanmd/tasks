@@ -1419,3 +1419,7 @@
 ## 2026-04-11 19:17 IDT
 
 - Upgraded the in-app `הדרכה` from a static reading modal into a guided tour: users can now launch a step-by-step interactive walkthrough that jumps to the real controls, opens the needed popup or menu, highlights the live target on screen, and shows a small visual preview card for each major area such as the book menu, workspace buttons, new-task form, task-row actions, filters, and the three side lists.
+
+## 2026-04-11 20:16 IDT
+
+- Tightened backup retention to a short rolling window: backup files older than 48 hours are now pruned automatically on startup and whenever the backup list is refreshed or a new backup is created, so the backup folder stays small and focused on recent recovery points.

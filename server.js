@@ -138,6 +138,8 @@ const SESSION_COOKIE_NAME = 'sefer_session';
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const HEARTBEAT_INTERVAL_MS = 25 * 1000;
 const BACKUP_RETENTION_COUNT = normalizePositiveIntegerEnv(process.env.BACKUP_RETENTION_COUNT, 40);
+const BACKUP_RETENTION_HOURS = normalizePositiveIntegerEnv(process.env.BACKUP_RETENTION_HOURS, 48);
+const BACKUP_RETENTION_MS = BACKUP_RETENTION_HOURS * 60 * 60 * 1000;
 const LOG_RETENTION_COUNT = normalizePositiveIntegerEnv(process.env.LOG_RETENTION_COUNT, 10);
 const LOG_ROTATION_MAX_BYTES = normalizePositiveIntegerEnv(process.env.LOG_ROTATION_MAX_BYTES, 2 * 1024 * 1024);
 const STAFF_ACCOUNT_STATUS_PENDING = 'pending';
@@ -160,6 +162,7 @@ const server = http.createServer(app);
 ensureParentDirectoryExists(DB_PATH);
 ensureDirectoryExists(BACKUP_DIR);
 ensureDirectoryExists(LOG_DIR);
+pruneFilesOlderThan(BACKUP_DIR, (name) => name.endsWith('.db'), BACKUP_RETENTION_MS);
 let db = openPrimaryDatabase();
 const realtimeServer = new WebSocketServer({ noServer: true });
 const realtimeClients = new Map();
@@ -3246,6 +3249,31 @@ function pruneOldFiles(directoryPath, matcher, keepCount) {
   });
 }
 
+function pruneFilesOlderThan(directoryPath, matcher, maxAgeMs) {
+  if (!Number.isFinite(maxAgeMs) || maxAgeMs <= 0) {
+    return;
+  }
+
+  const cutoffTime = Date.now() - maxAgeMs;
+
+  fs.readdirSync(directoryPath, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && matcher(entry.name))
+    .forEach((entry) => {
+      const filePath = path.join(directoryPath, entry.name);
+
+      try {
+        const stats = fs.statSync(filePath);
+        if (stats.mtimeMs < cutoffTime) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (error) {
+        console.error('[file-age-prune-failed]', error, {
+          file_path: filePath
+        });
+      }
+    });
+}
+
 function finalizeStandaloneBackupDatabase(filePath) {
   let backupDb = null;
 
@@ -3266,6 +3294,7 @@ function finalizeStandaloneBackupDatabase(filePath) {
 async function createDatabaseBackup(options = {}) {
   const { reason = 'manual', actorName = '' } = options;
   ensureDirectoryExists(BACKUP_DIR);
+  pruneFilesOlderThan(BACKUP_DIR, (name) => name.endsWith('.db'), BACKUP_RETENTION_MS);
   const timestamp = getTimestampSlug();
   const reasonSegment = sanitizeFilenameSegment(reason, 'manual');
   const targetPath = path.join(BACKUP_DIR, `tasks_${timestamp}_${reasonSegment}.db`);
@@ -3399,6 +3428,7 @@ async function restoreDatabaseFromBackup(backupPath, options = {}) {
 
 function listDatabaseBackups() {
   ensureDirectoryExists(BACKUP_DIR);
+  pruneFilesOlderThan(BACKUP_DIR, (name) => name.endsWith('.db'), BACKUP_RETENTION_MS);
 
   return fs.readdirSync(BACKUP_DIR, { withFileTypes: true })
     .filter((entry) => entry.isFile() && entry.name.endsWith('.db'))
