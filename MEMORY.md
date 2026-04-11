@@ -1428,3 +1428,11 @@
 
 - Refined the new in-app `הדרכה` further by turning the task-buttons and filtering parts into more detailed, topic-specific explanations: the written guide now explains `עדיפות גבוהה`, `העבר לתורנות`, `העבר למחר`, and `העבר למעקבים` separately, and the guided tour now has direct topic shortcuts plus separate steps for date filtering, patient filtering, and category/assignee filtering.
 - Brightened the overall visual theme with a more optimistic but still professional blue-forward palette: lighter sky-blue background washes, bluer glass panels and header, calmer blue-tinted workspace buttons and chips, and cleaner blue-accented form controls so the page feels less gray and more alive without losing readability.
+
+## 2026-04-11 20:33 IDT
+
+- Added a more visible blue treatment specifically to the top hero/banner by strengthening its blue gradients, border, glow, and decorative light washes, so the header feels fresher and less gray without changing the page layout or making it look loud.
+
+## 2026-04-11 20:33 IDT
+
+- Reduced the perceived delay after common clicks by stopping the usual task and list actions from doing a full app-wide refetch every time; task actions now refresh only task data, and each side list now refreshes only its own dataset unless the action truly changes multiple areas.

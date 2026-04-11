@@ -173,13 +173,16 @@
       max-width: 1380px;
       margin: 0 auto;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(244, 249, 255, 0.76)),
-        linear-gradient(135deg, rgba(215, 233, 255, 0.48), rgba(224, 247, 239, 0.24));
+        linear-gradient(180deg, rgba(252, 254, 255, 0.95), rgba(229, 241, 255, 0.88)),
+        linear-gradient(112deg, rgba(138, 183, 255, 0.28) 0%, rgba(183, 221, 255, 0.18) 44%, rgba(224, 247, 255, 0.2) 100%);
       border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(225, 237, 255, 0.98);
       color: var(--text);
       padding: 12px 18px;
-      box-shadow: 0 24px 56px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      box-shadow:
+        0 26px 60px rgba(37, 99, 235, 0.14),
+        0 8px 22px rgba(59, 130, 246, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.86);
       backdrop-filter: blur(18px) saturate(145%);
       display: flex;
       justify-content: space-between;
@@ -211,19 +214,19 @@
     }
 
     .hero::before {
-      width: 220px;
-      height: 220px;
-      top: -128px;
-      left: -58px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.54), transparent 68%);
+      width: 240px;
+      height: 240px;
+      top: -132px;
+      left: -52px;
+      background: radial-gradient(circle, rgba(126, 171, 255, 0.28), rgba(255, 255, 255, 0.18) 42%, transparent 72%);
     }
 
     .hero::after {
-      width: 180px;
-      height: 180px;
-      bottom: -102px;
-      right: -42px;
-      background: radial-gradient(circle, rgba(255, 247, 234, 0.62), transparent 68%);
+      width: 200px;
+      height: 200px;
+      bottom: -108px;
+      right: -34px;
+      background: radial-gradient(circle, rgba(147, 197, 253, 0.2), rgba(255, 255, 255, 0.18) 46%, transparent 72%);
     }
 
     .hero h1 {
@@ -6086,6 +6089,10 @@
     let liveReconnectTimer = null;
     let liveRefreshTimer = null;
     let reloadAllPromise = null;
+    let reloadTasksPromise = null;
+    let reloadInfectedPromise = null;
+    let reloadErPatientsPromise = null;
+    let reloadSurgeryPrepsPromise = null;
     let adminSuggestions = [];
     let systemToolsBackups = [];
     let systemToolsLogs = [];
@@ -9075,6 +9082,111 @@
       renderAssigneeOptions();
       renderTeamMemberList();
       return teamMembers;
+    }
+
+    async function reloadTasksData() {
+      if (reloadTasksPromise) {
+        return reloadTasksPromise;
+      }
+
+      reloadTasksPromise = (async () => {
+        const tasksRes = await fetch('/api/tasks', { cache: 'no-store' });
+        allTasks = await tasksRes.json().catch(() => []);
+
+        if (currentEditingTaskId && !allTasks.some((task) => task.id === currentEditingTaskId)) {
+          currentEditingTaskId = null;
+          resetTaskForm();
+        }
+
+        renderPatientHelpers();
+        renderFilterAssigneeOptions();
+        renderCategoryFilters();
+        renderStatusLegend();
+        renderSummary();
+        renderTasks();
+        syncTaskCommentFieldVisibility();
+      })();
+
+      try {
+        await reloadTasksPromise;
+      } finally {
+        reloadTasksPromise = null;
+      }
+    }
+
+    async function reloadInfectedData() {
+      if (reloadInfectedPromise) {
+        return reloadInfectedPromise;
+      }
+
+      reloadInfectedPromise = (async () => {
+        const infectedRes = await fetch('/api/infected-list', { cache: 'no-store' });
+        infectedEntries = await infectedRes.json().catch(() => []);
+
+        if (currentEditingInfectedEntryId && !infectedEntries.some((entry) => entry.id === currentEditingInfectedEntryId)) {
+          currentEditingInfectedEntryId = null;
+          resetInfectedEntryForm();
+        }
+
+        renderPatientHelpers();
+        renderInfectedList();
+      })();
+
+      try {
+        await reloadInfectedPromise;
+      } finally {
+        reloadInfectedPromise = null;
+      }
+    }
+
+    async function reloadErPatientData() {
+      if (reloadErPatientsPromise) {
+        return reloadErPatientsPromise;
+      }
+
+      reloadErPatientsPromise = (async () => {
+        const erPatientsRes = await fetch('/api/er-patients', { cache: 'no-store' });
+        erPatientEntries = await erPatientsRes.json().catch(() => []);
+
+        if (currentEditingErPatientEntryId && !erPatientEntries.some((entry) => entry.id === currentEditingErPatientEntryId)) {
+          currentEditingErPatientEntryId = null;
+          resetErPatientForm();
+        }
+
+        renderPatientHelpers();
+        renderErPatientList();
+      })();
+
+      try {
+        await reloadErPatientsPromise;
+      } finally {
+        reloadErPatientsPromise = null;
+      }
+    }
+
+    async function reloadSurgeryPrepData() {
+      if (reloadSurgeryPrepsPromise) {
+        return reloadSurgeryPrepsPromise;
+      }
+
+      reloadSurgeryPrepsPromise = (async () => {
+        const surgeryPrepsRes = await fetch('/api/surgery-preps', { cache: 'no-store' });
+        surgeryPrepEntries = await surgeryPrepsRes.json().catch(() => []);
+
+        if (currentEditingSurgeryPrepEntryId && !surgeryPrepEntries.some((entry) => entry.id === currentEditingSurgeryPrepEntryId)) {
+          currentEditingSurgeryPrepEntryId = null;
+          resetSurgeryPrepForm();
+        }
+
+        renderPatientHelpers();
+        renderSurgeryPrepList();
+      })();
+
+      try {
+        await reloadSurgeryPrepsPromise;
+      } finally {
+        reloadSurgeryPrepsPromise = null;
+      }
     }
 
     async function reloadAll() {
@@ -12472,7 +12584,7 @@
 
       resetTaskForm({ preservePatient: patient });
       document.getElementById('task-category-trigger').focus();
-      await reloadAll();
+      await reloadTasksData();
     }
 
     async function updateExistingTask(id) {
@@ -12521,7 +12633,7 @@
       currentEditingTaskId = null;
       closePatientSuggestionMenu('task');
       resetTaskForm();
-      await reloadAll();
+      await reloadTasksData();
     }
 
     function resetTaskForm(options = {}) {
@@ -12610,7 +12722,7 @@
 
       resetInfectedEntryForm();
       syncAllDateDisplays();
-      await reloadAll();
+      await reloadInfectedData();
     }
 
     async function updateInfectedEntry(id) {
@@ -12648,7 +12760,7 @@
 
       currentEditingInfectedEntryId = null;
       resetInfectedEntryForm();
-      await reloadAll();
+      await reloadInfectedData();
     }
 
     function resetInfectedEntryForm() {
@@ -12701,7 +12813,7 @@
       }
 
       resetErPatientForm();
-      await reloadAll();
+      await reloadErPatientData();
     }
 
     async function updateErPatientEntry(id) {
@@ -12734,7 +12846,7 @@
 
       currentEditingErPatientEntryId = null;
       resetErPatientForm();
-      await reloadAll();
+      await reloadErPatientData();
     }
 
     async function toggleErPatientStatus(id) {
@@ -12842,7 +12954,7 @@
         return false;
       }
 
-      await reloadAll();
+      await reloadInfectedData();
       return true;
     }
 
@@ -12894,7 +13006,7 @@
         return false;
       }
 
-      await reloadAll();
+      await reloadErPatientData();
       return true;
     }
 
@@ -12947,7 +13059,7 @@
         return false;
       }
 
-      await reloadAll();
+      await reloadSurgeryPrepData();
       return true;
     }
 
@@ -13019,7 +13131,7 @@
         return;
       }
 
-      await reloadAll();
+      await Promise.all([reloadTasksData(), reloadErPatientData()]);
     }
 
     async function saveSurgeryPrepComment(id) {
@@ -13059,7 +13171,7 @@
       }
 
       resetSurgeryPrepForm();
-      await reloadAll();
+      await reloadSurgeryPrepData();
     }
 
     async function updateSurgeryPrepEntry(id) {
@@ -13088,7 +13200,7 @@
 
       currentEditingSurgeryPrepEntryId = null;
       resetSurgeryPrepForm();
-      await reloadAll();
+      await reloadSurgeryPrepData();
     }
 
     async function toggleSurgeryPrepStatus(id) {
@@ -13130,7 +13242,7 @@
         return;
       }
 
-      await reloadAll();
+      await reloadTasksData();
     }
 
     function getPendingTaskInlineSaveKey(id, field) {
@@ -13231,7 +13343,7 @@
         return;
       }
 
-      await reloadAll();
+      await reloadTasksData();
     }
 
     async function copyTaskToNextDay(id) {
@@ -13243,7 +13355,7 @@
         return;
       }
 
-      await reloadAll();
+      await reloadTasksData();
 
       if (payload.created) {
         alert('המשימה הועתקה ליום הבא.');
@@ -13310,7 +13422,7 @@
       }
 
       await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-      await reloadAll();
+      await reloadTasksData();
     }
 
     async function deleteInfectedEntry(id) {
@@ -13319,7 +13431,7 @@
       }
 
       await fetch(`/api/infected-list/${id}`, { method: 'DELETE' });
-      await reloadAll();
+      await reloadInfectedData();
     }
 
     async function deleteErPatientEntry(id) {
@@ -13328,7 +13440,7 @@
       }
 
       await fetch(`/api/er-patients/${id}`, { method: 'DELETE' });
-      await reloadAll();
+      await reloadErPatientData();
     }
 
     async function deleteSurgeryPrepEntry(id) {
@@ -13337,7 +13449,7 @@
       }
 
       await fetch(`/api/surgery-preps/${id}`, { method: 'DELETE' });
-      await reloadAll();
+      await reloadSurgeryPrepData();
     }
 
     async function deleteAllInfectedEntries() {
@@ -13352,7 +13464,7 @@
       }
 
       resetAllEditorStates();
-      await reloadAll();
+      await reloadInfectedData();
     }
 
     async function deleteAllErPatientEntries() {
@@ -13367,7 +13479,7 @@
       }
 
       resetAllEditorStates();
-      await reloadAll();
+      await reloadErPatientData();
     }
 
     async function deleteAllSurgeryPrepEntries() {
@@ -13382,7 +13494,7 @@
       }
 
       resetAllEditorStates();
-      await reloadAll();
+      await reloadSurgeryPrepData();
     }
 
     async function deletePreviousDayTasks() {
@@ -13400,7 +13512,7 @@
       }
 
       resetAllEditorStates();
-      await reloadAll();
+      await reloadTasksData();
     }
 
     function setPasswordConfirmationStatus(message = '', kind = '') {
