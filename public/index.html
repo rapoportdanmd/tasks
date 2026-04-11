@@ -825,8 +825,53 @@
       background: rgba(255, 255, 255, 0.7);
     }
 
+    .guide-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .guide-section {
+      border: 1px solid rgba(220, 212, 199, 0.88);
+      border-radius: 18px;
+      background: rgba(255, 252, 247, 0.9);
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      display: grid;
+      gap: 8px;
+    }
+
+    .guide-section h3 {
+      font-size: 0.9rem;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .guide-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .guide-list li {
+      color: var(--muted-strong);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .guide-list strong {
+      color: var(--ink);
+    }
+
     @media (max-width: 920px) {
       .system-tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -4803,6 +4848,67 @@
       <div class="modal-status" id="bookmark-status-text"></div>
     </div>
   </div>
+  <div class="modal-overlay" id="guide-modal" hidden>
+    <div class="modal-card modal-card-wide">
+      <h2>הדרכה קצרה</h2>
+      <p>מדריך קצר לשימוש היומיומי במערכת. המטרה כאן היא לעזור להבין מהר מה כל אזור עושה, בלי להעמיס יותר מדי.</p>
+      <div class="guide-grid">
+        <section class="guide-section">
+          <h3>משימות</h3>
+          <ul class="guide-list">
+            <li><strong>משימה חדשה</strong>: פותח חלון ליצירת משימה. בוחרים מטופל, סוג, פירוט, תאריך ושעה אם צריך.</li>
+            <li><strong>עדיפות גבוהה</strong>: מסמנת משימה כדחופה כדי שתבלוט יותר לעין.</li>
+            <li><strong>העבר לתורנות</strong>: מעביר את המשימה לקבוצת <strong>תורנות</strong>, כלומר למשימות של המשמרת.</li>
+            <li><strong>העבר למחר</strong>: יוצר משימה מקושרת ליום הבא. היא נשארת מקושרת עד שלוחצים שוב כדי לכבות.</li>
+          </ul>
+        </section>
+        <section class="guide-section">
+          <h3>סינון ותצוגה</h3>
+          <ul class="guide-list">
+            <li><strong>תאריך</strong>: בוחר איזה יום מוצג כרגע. בתוך לוח השנה אפשר גם לבחור <strong>כל התאריכים</strong>.</li>
+            <li><strong>מטופל</strong>: מסנן רק את המשימות של מטופל מסוים, גם אם יש לו משימות בימים אחרים.</li>
+            <li><strong>סוגי משימות</strong>: מסנן לפי קטגוריה כמו מעבדות, מעקבים, הדמיות וכדומה.</li>
+            <li><strong>שיוך</strong>: מסנן לפי איש צוות משויך.</li>
+          </ul>
+        </section>
+        <section class="guide-section">
+          <h3>הרשימות הצדדיות</h3>
+          <ul class="guide-list">
+            <li><strong>רשימת מזוהמים</strong>: עוקבת אחרי מטופלים עם תרביות, חיידקים, אנטיביוטיקה ושאלות פתוחות.</li>
+            <li><strong>מיונים/יעוצים</strong>: רשימת מטופלים שנמצאים במיון או ביעוץ. משם אפשר גם להעביר ל<strong>קבלות</strong>.</li>
+            <li><strong>רשימת הכנות ניתוחים</strong>: עוקבת אחרי הכנה לניתוחים ומוכנות.</li>
+            <li><strong>מאגר מטופלים</strong>: שמות שמגיעים מקובץ האקסל של אותו יום ומשמשים כהשלמה מהירה.</li>
+          </ul>
+        </section>
+        <section class="guide-section">
+          <h3>חלונית החשבון והספר</h3>
+          <ul class="guide-list">
+            <li><strong>חשבון</strong>: התחברות, יצירת חשבון, מעבר למשתמש אחר או למנהל.</li>
+            <li><strong>שמור סימנייה</strong>: עוזר לשמור את האתר כסימנייה בדפדפן.</li>
+            <li><strong>שלח הצעה</strong>: שולח רעיון או בקשת שיפור מתוך המערכת.</li>
+            <li><strong>גיבוי ושחזור</strong>: למנהל בלבד. שם אפשר ליצור גיבוי, לשחזר מגיבוי ולהוריד לוגים של תקלות.</li>
+          </ul>
+        </section>
+        <section class="guide-section">
+          <h3>כפתורים ירוקים על הסרגל</h3>
+          <ul class="guide-list">
+            <li>הכפתורים הירוקים למעלה פותחים חלונות עבודה כמו <strong>משימה חדשה</strong> או אחת משלוש הרשימות.</li>
+            <li>אם סוגרים חלון כזה ופותחים אותו שוב, הוא נפתח נקי בלי הבחירות הקודמות.</li>
+          </ul>
+        </section>
+        <section class="guide-section">
+          <h3>חשוב לזכור</h3>
+          <ul class="guide-list">
+            <li>פעולות כבדות כמו <strong>מחק משימות מוצגות</strong> ו<strong>איפוס מלא</strong> דורשות עכשיו הזנת סיסמה מחדש.</li>
+            <li>בזמן תורנות יש כללים מיוחדים ליום ולתאריך ברירת המחדל, ולכן לפעמים תראה <strong>Night-Shift</strong> במקום תאריך רגיל.</li>
+          </ul>
+        </section>
+      </div>
+      <div class="auth-actions">
+        <button class="btn secondary" type="button" onclick="closeGuideModal()">סגור</button>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="admin-suggestions-modal" hidden>
     <div class="modal-card modal-card-wide">
       <h2>פידבקים שהתקבלו</h2>
@@ -4901,6 +5007,9 @@
           <div class="hero-menu-divider"></div>
           <button class="hero-menu-item" type="button" role="menuitem" onclick="bookmarkCurrentPage()">
             <span class="hero-menu-item-main">שמור סימנייה</span>
+          </button>
+          <button class="hero-menu-item" type="button" role="menuitem" onclick="openGuideModal()">
+            <span class="hero-menu-item-main">הדרכה</span>
           </button>
           <button class="hero-menu-item" type="button" role="menuitem" id="hero-menu-account" onclick="openAccountAccessOverlay()">
             <span class="hero-menu-item-main">חשבון</span>
@@ -6226,6 +6335,7 @@
       closeLiveSync();
       closeHeroMenu();
       closeBookmarkModal();
+      closeGuideModal();
       closeSuggestionModal();
       closeAdminSuggestionsModal();
       closeSystemToolsModal();
@@ -6511,6 +6621,15 @@
       const status = document.getElementById('bookmark-status-text');
       status.textContent = '';
       status.dataset.kind = '';
+    }
+
+    function openGuideModal() {
+      closeHeroMenu();
+      document.getElementById('guide-modal').hidden = false;
+    }
+
+    function closeGuideModal() {
+      document.getElementById('guide-modal').hidden = true;
     }
 
     function bookmarkCurrentPage() {
@@ -12988,6 +13107,7 @@
 
         closeHeroMenu();
         closeBookmarkModal();
+        closeGuideModal();
         closeSuggestionModal();
         closeAdminSuggestionsModal();
         closeSystemToolsModal();
@@ -13008,6 +13128,11 @@
       document.getElementById('bookmark-modal').addEventListener('click', (event) => {
         if (event.target.id === 'bookmark-modal') {
           closeBookmarkModal();
+        }
+      });
+      document.getElementById('guide-modal').addEventListener('click', (event) => {
+        if (event.target.id === 'guide-modal') {
+          closeGuideModal();
         }
       });
       document.getElementById('admin-suggestions-modal').addEventListener('click', (event) => {

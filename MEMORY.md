@@ -1411,3 +1411,7 @@
 ## 2026-04-11 14:06 IDT
 
 - Added admin-only backup/restore tooling and real error logging: the app can now create manual SQLite backups, auto-create a safety backup before restore or full reset, restore from an existing backup without restarting the server, and download both server-side and browser-side error logs from a new `גיבוי ושחזור` modal in the book menu. Also removed the extra admin subtitle text from the book menu to keep that dropdown cleaner.
+
+## 2026-04-11 14:09 IDT
+
+- Added a new `הדרכה` item to the book menu that opens a short in-app user guide modal covering the main daily features: creating tasks, high priority, moving tasks to `תורנות` or tomorrow, filtering, the side lists, popup workspace buttons, and the main book-menu tools.
