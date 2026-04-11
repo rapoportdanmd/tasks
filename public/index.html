@@ -50,13 +50,13 @@
     }
 
     :root {
-      --bg: #eaf0f6;
-      --bg-deep: #dfe7f1;
-      --panel: rgba(255, 255, 255, 0.72);
-      --panel-strong: rgba(255, 255, 255, 0.9);
-      --panel-line: rgba(255, 255, 255, 0.88);
-      --border: rgba(208, 218, 230, 0.92);
-      --border-strong: rgba(145, 160, 183, 0.32);
+      --bg: #eef6ff;
+      --bg-deep: #dceaf8;
+      --panel: rgba(255, 255, 255, 0.76);
+      --panel-strong: rgba(255, 255, 255, 0.92);
+      --panel-line: rgba(255, 255, 255, 0.92);
+      --border: rgba(198, 214, 234, 0.92);
+      --border-strong: rgba(125, 149, 183, 0.34);
       --text: #18212f;
       --muted: #667085;
       --muted-strong: #475467;
@@ -139,11 +139,12 @@
       font-synthesis-style: none;
       position: relative;
       background:
-        radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.9), transparent 22%),
-        radial-gradient(circle at 84% 78%, rgba(255, 245, 235, 0.84), transparent 24%),
-        radial-gradient(circle at top right, rgba(111, 168, 220, 0.2), transparent 30%),
-        radial-gradient(circle at top left, rgba(173, 146, 214, 0.14), transparent 24%),
-        linear-gradient(180deg, #edf3f8 0%, #e8eef6 34%, #f3ede4 100%);
+        radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.96), transparent 22%),
+        radial-gradient(circle at 85% 16%, rgba(191, 219, 254, 0.42), transparent 24%),
+        radial-gradient(circle at 82% 76%, rgba(220, 252, 231, 0.34), transparent 22%),
+        radial-gradient(circle at 18% 84%, rgba(254, 240, 138, 0.18), transparent 20%),
+        radial-gradient(circle at top left, rgba(147, 197, 253, 0.18), transparent 26%),
+        linear-gradient(180deg, #f2f8ff 0%, #eaf3ff 36%, #f6fbff 100%);
       color: var(--text);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
@@ -172,13 +173,13 @@
       max-width: 1380px;
       margin: 0 auto;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(244, 248, 252, 0.68)),
-        linear-gradient(135deg, rgba(218, 240, 233, 0.38), rgba(229, 236, 250, 0.18));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(244, 249, 255, 0.76)),
+        linear-gradient(135deg, rgba(215, 233, 255, 0.48), rgba(224, 247, 239, 0.24));
       border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       color: var(--text);
       padding: 12px 18px;
-      box-shadow: 0 24px 56px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+      box-shadow: 0 24px 56px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82);
       backdrop-filter: blur(18px) saturate(145%);
       display: flex;
       justify-content: space-between;
@@ -258,28 +259,28 @@
     .hero-workspace-btn {
       min-height: 34px;
       padding: 0 13px;
-      border: 1px solid rgba(205, 216, 229, 0.94);
+      border: 1px solid rgba(193, 210, 233, 0.94);
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.68);
-      color: #334155;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(237, 245, 255, 0.82));
+      color: #31527f;
       font-size: 0.78rem;
       font-weight: 800;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 18px rgba(59, 130, 246, 0.08);
       backdrop-filter: blur(12px);
     }
 
     .hero-workspace-btn:hover,
     .hero-workspace-btn:focus-visible {
-      background: rgba(255, 255, 255, 0.82);
-      border-color: rgba(170, 185, 202, 0.9);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(226, 239, 255, 0.9));
+      border-color: rgba(125, 160, 221, 0.9);
       outline: none;
     }
 
     .hero-workspace-btn.is-active {
-      background: rgba(221, 247, 236, 0.96);
-      color: var(--teal-strong);
-      border-color: rgba(126, 196, 174, 0.86);
-      box-shadow: 0 12px 24px rgba(10, 18, 28, 0.1);
+      background: linear-gradient(180deg, rgba(220, 238, 255, 0.98), rgba(199, 224, 255, 0.94));
+      color: #1d4ed8;
+      border-color: rgba(96, 165, 250, 0.72);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.14);
     }
 
     .hero-status-chip {
@@ -289,9 +290,9 @@
       min-height: 28px;
       padding: 0 11px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(205, 216, 229, 0.94);
-      color: #334155;
+      background: rgba(244, 249, 255, 0.82);
+      border: 1px solid rgba(193, 210, 233, 0.94);
+      color: #31527f;
       font-size: 0.74rem;
       font-weight: 700;
       backdrop-filter: blur(12px);
@@ -883,6 +884,36 @@
       margin: 0;
     }
 
+    .guide-topic-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    .guide-topic-btn {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(189, 205, 225, 0.92);
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--muted-strong);
+      font-size: 0.77rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease, color 0.14s ease;
+    }
+
+    .guide-topic-btn:hover,
+    .guide-topic-btn:focus-visible {
+      background: rgba(232, 241, 255, 0.98);
+      border-color: rgba(127, 164, 255, 0.48);
+      color: #1d4ed8;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
     .guide-tour-shell {
       position: fixed;
       inset-inline-start: 24px;
@@ -1061,11 +1092,11 @@
       --panel-accent: rgba(15, 118, 110, 0.8);
       position: relative;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(247, 250, 253, 0.64)),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.48), rgba(227, 235, 245, 0.16));
-      border: 1px solid rgba(255, 255, 255, 0.88);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(242, 248, 255, 0.78)),
+        linear-gradient(135deg, rgba(222, 237, 255, 0.3), rgba(224, 247, 239, 0.12));
+      border: 1px solid rgba(255, 255, 255, 0.9);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.84);
       backdrop-filter: blur(18px) saturate(145%);
       z-index: 1;
       overflow: hidden;
@@ -1316,9 +1347,9 @@
       gap: 6px;
       padding: 4px;
       border-radius: 999px;
-      background: rgba(255, 252, 247, 0.96);
-      border: 1px solid rgba(221, 213, 201, 0.96);
-      box-shadow: 0 10px 20px rgba(31, 41, 55, 0.12);
+      background: rgba(248, 251, 255, 0.96);
+      border: 1px solid rgba(198, 214, 234, 0.94);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.12);
       z-index: 30;
     }
 
@@ -1327,7 +1358,7 @@
     }
 
     body.layout-mode .layout-item {
-      outline: 2px dashed rgba(15, 118, 110, 0.26);
+      outline: 2px dashed rgba(59, 130, 246, 0.28);
       outline-offset: 4px;
     }
 
@@ -1337,8 +1368,8 @@
       padding: 0 8px;
       border: none;
       border-radius: 999px;
-      background: rgba(15, 118, 110, 0.12);
-      color: var(--teal);
+      background: rgba(59, 130, 246, 0.12);
+      color: #1d4ed8;
       cursor: pointer;
       font-size: 0.76rem;
       font-weight: 700;
@@ -1363,7 +1394,7 @@
 
     .layout-item.drop-target,
     .layout-container.drop-target {
-      outline: 2px solid rgba(15, 118, 110, 0.62);
+      outline: 2px solid rgba(59, 130, 246, 0.62);
       outline-offset: 4px;
     }
 
@@ -1576,7 +1607,7 @@
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--border-strong);
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(248, 251, 255, 0.92);
       border-radius: 14px;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
       padding: 8px 34px 8px 10px;
@@ -1887,7 +1918,7 @@
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--border-strong);
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(248, 251, 255, 0.92);
       border-radius: 14px;
       padding: 8px 10px;
       color: var(--text);
@@ -1923,18 +1954,18 @@
 
     .date-control:focus-within .date-display,
     .time-control:focus-within .time-display {
-      border-color: var(--teal);
+      border-color: var(--dropdown-accent);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        0 0 0 4px rgba(15, 118, 110, 0.1);
+        0 0 0 4px rgba(59, 130, 246, 0.1);
     }
 
     .date-control[aria-expanded="true"] .date-display,
     .time-control[aria-expanded="true"] .time-display {
-      border-color: var(--teal);
+      border-color: var(--dropdown-accent);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        0 0 0 4px rgba(15, 118, 110, 0.1);
+        0 0 0 4px rgba(59, 130, 246, 0.1);
     }
 
     .filter-date-popover,
@@ -2509,21 +2540,21 @@
     }
 
     .btn {
-      border: 1px solid rgba(9, 104, 96, 0.22);
-      background: linear-gradient(180deg, #1c8f84, #13756d);
+      border: 1px solid rgba(37, 99, 235, 0.22);
+      background: linear-gradient(180deg, #3b82f6, #2563eb);
       color: white;
       padding: 8px 13px;
       font-weight: 800;
       font-size: 0.82rem;
       white-space: nowrap;
       min-height: 34px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 20px rgba(18, 117, 108, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 8px 20px rgba(37, 99, 235, 0.18);
     }
 
     .btn.secondary {
-      background: rgba(255, 255, 255, 0.76);
-      border-color: rgba(205, 216, 229, 0.92);
-      color: #334155;
+      background: rgba(248, 251, 255, 0.84);
+      border-color: rgba(193, 210, 233, 0.92);
+      color: #31527f;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
     }
 
@@ -2917,18 +2948,18 @@
 
     .chip {
       padding: 6px 11px;
-      background: rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(205, 216, 229, 0.9);
-      color: #475569;
+      background: rgba(248, 251, 255, 0.84);
+      border: 1px solid rgba(193, 210, 233, 0.9);
+      color: #48627f;
       font-size: 0.82rem;
       font-weight: 700;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
     }
 
     .chip.active {
-      background: var(--teal-soft);
-      color: var(--teal);
-      border-color: rgba(15, 118, 110, 0.24);
+      background: rgba(219, 234, 254, 0.96);
+      color: #1d4ed8;
+      border-color: rgba(96, 165, 250, 0.34);
     }
 
     .chip.is-empty:not(.active) {
@@ -2951,8 +2982,8 @@
       margin-top: 2px;
       padding: 8px 10px;
       border-radius: 15px;
-      border: 1px solid rgba(205, 216, 229, 0.74);
-      background: rgba(255, 255, 255, 0.54);
+      border: 1px solid rgba(193, 210, 233, 0.8);
+      background: rgba(245, 249, 255, 0.72);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
       color: var(--muted);
       font-size: 0.8rem;
@@ -2968,8 +2999,8 @@
     .legend-total {
       padding: 6px 11px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid rgba(205, 216, 229, 0.88);
+      background: rgba(248, 251, 255, 0.9);
+      border: 1px solid rgba(193, 210, 233, 0.88);
       font-size: 0.82rem;
       font-weight: 800;
       color: var(--text);
@@ -3078,8 +3109,8 @@
     .summary-pill {
       padding: 6px 11px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(211, 203, 190, 0.9);
+      background: rgba(244, 249, 255, 0.92);
+      border: 1px solid rgba(193, 210, 233, 0.9);
       font-size: 0.82rem;
       font-weight: 800;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
@@ -4996,18 +5027,19 @@
           <h3>משימות</h3>
           <ul class="guide-list">
             <li><strong>משימה חדשה</strong>: פותח חלון ליצירת משימה. בוחרים מטופל, סוג, פירוט, תאריך ושעה אם צריך.</li>
-            <li><strong>עדיפות גבוהה</strong>: מסמנת משימה כדחופה כדי שתבלוט יותר לעין.</li>
-            <li><strong>העבר לתורנות</strong>: מעביר את המשימה לקבוצת <strong>תורנות</strong>, כלומר למשימות של המשמרת.</li>
-            <li><strong>העבר למחר</strong>: יוצר משימה מקושרת ליום הבא. היא נשארת מקושרת עד שלוחצים שוב כדי לכבות.</li>
+            <li><strong>עדיפות גבוהה</strong>: מסמנת משימה כדחופה יותר. היא נשארת באותה קטגוריה, אבל בולטת יותר לעין בתוך הרשימה.</li>
+            <li><strong>העבר לתורנות</strong>: מעביר את המשימה לקבוצת <strong>תורנות</strong>. משם היא תופיע תחת קופסת התורנות לפי כללי המשמרת.</li>
+            <li><strong>העבר למחר</strong>: יוצר משימה מקושרת ליום הבא. הקישור נשאר פעיל עד שלוחצים שוב, ואם משנים היום בין <strong>מעבדות</strong> ל<strong>מעקבים</strong> גם המשימה של מחר מתעדכנת בהתאם.</li>
+            <li><strong>העבר למעקבים</strong>: מופיע כשמשימת <strong>מעבדות</strong> נמצאת בסטטוס <strong>בביצוע</strong>. הוא מעביר אותה ל<strong>מעקבים</strong>, ומשם אפשר גם להחזיר אותה שוב ל<strong>מעבדות</strong>.</li>
           </ul>
         </section>
         <section class="guide-section">
           <h3>סינון ותצוגה</h3>
           <ul class="guide-list">
-            <li><strong>תאריך</strong>: בוחר איזה יום מוצג כרגע. בתוך לוח השנה אפשר גם לבחור <strong>כל התאריכים</strong>.</li>
-            <li><strong>מטופל</strong>: מסנן רק את המשימות של מטופל מסוים, גם אם יש לו משימות בימים אחרים.</li>
-            <li><strong>סוגי משימות</strong>: מסנן לפי קטגוריה כמו מעבדות, מעקבים, הדמיות וכדומה.</li>
-            <li><strong>שיוך</strong>: מסנן לפי איש צוות משויך.</li>
+            <li><strong>תאריך</strong>: בוחר איזה יום מוצג כרגע. בתוך לוח השנה אפשר לבחור גם <strong>כל התאריכים</strong>, ובזמן חלון תורנות לפעמים יופיע <strong>Night-Shift</strong>.</li>
+            <li><strong>מטופל</strong>: מסנן משימות של מטופל מסוים. ברשימת ההשלמה יופיעו גם מטופלים שיש להם משימות בימים אחרים, לא רק במאגר של היום.</li>
+            <li><strong>סוגי משימות</strong>: מסנן לפי קטגוריה כמו מעבדות, מעקבים, הדמיות וכדומה. מתאים במיוחד כשיש הרבה משימות פתוחות במקביל.</li>
+            <li><strong>שיוך</strong>: מסנן לפי איש צוות משויך, כולל אפשרות לראות רק משימות ללא שיוך.</li>
           </ul>
         </section>
         <section class="guide-section">
@@ -5042,6 +5074,13 @@
             <li>בזמן תורנות יש כללים מיוחדים ליום ולתאריך ברירת המחדל, ולכן לפעמים תראה <strong>Night-Shift</strong> במקום תאריך רגיל.</li>
           </ul>
         </section>
+      </div>
+      <div class="guide-topic-strip">
+        <button class="guide-topic-btn" type="button" onclick="startGuideTourFrom(0)">הספר</button>
+        <button class="guide-topic-btn" type="button" onclick="startGuideTourFrom(2)">משימה חדשה</button>
+        <button class="guide-topic-btn" type="button" onclick="startGuideTourFrom(4)">כפתורי משימה</button>
+        <button class="guide-topic-btn" type="button" onclick="startGuideTourFrom(8)">סינון</button>
+        <button class="guide-topic-btn" type="button" onclick="startGuideTourFrom(11)">רשימות</button>
       </div>
       <div class="guide-actions">
         <p class="guide-actions-note">אם נוח יותר ללמוד דרך המסך עצמו, אפשר לפתוח גם סיור מודרך שמדגיש את הכפתורים והאזורים החשובים ומראה דוגמה קטנה בכל שלב.</p>
@@ -6864,6 +6903,62 @@
               <rect x="32" y="134" width="118" height="10" rx="5" fill="#e6edf7"/>
             </svg>
           `;
+        case 'priority':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7fbff"/>
+              <rect x="28" y="26" width="264" height="128" rx="24" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <rect x="48" y="48" width="92" height="12" rx="6" fill="#dbeafe"/>
+              <rect x="48" y="70" width="144" height="10" rx="5" fill="#e6edf7"/>
+              <circle cx="252" cy="90" r="30" fill="#fee2e2" stroke="#f87171" stroke-width="4"/>
+              <path d="M252 70v30" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+              <circle cx="252" cy="112" r="4.5" fill="#dc2626"/>
+            </svg>
+          `;
+        case 'night-shift':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7f7ff"/>
+              <rect x="24" y="28" width="122" height="118" rx="22" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <rect x="174" y="28" width="122" height="118" rx="22" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"/>
+              <rect x="42" y="48" width="72" height="10" rx="5" fill="#dbeafe"/>
+              <rect x="192" y="48" width="72" height="10" rx="5" fill="#ddd6fe"/>
+              <path d="M122 88h42" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+              <path d="M152 76l12 12-12 12" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M234 78a22 22 0 1 0 0 44a18 18 0 1 1 0-44z" fill="#8b5cf6"/>
+            </svg>
+          `;
+        case 'next-day':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7fbff"/>
+              <rect x="24" y="28" width="118" height="118" rx="22" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <rect x="178" y="28" width="118" height="118" rx="22" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <rect x="42" y="50" width="66" height="10" rx="5" fill="#dbeafe"/>
+              <rect x="196" y="50" width="66" height="10" rx="5" fill="#dbeafe"/>
+              <rect x="42" y="72" width="82" height="10" rx="5" fill="#e6edf7"/>
+              <rect x="196" y="72" width="82" height="10" rx="5" fill="#e6edf7"/>
+              <rect x="52" y="106" width="62" height="24" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="206" y="106" width="62" height="24" rx="12" fill="#dcfce7" stroke="#86efac" stroke-width="2"/>
+              <path d="M134 88h42" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+              <path d="M164 76l12 12-12 12" stroke="#60a5fa" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `;
+        case 'followup':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f7fbff"/>
+              <rect x="24" y="28" width="118" height="118" rx="22" fill="#ffffff" stroke="#d7e2f0" stroke-width="2"/>
+              <rect x="178" y="28" width="118" height="118" rx="22" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+              <rect x="44" y="50" width="64" height="10" rx="5" fill="#bfdbfe"/>
+              <rect x="198" y="50" width="64" height="10" rx="5" fill="#fdba74"/>
+              <rect x="44" y="72" width="82" height="10" rx="5" fill="#e6edf7"/>
+              <rect x="198" y="72" width="82" height="10" rx="5" fill="#fed7aa"/>
+              <path d="M136 88h42" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+              <path d="M166 76l12 12-12 12" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="198" y="106" width="64" height="24" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+            </svg>
+          `;
         case 'filters':
           return `
             <svg viewBox="0 0 320 180" aria-hidden="true">
@@ -6875,6 +6970,34 @@
               <rect x="34" y="84" width="116" height="34" rx="15" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
               <rect x="162" y="84" width="124" height="34" rx="15" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
               <rect x="34" y="132" width="252" height="12" rx="6" fill="#dbeafe"/>
+            </svg>
+          `;
+        case 'filter-patient':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f4f8ff"/>
+              <rect x="24" y="28" width="272" height="124" rx="24" fill="#ffffff" stroke="#d9e4f5" stroke-width="2"/>
+              <rect x="42" y="46" width="144" height="12" rx="6" fill="#dbeafe"/>
+              <rect x="42" y="72" width="236" height="34" rx="17" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <circle cx="64" cy="89" r="8" fill="none" stroke="#60a5fa" stroke-width="3"/>
+              <path d="M70 95l8 8" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+              <rect x="92" y="83" width="92" height="10" rx="5" fill="#c7d2fe"/>
+              <rect x="42" y="116" width="110" height="10" rx="5" fill="#e5edff"/>
+              <rect x="42" y="132" width="94" height="10" rx="5" fill="#e5edff"/>
+            </svg>
+          `;
+        case 'filter-category':
+          return `
+            <svg viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" rx="28" fill="#f4f8ff"/>
+              <rect x="20" y="24" width="280" height="132" rx="24" fill="#ffffff" stroke="#d9e4f5" stroke-width="2"/>
+              <rect x="36" y="44" width="78" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+              <rect x="122" y="44" width="78" height="28" rx="14" fill="#ffffff" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="208" y="44" width="78" height="28" rx="14" fill="#ffffff" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="36" y="88" width="98" height="34" rx="16" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <path d="M116 103l7 7 7-7" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="148" y="88" width="138" height="34" rx="16" fill="#f8fafc" stroke="#d8e4f2" stroke-width="2"/>
+              <rect x="36" y="132" width="250" height="10" rx="5" fill="#e5edff"/>
             </svg>
           `;
         case 'lists':
@@ -6957,32 +7080,92 @@
           target: () => document.querySelector('[data-layout-id="new-task-form-block"]')
         },
         {
-          title: 'כפתורי הפעולה בתוך המשימות',
-          body: 'בתוך שורת משימה נמצאים הכפתורים השוטפים כמו עדיפות גבוהה, העברה לתורנות והעברה למחר. הם עובדים מתוך תיבת המשימות עצמה.',
-          hint: 'הסיור ידגיש את אזור המשימות הראשי, והאיור מראה איך שורת משימה טיפוסית נראית.',
-          preview: getGuideTourPreviewMarkup('task-actions'),
+          title: 'עדיפות גבוהה',
+          body: 'כפתור הסימן קריאה מסמן שמשימה דחופה יותר מהרגיל. הוא לא משנה את הקטגוריה של המשימה, אלא רק מדגיש אותה כדי שלא תתפספס.',
+          hint: 'אם יש כרגע משימות על המסך, הכפתור עצמו יודגש. אם אין, יודגש אזור המשימות שבו הוא מופיע בדרך כלל.',
+          preview: getGuideTourPreviewMarkup('priority'),
           prepare() {
             closeHeroMenu();
             closeWorkspacePopup();
             ensureGuideTourPanelOpen('tasks-panel');
           },
-          target: () => document.querySelector('[data-layout-id="tasks-panel"]')
+          target: () => document.querySelector('.priority-btn') || document.querySelector('[data-layout-id="tasks-panel"]')
         },
         {
-          title: 'סינון ותצוגה',
-          body: 'כאן מסננים לפי תאריך, מטופל, סוג משימה ושיוך. אם מחפשים מטופל, אפשר לראות גם משימות מימים אחרים לפי הצורך.',
-          hint: 'הסיור יפתח את פנל הסינון אם צריך וידגיש אותו.',
+          title: 'העבר לתורנות',
+          body: 'כפתור הירח מעביר משימה לקופסת התורנות. אם לוחצים שוב, הוא מחזיר אותה למשימות הרגילות. זה מתאים למשימות שצריכות לעבור עם המשמרת.',
+          hint: 'הסיור יחפש את כפתור הירח בתוך שורת משימה, ואם אין כרגע שורה מתאימה הוא ידגיש את קופסת המשימות עצמה.',
+          preview: getGuideTourPreviewMarkup('night-shift'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('tasks-panel');
+          },
+          target: () => document.querySelector('.night-shift-btn') || document.querySelector('[data-layout-id="tasks-panel"]')
+        },
+        {
+          title: 'העבר למחר',
+          body: 'הכפתור הזה יוצר או שומר משימה מקושרת ליום הבא. הקישור נשאר פעיל עד שלוחצים שוב, והמשימה של מחר לא מקבלת אוטומטית זמן, שיוך או עדיפות גבוהה מהיום.',
+          hint: 'אם יש שורת משימה מתאימה, יודגש הכפתור שלה. אחרת יודגש אזור המשימות שבו משתמשים בו.',
+          preview: getGuideTourPreviewMarkup('next-day'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('tasks-panel');
+          },
+          target: () => document.querySelector('.next-day-copy-btn') || document.querySelector('[data-layout-id="tasks-panel"]')
+        },
+        {
+          title: 'העבר למעקבים',
+          body: 'הכפתור הזה מופיע במשימות מעבדה שנמצאות בסטטוס בביצוע. הוא מעביר אותן לקטגוריית מעקבים, ומשם אותו כפתור יכול להחזיר אותן שוב למעבדות.',
+          hint: 'הסיור יחפש כפתור החלפה אמיתי בתוך שורת משימה. אם אין כרגע כזה, הוא ידגיש את קופסת המשימות ויראה את ההמחשה בתמונה.',
+          preview: getGuideTourPreviewMarkup('followup'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('tasks-panel');
+          },
+          target: () => document.querySelector('.category-swap-btn') || document.querySelector('[data-layout-id="tasks-panel"]')
+        },
+        {
+          title: 'סינון לפי תאריך',
+          body: 'כאן בוחרים איזה יום מוצג כרגע. בתוך לוח השנה אפשר לעבור בין חודשים, לבחור יום אחר, או לעבור ל-כל התאריכים אם רוצים לראות תמונה רחבה יותר.',
+          hint: 'הסיור ידגיש את בחירת התאריך עצמה, כי משם מתחילים רוב הסינונים.',
           preview: getGuideTourPreviewMarkup('filters'),
           prepare() {
             closeHeroMenu();
             closeWorkspacePopup();
             ensureGuideTourPanelOpen('filters-panel');
           },
-          target: () => document.querySelector('[data-layout-id="filters-panel"]')
+          target: () => document.getElementById('filter-date-control')
+        },
+        {
+          title: 'סינון לפי מטופל',
+          body: 'השדה הזה מאפשר למצוא רק את המשימות של מטופל מסוים. ברשימת ההשלמה יופיעו גם מטופלים שיש להם משימות בימים אחרים, לא רק מי שנמצא במאגר של היום.',
+          hint: 'הסיור ידגיש את שדה המטופל של הסינון, כי הוא אחד הכלים הכי שימושיים כשמחפשים היסטוריה של מטופל.',
+          preview: getGuideTourPreviewMarkup('filter-patient'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('filters-panel');
+          },
+          target: () => document.getElementById('filter-patient')?.closest('.field')
+        },
+        {
+          title: 'סינון לפי סוג ושיוך',
+          body: 'מתחת לאותו אזור אפשר לצמצם גם לפי קטגוריית משימה וגם לפי איש צוות משויך. זה טוב במיוחד כשיש הרבה משימות פתוחות ורוצים להתמקד רק בסוג מסוים או במטלות של אדם מסוים.',
+          hint: 'הסיור ידגיש את אזור סוגי המשימות, ובתוכו נמצאים גם שבבי הקטגוריות וגם בחירת השיוך.',
+          preview: getGuideTourPreviewMarkup('filter-category'),
+          prepare() {
+            closeHeroMenu();
+            closeWorkspacePopup();
+            ensureGuideTourPanelOpen('filters-panel');
+          },
+          target: () => document.getElementById('category-filters')?.closest('.field') || document.getElementById('filter-assignee')?.closest('.field') || document.querySelector('[data-layout-id="filters-panel"]')
         },
         {
           title: 'שלוש הרשימות הצדדיות',
-          body: 'מזוהמים, מיונים/יעוצים והכנות ניתוחים נפתחו עכשיו מכפתורים משלהם. כל אחת נועדה לעבודה מהירה וממוקדת מסוג אחר.',
+          body: 'מזוהמים, מיונים/יעוצים והכנות ניתוחים נפתחו עכשיו מכפתורים משלהם. כל אחת נועדה לעבודה מהירה וממוקדת מסוג אחר, בלי לערבב אותה ישירות עם תיבת המשימות הראשית.',
           hint: 'הסיור יחזיר אותך לשורת הכפתורים וידגיש את אזור הרשימות.',
           preview: getGuideTourPreviewMarkup('lists'),
           prepare() {
@@ -7086,12 +7269,16 @@
       }, 0);
     }
 
-    function startGuideTour() {
+    function startGuideTour(startIndex = 0) {
       guideTourCollapsedPanelsSnapshot = { ...collapsedPanels };
       guideTourActive = true;
       closeGuideModal();
       document.getElementById('guide-tour-shell').hidden = false;
-      showGuideTourStep(0);
+      showGuideTourStep(startIndex);
+    }
+
+    function startGuideTourFrom(index) {
+      startGuideTour(index);
     }
 
     function advanceGuideTour(direction) {

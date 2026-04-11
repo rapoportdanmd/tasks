@@ -1423,3 +1423,8 @@
 ## 2026-04-11 20:16 IDT
 
 - Tightened backup retention to a short rolling window: backup files older than 48 hours are now pruned automatically on startup and whenever the backup list is refreshed or a new backup is created, so the backup folder stays small and focused on recent recovery points.
+
+## 2026-04-11 20:21 IDT
+
+- Refined the new in-app `הדרכה` further by turning the task-buttons and filtering parts into more detailed, topic-specific explanations: the written guide now explains `עדיפות גבוהה`, `העבר לתורנות`, `העבר למחר`, and `העבר למעקבים` separately, and the guided tour now has direct topic shortcuts plus separate steps for date filtering, patient filtering, and category/assignee filtering.
+- Brightened the overall visual theme with a more optimistic but still professional blue-forward palette: lighter sky-blue background washes, bluer glass panels and header, calmer blue-tinted workspace buttons and chips, and cleaner blue-accented form controls so the page feels less gray and more alive without losing readability.
