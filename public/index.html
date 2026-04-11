@@ -645,7 +645,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      z-index: 44;
+      z-index: 90;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -689,6 +689,10 @@
 
     .modal-status[data-kind="success"] {
       color: #0f766e;
+    }
+
+    .modal-status[data-kind="info"] {
+      color: var(--muted-strong);
     }
 
     .bookmark-shortcut {
@@ -4716,6 +4720,21 @@
       </div>
     </div>
   </div>
+  <div class="modal-overlay" id="password-confirm-modal" hidden>
+    <div class="modal-card">
+      <h2 id="password-confirm-title">אישור סיסמה</h2>
+      <p id="password-confirm-description">לפני הפעולה הזו צריך להזין שוב את הסיסמה של החשבון הנוכחי.</p>
+      <div class="field">
+        <label for="password-confirm-input" id="password-confirm-label">סיסמה</label>
+        <input type="password" id="password-confirm-input" autocomplete="current-password" placeholder="הזן שוב את הסיסמה" />
+      </div>
+      <div class="auth-actions">
+        <button class="btn danger" type="button" id="password-confirm-submit-btn" onclick="submitPasswordConfirmationModal()">אישור</button>
+        <button class="btn secondary" type="button" onclick="cancelPasswordConfirmationModal()">בטל</button>
+      </div>
+      <div class="modal-status" id="password-confirm-status-text"></div>
+    </div>
+  </div>
   <div class="patient-history-tooltip" id="patient-history-tooltip" role="tooltip" hidden></div>
   <div class="patient-history-tooltip inline-value-tooltip" id="inline-value-tooltip" role="tooltip" hidden></div>
   <div class="workspace-popup-overlay" id="workspace-popup-overlay" hidden onclick="handleWorkspacePopupOverlayClick(event)">
@@ -5632,6 +5651,7 @@
     let liveRefreshTimer = null;
     let reloadAllPromise = null;
     let adminSuggestions = [];
+    let passwordConfirmationResolver = null;
     let patientHistoryTooltipTimer = null;
     let patientHistoryTooltipAnchor = null;
     let inlineValueTooltipTimer = null;
@@ -5951,6 +5971,7 @@
       }
 
       if (activeWorkspacePopupPanelId && activeWorkspacePopupPanelId !== panelId) {
+        resetWorkspacePopupPanelState(activeWorkspacePopupPanelId);
         restoreWorkspacePopupPanel(activeWorkspacePopupPanelId);
       }
 
@@ -5983,10 +6004,12 @@
       }
 
       closeStatusPicker();
+      closeTaskCategoryMenu();
       closeAllCustomDatePopovers();
       closeAllCustomTimePopovers();
       closeAllPatientSuggestionMenus();
       closeAllTalkSeniorSuggestionMenus();
+      resetWorkspacePopupPanelState(activeWorkspacePopupPanelId);
       restoreWorkspacePopupPanel(activeWorkspacePopupPanelId);
       activeWorkspacePopupPanelId = null;
       syncWorkspacePopupUi();
@@ -6068,6 +6091,7 @@
       closeBookmarkModal();
       closeSuggestionModal();
       closeAdminSuggestionsModal();
+      cancelPasswordConfirmationModal();
       setAuthStatus(message, 'info');
       syncAuthUi();
     }
@@ -11022,6 +11046,30 @@
       scrollEditorIntoView('input-patient');
     }
 
+    function resetWorkspacePopupPanelState(panelId) {
+      switch (panelId) {
+        case 'new-task-panel':
+          currentEditingTaskId = null;
+          closeTaskCategoryMenu();
+          resetTaskForm();
+          break;
+        case 'infected-panel':
+          currentEditingInfectedEntryId = null;
+          resetInfectedEntryForm();
+          break;
+        case 'er-panel':
+          currentEditingErPatientEntryId = null;
+          resetErPatientForm();
+          break;
+        case 'surgery-prep-panel':
+          currentEditingSurgeryPrepEntryId = null;
+          resetSurgeryPrepForm();
+          break;
+        default:
+          break;
+      }
+    }
+
     function scrollEditorIntoView(controlId) {
       const workspacePanelId = !isPhoneLayout ? WORKSPACE_CONTROL_PANEL_MAP[controlId] : null;
       if (workspacePanelId && activeWorkspacePopupPanelId !== workspacePanelId) {
@@ -12156,6 +12204,109 @@
       await reloadAll();
     }
 
+    function setPasswordConfirmationStatus(message = '', kind = '') {
+      const status = document.getElementById('password-confirm-status-text');
+      if (!status) {
+        return;
+      }
+
+      status.textContent = message;
+      status.dataset.kind = message ? kind : '';
+    }
+
+    function isPasswordConfirmationModalOpen() {
+      const modal = document.getElementById('password-confirm-modal');
+      return Boolean(modal) && !modal.hidden;
+    }
+
+    function closePasswordConfirmationModalInternal(resolveValue = null) {
+      const modal = document.getElementById('password-confirm-modal');
+      const input = document.getElementById('password-confirm-input');
+      if (modal) {
+        modal.hidden = true;
+      }
+      if (input) {
+        input.value = '';
+      }
+      setPasswordConfirmationStatus('', '');
+
+      if (passwordConfirmationResolver) {
+        const resolver = passwordConfirmationResolver;
+        passwordConfirmationResolver = null;
+        resolver(resolveValue);
+      }
+    }
+
+    function cancelPasswordConfirmationModal() {
+      closePasswordConfirmationModalInternal(null);
+    }
+
+    function submitPasswordConfirmationModal() {
+      const input = document.getElementById('password-confirm-input');
+      if (!input) {
+        closePasswordConfirmationModalInternal(null);
+        return;
+      }
+
+      const password = input.value.trim();
+      if (!password) {
+        setPasswordConfirmationStatus('יש להזין סיסמה כדי להמשיך.');
+        input.focus();
+        return;
+      }
+
+      closePasswordConfirmationModalInternal(password);
+    }
+
+    function getPasswordConfirmationModalText(actionLabel = '') {
+      const isAdmin = authState.role === 'admin';
+      const descriptionAction = actionLabel ? `לפני ${actionLabel}` : 'לפני הפעולה הזו';
+      return {
+        title: isAdmin ? 'אישור סיסמת מנהל' : 'אישור סיסמה',
+        description: isAdmin
+          ? `${descriptionAction} צריך להזין שוב את סיסמת המנהל.`
+          : `${descriptionAction} צריך להזין שוב את הסיסמה של החשבון הנוכחי.`,
+        label: isAdmin ? 'סיסמת מנהל' : 'סיסמה',
+        placeholder: isAdmin ? 'הזן שוב את סיסמת המנהל' : 'הזן שוב את הסיסמה'
+      };
+    }
+
+    function requestPasswordConfirmation(actionLabel = '') {
+      if (!authState.auth_enabled || authState.role === 'local') {
+        return Promise.resolve('');
+      }
+
+      if (passwordConfirmationResolver) {
+        closePasswordConfirmationModalInternal(null);
+      }
+
+      const modal = document.getElementById('password-confirm-modal');
+      const title = document.getElementById('password-confirm-title');
+      const description = document.getElementById('password-confirm-description');
+      const label = document.getElementById('password-confirm-label');
+      const input = document.getElementById('password-confirm-input');
+      const copy = getPasswordConfirmationModalText(actionLabel);
+
+      if (!modal || !title || !description || !label || !input) {
+        return Promise.resolve(null);
+      }
+
+      title.textContent = copy.title;
+      description.textContent = copy.description;
+      label.textContent = copy.label;
+      input.placeholder = copy.placeholder;
+      input.inputMode = authState.role === 'admin' ? 'text' : 'numeric';
+      input.value = '';
+      setPasswordConfirmationStatus('', '');
+      modal.hidden = false;
+
+      window.setTimeout(() => input.focus(), 0);
+
+      return new Promise((resolve) => {
+        passwordConfirmationResolver = resolve;
+      });
+    }
+
     async function deleteShownFilteredTasks() {
       const visibleTaskIds = getFilteredTasks().map((task) => task.id);
 
@@ -12168,13 +12319,19 @@
         return;
       }
 
+      const password = await requestPasswordConfirmation(`מחיקת ${visibleTaskIds.length} המשימות המוצגות`);
+      if (password === null) {
+        return;
+      }
+
       const res = await fetch('/api/tasks/bulk-delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: visibleTaskIds })
+        body: JSON.stringify({ ids: visibleTaskIds, password })
       });
+      const payload = await res.json().catch(() => ({ error: 'מחיקת המשימות המוצגות נכשלה.' }));
       if (!res.ok) {
-        alert('מחיקת המשימות המוצגות נכשלה.');
+        alert(payload.error || 'מחיקת המשימות המוצגות נכשלה.');
         return;
       }
 
@@ -12191,9 +12348,19 @@
         return;
       }
 
-      const res = await fetch('/api/reset-all', { method: 'POST' });
+      const password = await requestPasswordConfirmation('האיפוס המלא');
+      if (password === null) {
+        return;
+      }
+
+      const res = await fetch('/api/reset-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      const payload = await res.json().catch(() => ({ error: 'האיפוס המלא נכשל.' }));
       if (!res.ok) {
-        alert('האיפוס המלא נכשל.');
+        alert(payload.error || 'האיפוס המלא נכשל.');
         return;
       }
 
@@ -12328,6 +12495,18 @@
           }
         });
       });
+      document.getElementById('password-confirm-input').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          submitPasswordConfirmationModal();
+          return;
+        }
+
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          cancelPasswordConfirmationModal();
+        }
+      });
       document.getElementById('suggestion-message').addEventListener('keydown', (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
           submitSuggestion();
@@ -12416,6 +12595,7 @@
         closeBookmarkModal();
         closeSuggestionModal();
         closeAdminSuggestionsModal();
+        cancelPasswordConfirmationModal();
         closeWorkspacePopup();
         closeStatusPicker();
         closeTaskCategoryMenu();
@@ -12437,6 +12617,11 @@
       document.getElementById('admin-suggestions-modal').addEventListener('click', (event) => {
         if (event.target.id === 'admin-suggestions-modal') {
           closeAdminSuggestionsModal();
+        }
+      });
+      document.getElementById('password-confirm-modal').addEventListener('click', (event) => {
+        if (event.target.id === 'password-confirm-modal') {
+          cancelPasswordConfirmationModal();
         }
       });
       window.addEventListener('resize', () => {

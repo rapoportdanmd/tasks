@@ -1399,3 +1399,11 @@
 ## 2026-04-11 19:24 IDT
 
 - Hardened cross-platform consistency by bundling `Heebo` locally instead of depending on Google Fonts at runtime, normalizing text-size and autofill behavior, and adding no-blur fallbacks so browsers without strong `backdrop-filter` support still render a stable, intentional light theme instead of drifting into a different visual style.
+
+## 2026-04-11 19:42 IDT
+
+- Added a re-enter-password confirmation step before `מחק משימות מוצגות` and `איפוס מלא`, with a dedicated in-app modal on the client and matching password verification on the backend so those two destructive actions now require the current user’s password again before they proceed.
+
+## 2026-04-11 19:53 IDT
+
+- Made the desktop workspace popups reset their form/edit state when closed or when switching to a different popup, so reopening windows like `משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, or `רשימת הכנות ניתוחים` starts clean instead of remembering the previous selections or edit mode.

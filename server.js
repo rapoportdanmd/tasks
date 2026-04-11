@@ -1273,6 +1273,11 @@ app.delete('/api/tasks', (req, res) => {
 });
 
 app.post('/api/tasks/bulk-delete', (req, res) => {
+  const passwordVerification = verifySensitiveActionPassword(req.authSession, req.body?.password);
+  if (!passwordVerification.ok) {
+    return res.status(403).json({ error: passwordVerification.error });
+  }
+
   const ids = Array.isArray(req.body.ids)
     ? [...new Set(
         req.body.ids
@@ -1825,6 +1830,11 @@ app.delete('/api/surgery-preps', (req, res) => {
 });
 
 app.post('/api/reset-all', (req, res) => {
+  const passwordVerification = verifySensitiveActionPassword(req.authSession, req.body?.password);
+  if (!passwordVerification.ok) {
+    return res.status(403).json({ error: passwordVerification.error });
+  }
+
   const summary = db.transaction(() => {
     const deletedTasks = db.prepare('DELETE FROM tasks').run().changes;
     const deletedInfected = db.prepare('DELETE FROM infected_list_entries').run().changes;
@@ -3390,6 +3400,23 @@ function getStaffAccountById(id) {
   return sanitizeStaffAccount(account);
 }
 
+function getRawStaffAccountById(id) {
+  const parsedId = Number(id);
+  if (!Number.isInteger(parsedId) || parsedId <= 0) {
+    return null;
+  }
+
+  return db.prepare(`
+    SELECT
+      staff_accounts.*,
+      team_members.name AS team_member_name
+    FROM staff_accounts
+    LEFT JOIN team_members
+      ON team_members.id = staff_accounts.team_member_id
+    WHERE staff_accounts.id = ?
+  `).get(parsedId) || null;
+}
+
 function sanitizeStaffAccount(account) {
   if (!account) {
     return null;
@@ -3450,6 +3477,45 @@ function verifyStaffPassword(password, salt, passwordHash) {
 
   const candidateHash = hashStaffPassword(password, salt);
   return safeCompareStrings(candidateHash, passwordHash);
+}
+
+function verifySensitiveActionPassword(session, password) {
+  if (!AUTH_ENABLED || session?.role === 'local') {
+    return { ok: true };
+  }
+
+  const normalizedPassword = normalizeStaffPassword(password);
+  if (!normalizedPassword) {
+    return {
+      ok: false,
+      error: 'יש להזין שוב את הסיסמה כדי להמשיך.'
+    };
+  }
+
+  if (session?.role === 'admin') {
+    return isValidAdminCredentials(ADMIN_USERNAME, normalizedPassword)
+      ? { ok: true }
+      : { ok: false, error: 'הסיסמה שהוזנה אינה נכונה.' };
+  }
+
+  if (session?.role === 'staff') {
+    const account = getRawStaffAccountById(session.accountId);
+    if (!account || account.status !== STAFF_ACCOUNT_STATUS_APPROVED) {
+      return {
+        ok: false,
+        error: 'לא הצלחנו לאמת את החשבון הנוכחי.'
+      };
+    }
+
+    return verifyStaffPassword(normalizedPassword, account.password_salt, account.password_hash)
+      ? { ok: true }
+      : { ok: false, error: 'הסיסמה שהוזנה אינה נכונה.' };
+  }
+
+  return {
+    ok: false,
+    error: 'לא ניתן לאשר את הפעולה הזו עבור החשבון הנוכחי.'
+  };
 }
 
 function authenticateStaffAccount(name, password) {
