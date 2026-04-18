@@ -1458,3 +1458,7 @@
 ## 2026-04-18 21:23 IDT
 
 - Replaced the `ניהול אנשי צוות` duty-assignment controls with app-owned dropdown popovers backed by the same saved values, so the opened menus themselves now match the newer in-app dropdown system instead of falling back to the browser/operating-system menu look.
+
+## 2026-04-18 21:40 IDT
+
+- Followed up on the new `ניהול אנשי צוות` custom menus by making the closed trigger controls read more like normal dropdown fields again instead of obvious buttons, and by allowing the team panel/body to overflow visibly so the opened popovers are no longer cut off at the bottom edge of the panel.

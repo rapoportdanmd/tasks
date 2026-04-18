@@ -1126,6 +1126,12 @@
 
     [data-layout-id="team-panel"] {
       --panel-accent: rgba(51, 65, 85, 0.74);
+      overflow: visible;
+      z-index: 4;
+    }
+
+    [data-layout-id="team-panel"] .panel-body {
+      overflow: visible;
     }
 
     [data-layout-id="patient-pool-panel"] {
@@ -2718,17 +2724,16 @@
       min-height: 38px;
       width: 100%;
       padding: 8px 34px 8px 10px;
+      border: 1px solid var(--dropdown-control-border);
       border-radius: 14px;
-      border-color: var(--border-strong);
-      background:
-        rgba(248, 251, 255, 0.92);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+      background-color: var(--dropdown-control-bg);
+      box-shadow: var(--dropdown-control-shadow);
       color: var(--text);
       font-weight: 700;
       font-size: 0.82rem;
       text-align: right;
       cursor: pointer;
-      transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+      transition: border-color 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease;
       position: relative;
       display: flex;
       align-items: center;
@@ -2761,7 +2766,6 @@
     .duty-select-trigger:disabled {
       opacity: 0.66;
       cursor: not-allowed;
-      transform: none !important;
     }
 
     .duty-select-popover {
@@ -2827,8 +2831,9 @@
     .duty-select-trigger:focus-visible,
     .duty-select-trigger[aria-expanded="true"] {
       border-color: var(--dropdown-accent);
+      background-color: rgba(248, 251, 255, 0.96);
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        var(--dropdown-control-shadow),
         0 0 0 4px rgba(59, 130, 246, 0.12);
       outline: none;
     }
