@@ -1450,3 +1450,7 @@
 
 - Reused the existing workspace-popup system on phone so the four editor/list panels (`משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, `רשימת הכנות ניתוחים`) can now be opened from the same top launcher buttons instead of staying as long inline sections; the source panel strip is now hidden on phone too, while the popup version still opens the real panel with its normal form and close button.
 - Added a tablet-focused task-row layout pass so task bars stop spilling off-screen on mid-size devices: below the desktop range they now reflow into a more flexible multi-row grid and allow the actions cluster to wrap instead of forcing a too-wide single line.
+
+## 2026-04-18 21:15 IDT
+
+- Restyled the `ניהול אנשי צוות` duty-assignment dropdowns (`מנהל יום` and the on-call role selectors) so they visually match the newer `משימה חדשה` control style more closely: cooler blue-tinted surface, cleaner border radius, matching chevron treatment, and the same blue focus/hover ring, while keeping the underlying native select behavior unchanged.

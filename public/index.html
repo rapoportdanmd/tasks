@@ -2705,6 +2705,27 @@
       min-width: 0;
     }
 
+    .duty-slot select {
+      min-height: 38px;
+      border-radius: 14px;
+      border-color: var(--border-strong);
+      background:
+        var(--select-chevron) no-repeat left 10px center / 12px 12px,
+        rgba(248, 251, 255, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+      color: var(--text);
+      font-weight: 700;
+      transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+    }
+
+    .duty-slot select:hover,
+    .duty-slot select:focus {
+      border-color: var(--dropdown-accent);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
     .duty-strip-notes {
       margin-top: 7px;
       display: flex;
