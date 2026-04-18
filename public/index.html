@@ -9811,11 +9811,6 @@
     function getFilterCalendarTaskDates() {
       const contextualTasks = getTasksForFilters({ exclude: ['date'] });
       const dateSet = new Set();
-      const fallbackDate = getCurrentFilterDateValue() || getDefaultFilterDate();
-
-      if (fallbackDate) {
-        dateSet.add(fallbackDate);
-      }
 
       contextualTasks.forEach((task) => {
         const taskDate = String(task?.night_shift_anchor_date || task?.task_date || '').trim();
@@ -9882,13 +9877,15 @@
         return `${activeDates.length} תאריכים`;
       }
 
-      if (!inputDate) {
+      const singleDate = activeDates[0] || inputDate;
+
+      if (!singleDate) {
         return emptyLabel;
       }
 
-      return shouldShowNightShiftFilterLabel(inputDate)
+      return shouldShowNightShiftFilterLabel(singleDate)
         ? 'Night-Shift'
-        : formatControlDate(inputDate);
+        : formatControlDate(singleDate);
     }
 
     function getShiftableFilterDates() {
@@ -10621,6 +10618,7 @@
       if (filterAllPatientDates || resetToSingle) {
         filterAllPatientDates = false;
         selectedPatientFilterDates = [date];
+        input.value = date;
         syncAllDateDisplays();
         handleFiltersChanged();
         if (!keepOpen) {
@@ -10637,6 +10635,7 @@
       }
 
       selectedPatientFilterDates = Array.from(selected).sort();
+      input.value = selectedPatientFilterDates[0] || '';
       syncAllDateDisplays();
       handleFiltersChanged();
       if (!keepOpen) {

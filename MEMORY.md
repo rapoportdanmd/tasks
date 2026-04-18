@@ -1441,3 +1441,7 @@
 
 - Expanded the desktop filter-date control into a fuller multi-date tool: it now supports selecting several dates at once for general task filtering, keeps the existing `כל התאריכים` mode inside the calendar, and adds quick previous/next day arrow buttons directly on the filter-date control for fast day-shifting without opening the calendar.
 - Simplified the custom desktop time pickers in both `משימה חדשה` and inline task rows by removing extra header/preview clutter, keeping the action buttons together on one top row, shortening the option columns, and forcing the columns into a clearer left-to-right order so hours sit on the left and minutes on the right.
+
+## 2026-04-18 20:36 IDT
+
+- Fixed a multi-date filter calendar state bug where removing a selected date could leave it colored orange even with no tasks on that date; the calendar now marks orange only for real task dates, and the visible filter-date value now tracks the actual remaining active dates instead of the last clicked date.
