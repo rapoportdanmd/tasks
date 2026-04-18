@@ -1935,6 +1935,50 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
+    .filter-date-display-shell {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .filter-date-display-shell .date-display {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+    }
+
+    .filter-date-quick-nav-btn {
+      width: 34px;
+      min-width: 34px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: rgba(248, 251, 255, 0.92);
+      color: var(--dropdown-accent-strong);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.14s ease;
+      cursor: pointer;
+    }
+
+    .filter-date-quick-nav-btn:hover,
+    .filter-date-quick-nav-btn:focus-visible {
+      background: var(--dropdown-hover-bg);
+      border-color: rgba(59, 130, 246, 0.24);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .filter-date-quick-nav-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .time-display {
       direction: ltr;
       letter-spacing: 0.01em;
@@ -2111,6 +2155,7 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+      direction: ltr;
     }
 
     .time-popover-column {
@@ -2127,7 +2172,7 @@
     }
 
     .time-popover-options {
-      max-height: 184px;
+      max-height: 148px;
       overflow-y: auto;
       overflow-x: hidden;
       overscroll-behavior: contain;
@@ -2135,6 +2180,15 @@
       display: grid;
       gap: 4px;
       padding-inline-end: 2px;
+    }
+
+    .time-popover .filter-date-meta-row {
+      flex-wrap: nowrap;
+    }
+
+    .time-popover .filter-date-meta-btn {
+      flex: 1 1 0;
+      min-width: 0;
     }
 
     .time-popover-option {
@@ -5438,15 +5492,11 @@
                 <div class="time-display is-empty" id="input-time-display" data-empty-label="ללא שעה">ללא שעה</div>
                 <input class="time-native" type="time" id="input-time" />
                 <div class="time-popover input-time-popover" id="input-time-popover" role="dialog" aria-label="בחירת שעה למשימה" hidden>
-                  <div class="time-popover-head">
-                    <div class="time-popover-title">בחירת שעה</div>
-                  </div>
                   <div class="filter-date-meta-row">
                     <button type="button" class="filter-date-meta-btn" onclick="clearInputTimeSelection(event)">ללא שעה</button>
                     <button type="button" class="filter-date-meta-btn" onclick="setInputTimeSelectionToNow(event)">עכשיו</button>
                     <button type="button" class="filter-date-meta-btn" onclick="applyInputTimeSelection(event)">אישור</button>
                   </div>
-                  <div class="time-popover-selection is-empty" id="input-time-selection-preview">ללא שעה</div>
                   <div class="time-popover-columns">
                     <div class="time-popover-column">
                       <div class="time-popover-column-label">שעה</div>
@@ -5723,7 +5773,23 @@
                 aria-haspopup="dialog"
                 aria-expanded="false"
               >
-                <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
+                <div class="filter-date-display-shell">
+                  <button
+                    type="button"
+                    class="filter-date-quick-nav-btn"
+                    id="filter-date-prev-btn"
+                    aria-label="תאריך קודם"
+                    onclick="shiftFilterDateSelection(-1, event)"
+                  >‹</button>
+                  <div class="date-display" id="filter-date-display" data-empty-label="ללא סינון">Today</div>
+                  <button
+                    type="button"
+                    class="filter-date-quick-nav-btn"
+                    id="filter-date-next-btn"
+                    aria-label="תאריך הבא"
+                    onclick="shiftFilterDateSelection(1, event)"
+                  >›</button>
+                </div>
                 <input class="date-native" type="date" id="filter-date" />
                 <div class="filter-date-popover" id="filter-date-popover" role="dialog" aria-label="בחירת תאריכים לסינון" hidden>
                   <div class="filter-date-popover-head">
@@ -9730,17 +9796,11 @@
     }
 
     function getActiveTaskFilterDates() {
-      const filterDate = getCurrentFilterDateValue();
-      const patientFilter = getNormalizedPatientFilterValue();
-
-      if (!patientFilter) {
-        return filterDate ? new Set([filterDate]) : null;
-      }
-
       if (filterAllPatientDates) {
         return null;
       }
 
+      const filterDate = getCurrentFilterDateValue();
       const activeDates = selectedPatientFilterDates.length > 0
         ? selectedPatientFilterDates
         : (filterDate ? [filterDate] : []);
@@ -9810,16 +9870,6 @@
     }
 
     function getFilterDateDisplayText(inputDate, emptyLabel = '') {
-      const patientFilter = getNormalizedPatientFilterValue();
-      if (!patientFilter) {
-        if (!inputDate) {
-          return emptyLabel;
-        }
-        return shouldShowNightShiftFilterLabel(inputDate)
-          ? 'Night-Shift'
-          : formatControlDate(inputDate);
-      }
-
       if (filterAllPatientDates) {
         return 'כל התאריכים';
       }
@@ -9839,6 +9889,18 @@
       return shouldShowNightShiftFilterLabel(inputDate)
         ? 'Night-Shift'
         : formatControlDate(inputDate);
+    }
+
+    function getShiftableFilterDates() {
+      if (filterAllPatientDates) {
+        return [];
+      }
+
+      const fallbackDate = getCurrentFilterDateValue() || getDefaultFilterDate();
+      return (selectedPatientFilterDates.length > 0
+        ? selectedPatientFilterDates
+        : (fallbackDate ? [fallbackDate] : [])
+      ).slice().sort();
     }
 
     function isFilterDatePopoverOpen() {
@@ -9908,7 +9970,6 @@
       const monthKey = filterCalendarMonth || getMonthKeyFromDate(getCurrentFilterDateValue() || getDefaultFilterDate());
       filterCalendarMonth = monthKey;
 
-      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
       const monthDate = parseMonthKey(monthKey);
       const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
       const gridStart = new Date(monthStart);
@@ -9922,8 +9983,8 @@
       helper.textContent = '';
       helper.hidden = true;
 
-      allDatesButton.hidden = !patientFilterActive;
-      allDatesButton.classList.toggle('active', patientFilterActive && filterAllPatientDates);
+      allDatesButton.hidden = false;
+      allDatesButton.classList.toggle('active', filterAllPatientDates);
 
       grid.innerHTML = Array.from({ length: 42 }, (_, index) => {
         const cellDate = new Date(gridStart);
@@ -10175,16 +10236,12 @@
     }
 
     function renderInputTimePopover() {
-      const preview = document.getElementById('input-time-selection-preview');
       const hourOptions = document.getElementById('input-time-hour-options');
       const minuteOptions = document.getElementById('input-time-minute-options');
-      if (!preview || !hourOptions || !minuteOptions) {
+      if (!hourOptions || !minuteOptions) {
         return;
       }
 
-      const previewText = buildTimeSelectionValue(inputTimeSelection);
-      preview.textContent = previewText || 'ללא שעה';
-      preview.classList.toggle('is-empty', !previewText);
       hourOptions.innerHTML = getTimePopoverOptionMarkup(
         Array.from({ length: 24 }, (_, index) => padTimePart(index)),
         inputTimeSelection.hour,
@@ -10423,19 +10480,13 @@
         return '';
       }
 
-      const previewText = buildTimeSelectionValue(taskInlineTimeSelection);
-
       return `
         <div class="time-popover task-inline-time-popover" role="dialog" aria-label="בחירת שעה למשימה">
-          <div class="time-popover-head">
-            <div class="time-popover-title">בחירת שעה</div>
-          </div>
           <div class="filter-date-meta-row">
             <button type="button" class="filter-date-meta-btn" onclick="clearTaskInlineTimeSelection(${task.id}, event)">ללא שעה</button>
             <button type="button" class="filter-date-meta-btn" onclick="setTaskInlineTimeSelectionToNow(${task.id}, event)">עכשיו</button>
             <button type="button" class="filter-date-meta-btn" onclick="applyTaskInlineTimeSelection(${task.id}, event)">אישור</button>
           </div>
-          <div class="time-popover-selection ${previewText ? '' : 'is-empty'}">${escHtml(previewText || 'ללא שעה')}</div>
           <div class="time-popover-columns">
             <div class="time-popover-column">
               <div class="time-popover-column-label">שעה</div>
@@ -10567,18 +10618,6 @@
       input.value = date;
       filterCalendarMonth = getMonthKeyFromDate(date);
 
-      const patientFilterActive = Boolean(getNormalizedPatientFilterValue());
-      if (!patientFilterActive) {
-        filterAllPatientDates = false;
-        selectedPatientFilterDates = [];
-        syncAllDateDisplays();
-        handleFiltersChanged();
-        if (!keepOpen) {
-          closeFilterDatePopover();
-        }
-        return;
-      }
-
       if (filterAllPatientDates || resetToSingle) {
         filterAllPatientDates = false;
         selectedPatientFilterDates = [date];
@@ -10608,16 +10647,12 @@
     function selectFilterCalendarDate(date, event) {
       event?.preventDefault?.();
       event?.stopPropagation?.();
-      applyFilterDateSelection(date, { keepOpen: Boolean(getNormalizedPatientFilterValue()) });
+      applyFilterDateSelection(date, { keepOpen: true });
     }
 
     function toggleAllDatesFromCalendar(event) {
       event?.preventDefault?.();
       event?.stopPropagation?.();
-
-      if (!getNormalizedPatientFilterValue()) {
-        return;
-      }
 
       filterAllPatientDates = !filterAllPatientDates;
       if (filterAllPatientDates) {
@@ -10632,7 +10667,39 @@
     function resetFilterDateCalendarToToday(event) {
       event?.preventDefault?.();
       event?.stopPropagation?.();
-      applyFilterDateSelection(getTodayString(), { keepOpen: Boolean(getNormalizedPatientFilterValue()), resetToSingle: Boolean(getNormalizedPatientFilterValue()) });
+      applyFilterDateSelection(getTodayString(), { keepOpen: true, resetToSingle: true });
+    }
+
+    function shiftFilterDateSelection(delta, event) {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+
+      if (!Number.isFinite(delta) || delta === 0 || filterAllPatientDates || isPhoneLayout) {
+        return;
+      }
+
+      const input = document.getElementById('filter-date');
+      if (!input) {
+        return;
+      }
+
+      const sourceDates = getShiftableFilterDates();
+      if (sourceDates.length === 0) {
+        return;
+      }
+
+      const shiftedDates = Array.from(new Set(
+        sourceDates.map((date) => addDaysString(date, delta))
+      )).sort();
+
+      selectedPatientFilterDates = shiftedDates;
+      input.value = shiftedDates[0] || '';
+      filterCalendarMonth = getMonthKeyFromDate(input.value || getDefaultFilterDate());
+      syncAllDateDisplays();
+      handleFiltersChanged();
+      if (isFilterDatePopoverOpen()) {
+        renderFilterDatePopover();
+      }
     }
 
     function getUploadedPatientPoolNames() {
@@ -13830,17 +13897,13 @@
       });
       document.getElementById('filter-date').addEventListener('change', () => {
         syncAllDateDisplays();
-        if (getNormalizedPatientFilterValue() && !filterAllPatientDates) {
+        if (!filterAllPatientDates) {
           const nextDate = getCurrentFilterDateValue();
           selectedPatientFilterDates = nextDate ? [nextDate] : [];
         }
         handleFiltersChanged();
       });
       document.getElementById('filter-patient').addEventListener('input', () => {
-        if (!getNormalizedPatientFilterValue()) {
-          filterAllPatientDates = false;
-          selectedPatientFilterDates = [];
-        }
         handleFiltersChanged();
       });
       bindPatientSuggestionInput('task');
@@ -14659,6 +14722,20 @@
       display.classList.toggle('is-empty', !displayText);
     }
 
+    function syncFilterDateQuickNavButtons() {
+      const previousButton = document.getElementById('filter-date-prev-btn');
+      const nextButton = document.getElementById('filter-date-next-btn');
+      const shouldDisable = isPhoneLayout || filterAllPatientDates;
+
+      [previousButton, nextButton].forEach((button) => {
+        if (!button) {
+          return;
+        }
+
+        button.disabled = shouldDisable;
+      });
+    }
+
     function syncDateLimits() {
       const today = getTodayString();
       const activeMinimum = isWithinTaskPreviousDaySelectionWindow()
@@ -14676,6 +14753,7 @@
       syncDateLimits();
       syncDateDisplay('input-date', 'input-date-display');
       syncDateDisplay('filter-date', 'filter-date-display');
+      syncFilterDateQuickNavButtons();
       syncInputTimeDisplay();
     }
 

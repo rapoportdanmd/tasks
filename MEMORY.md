@@ -1436,3 +1436,8 @@
 ## 2026-04-11 20:33 IDT
 
 - Reduced the perceived delay after common clicks by stopping the usual task and list actions from doing a full app-wide refetch every time; task actions now refresh only task data, and each side list now refreshes only its own dataset unless the action truly changes multiple areas.
+
+## 2026-04-18 20:28 IDT
+
+- Expanded the desktop filter-date control into a fuller multi-date tool: it now supports selecting several dates at once for general task filtering, keeps the existing `כל התאריכים` mode inside the calendar, and adds quick previous/next day arrow buttons directly on the filter-date control for fast day-shifting without opening the calendar.
+- Simplified the custom desktop time pickers in both `משימה חדשה` and inline task rows by removing extra header/preview clutter, keeping the action buttons together on one top row, shortening the option columns, and forcing the columns into a clearer left-to-right order so hours sit on the left and minutes on the right.
