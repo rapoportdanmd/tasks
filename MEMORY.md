@@ -1445,3 +1445,8 @@
 ## 2026-04-18 20:36 IDT
 
 - Fixed a multi-date filter calendar state bug where removing a selected date could leave it colored orange even with no tasks on that date; the calendar now marks orange only for real task dates, and the visible filter-date value now tracks the actual remaining active dates instead of the last clicked date.
+
+## 2026-04-18 21:13 IDT
+
+- Reused the existing workspace-popup system on phone so the four editor/list panels (`משימה חדשה`, `רשימת מזוהמים`, `מיונים/יעוצים`, `רשימת הכנות ניתוחים`) can now be opened from the same top launcher buttons instead of staying as long inline sections; the source panel strip is now hidden on phone too, while the popup version still opens the real panel with its normal form and close button.
+- Added a tablet-focused task-row layout pass so task bars stop spilling off-screen on mid-size devices: below the desktop range they now reflow into a more flexible multi-row grid and allow the actions cluster to wrap instead of forcing a too-wide single line.

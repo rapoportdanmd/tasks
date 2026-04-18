@@ -1558,7 +1558,7 @@
       align-items: stretch;
     }
 
-    body:not(.phone-layout) .top-grid.workspace-popup-source {
+    .top-grid.workspace-popup-source {
       display: block;
       height: 0;
       min-height: 0;
@@ -1568,15 +1568,15 @@
       gap: 0;
     }
 
-    body:not(.phone-layout) .top-grid.workspace-popup-source > .panel {
+    .top-grid.workspace-popup-source > .panel {
       display: none;
     }
 
-    body:not(.phone-layout) .top-grid.workspace-popup-source > .panel.workspace-popup-active {
+    .top-grid.workspace-popup-source > .panel.workspace-popup-active {
       display: block;
     }
 
-    body.workspace-popup-open:not(.phone-layout) {
+    body.workspace-popup-open {
       overflow: hidden;
     }
 
@@ -4551,18 +4551,18 @@
       display: none !important;
     }
 
-    body.phone-layout [data-layout-id="infected-form-block"],
-    body.phone-layout [data-layout-id="infected-action-block"],
-    body.phone-layout [data-layout-id="er-form-block"],
-    body.phone-layout [data-layout-id="er-action-block"],
-    body.phone-layout [data-layout-id="surgery-prep-form-block"],
-    body.phone-layout [data-layout-id="surgery-prep-action-block"] {
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="infected-form-block"],
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="infected-action-block"],
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="er-form-block"],
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="er-action-block"],
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="surgery-prep-form-block"],
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="surgery-prep-action-block"] {
       display: none !important;
     }
 
-    body.phone-layout [data-layout-id="infected-panel"] .panel-head-actions .btn.danger,
-    body.phone-layout [data-layout-id="er-panel"] .panel-head-actions .btn.danger,
-    body.phone-layout [data-layout-id="surgery-prep-panel"] .panel-head-actions .btn.danger {
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="infected-panel"] .panel-head-actions .btn.danger,
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="er-panel"] .panel-head-actions .btn.danger,
+    body.phone-layout .top-grid.workspace-popup-source [data-layout-id="surgery-prep-panel"] .panel-head-actions .btn.danger {
       display: none !important;
     }
 
@@ -4819,7 +4819,108 @@
       }
 
       .task-row {
-        grid-template-columns: 10px 130px minmax(0, 0.96fr) 144px 122px 160px 138px;
+        grid-template-columns: 10px minmax(124px, 0.86fr) minmax(0, 1.16fr) minmax(112px, 0.8fr) auto;
+        padding: 7px 10px 8px 12px;
+        align-items: start;
+      }
+
+      .task-row .status-picker-shell {
+        grid-column: 1;
+        grid-row: 1 / span 4;
+        align-self: stretch;
+      }
+
+      .task-row .task-patient-block {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .task-row .task-desc-shell {
+        grid-column: 3 / 5;
+        grid-row: 1;
+      }
+
+      .task-row .task-actions {
+        grid-column: 5;
+        grid-row: 1 / span 3;
+        align-self: start;
+        justify-self: end;
+        max-width: 156px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        row-gap: 4px;
+        padding: 4px 5px;
+        border-radius: 18px;
+      }
+
+      .task-row .task-datetime-box {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .task-row .assignee-select {
+        grid-column: 3;
+        grid-row: 2;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .task-row .task-comment-box {
+        grid-column: 2 / 5;
+        grid-row: 3;
+      }
+
+      .task-row .task-inline-time {
+        flex-basis: 72px;
+        width: 72px;
+        min-width: 72px;
+      }
+
+      .task-row .task-inline-date .date-display,
+      .task-row .task-inline-time .time-display,
+      .task-row .task-desc-input,
+      .task-row .task-comment-input,
+      .task-row .task-meta-select,
+      .task-row .task-meta-input {
+        font-size: 0.66rem;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .task-row {
+        grid-template-columns: 10px minmax(112px, 0.88fr) minmax(0, 1fr) auto;
+        gap: 7px;
+      }
+
+      .task-row .task-patient-block {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .task-row .task-desc-shell {
+        grid-column: 3;
+        grid-row: 1;
+      }
+
+      .task-row .task-actions {
+        grid-column: 4;
+        grid-row: 1 / span 4;
+        max-width: 132px;
+      }
+
+      .task-row .task-datetime-box {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .task-row .assignee-select {
+        grid-column: 3;
+        grid-row: 2;
+      }
+
+      .task-row .task-comment-box {
+        grid-column: 2 / 4;
+        grid-row: 3;
       }
     }
 
@@ -4864,7 +4965,30 @@
       }
 
       .hero-workspace-actions {
-        display: none;
+        display: flex;
+        width: 100%;
+        gap: 6px;
+      }
+
+      .hero-workspace-btn {
+        min-height: 30px;
+        padding: 0 10px;
+        border-radius: 14px;
+        font-size: 0.7rem;
+      }
+
+      .workspace-popup-overlay {
+        padding: 76px 10px 18px;
+        background: rgba(10, 18, 28, 0.24);
+        backdrop-filter: blur(8px);
+      }
+
+      .workspace-popup-stage {
+        width: min(100%, 620px);
+      }
+
+      .workspace-popup-stage > .panel {
+        border-radius: 18px;
       }
 
       .hero-status-chip {
@@ -4886,10 +5010,6 @@
       .management-grid,
       .top-grid {
         grid-template-columns: 1fr;
-      }
-
-      .workspace-popup-overlay {
-        display: none !important;
       }
 
       .panel-head,
@@ -6423,7 +6543,7 @@
 
     function syncWorkspacePopupUi() {
       const overlay = document.getElementById('workspace-popup-overlay');
-      const shouldShowOverlay = !isPhoneLayout && Boolean(activeWorkspacePopupPanelId);
+      const shouldShowOverlay = Boolean(activeWorkspacePopupPanelId);
 
       if (overlay) {
         overlay.hidden = !shouldShowOverlay;
@@ -6432,7 +6552,7 @@
       document.body.classList.toggle('workspace-popup-open', shouldShowOverlay);
 
       document.querySelectorAll('.hero-workspace-btn').forEach((button) => {
-        const isActive = !isPhoneLayout && button.dataset.workspacePanel === activeWorkspacePopupPanelId;
+        const isActive = button.dataset.workspacePanel === activeWorkspacePopupPanelId;
         button.classList.toggle('is-active', isActive);
       });
 
@@ -6442,7 +6562,7 @@
           return;
         }
 
-        panel.classList.toggle('workspace-popup-active', !isPhoneLayout && panelId === activeWorkspacePopupPanelId);
+        panel.classList.toggle('workspace-popup-active', panelId === activeWorkspacePopupPanelId);
       });
     }
 
@@ -6480,7 +6600,7 @@
     function openWorkspacePopup(panelId, options = {}) {
       const { focusControlId = '' } = options;
 
-      if (isPhoneLayout || !DESKTOP_WORKSPACE_PANEL_IDS.includes(panelId)) {
+      if (!DESKTOP_WORKSPACE_PANEL_IDS.includes(panelId)) {
         return;
       }
 
@@ -6503,6 +6623,11 @@
         workspacePopupPlaceholders[panelId] = placeholder;
         stage.appendChild(panel);
         activeWorkspacePopupPanelId = panelId;
+      }
+
+      if (collapsedPanels[panelId]) {
+        collapsedPanels[panelId] = false;
+        applyCollapsedPanelState();
       }
 
       closeHeroMenu();
@@ -6536,10 +6661,6 @@
     }
 
     function toggleWorkspacePopup(panelId) {
-      if (isPhoneLayout) {
-        return;
-      }
-
       if (activeWorkspacePopupPanelId === panelId) {
         closeWorkspacePopup();
         return;
@@ -12448,7 +12569,7 @@
     }
 
     function scrollEditorIntoView(controlId) {
-      const workspacePanelId = !isPhoneLayout ? WORKSPACE_CONTROL_PANEL_MAP[controlId] : null;
+      const workspacePanelId = WORKSPACE_CONTROL_PANEL_MAP[controlId] || null;
       if (workspacePanelId && activeWorkspacePopupPanelId !== workspacePanelId) {
         openWorkspacePopup(workspacePanelId, { focusControlId: controlId });
         return;
