@@ -2705,25 +2705,132 @@
       min-width: 0;
     }
 
-    .duty-slot select {
+    .duty-select-shell {
+      position: relative;
+      width: 100%;
+    }
+
+    .duty-select-shell:focus-within {
+      z-index: 18;
+    }
+
+    .duty-select-trigger {
       min-height: 38px;
+      width: 100%;
+      padding: 8px 34px 8px 10px;
       border-radius: 14px;
       border-color: var(--border-strong);
       background:
-        var(--select-chevron) no-repeat left 10px center / 12px 12px,
         rgba(248, 251, 255, 0.92);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
       color: var(--text);
       font-weight: 700;
+      font-size: 0.82rem;
+      text-align: right;
+      cursor: pointer;
       transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
     }
 
-    .duty-slot select:hover,
-    .duty-slot select:focus {
+    .duty-select-trigger::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      background-image: var(--select-chevron);
+      background-repeat: no-repeat;
+      background-size: 12px 12px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      transition: transform 0.14s ease;
+    }
+
+    .duty-select-trigger[aria-expanded="true"]::before {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .duty-select-trigger.is-placeholder {
+      color: #94a3b8;
+    }
+
+    .duty-select-trigger:disabled {
+      opacity: 0.66;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .duty-select-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 100%;
+      max-width: min(260px, calc(100vw - 40px));
+      max-height: min(240px, 38vh);
+      overflow: auto;
+      padding: 7px;
+      border-radius: var(--dropdown-radius);
+      border: 1px solid var(--dropdown-border);
+      background: var(--dropdown-surface);
+      box-shadow: var(--dropdown-shadow);
+      backdrop-filter: blur(18px) saturate(150%);
+      z-index: 19;
+      display: grid;
+      gap: 4px;
+    }
+
+    .duty-select-popover[hidden] {
+      display: none;
+    }
+
+    .duty-select-option {
+      width: 100%;
+      min-height: var(--dropdown-item-height);
+      padding: var(--dropdown-item-padding);
+      border: 1px solid transparent;
+      border-radius: var(--dropdown-item-radius);
+      background: rgba(255, 255, 255, 0.68);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.79rem;
+      font-weight: 800;
+      text-align: right;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+    }
+
+    .duty-select-option:hover,
+    .duty-select-option:focus-visible {
+      background: var(--dropdown-hover-bg);
+      border-color: var(--dropdown-hover-border);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .duty-select-option.is-selected {
+      background: var(--dropdown-active-bg);
+      border-color: var(--dropdown-active-border);
+      color: var(--teal-strong);
+    }
+
+    .duty-select-option:disabled {
+      opacity: 0.56;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .duty-select-trigger:hover,
+    .duty-select-trigger:focus-visible,
+    .duty-select-trigger[aria-expanded="true"] {
       border-color: var(--dropdown-accent);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 0 0 4px rgba(59, 130, 246, 0.12);
+      outline: none;
     }
 
     .duty-strip-notes {
@@ -5453,23 +5560,83 @@
             <div class="duty-strip-grid">
               <div class="duty-slot">
                 <label for="daily-admin-select">מנהל יום</label>
-                <select id="daily-admin-select" onchange="saveDailyAdmin()"></select>
+                <div class="duty-select-shell">
+                  <button
+                    type="button"
+                    class="duty-select-trigger is-placeholder"
+                    id="daily-admin-select-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleDutySelectMenu('daily-admin-select', event)"
+                    onkeydown="handleDutySelectTriggerKeydown('daily-admin-select', event)"
+                  ><span id="daily-admin-select-trigger-text">ללא אחראי/ת</span></button>
+                  <div class="duty-select-popover" id="daily-admin-select-popover" role="menu" hidden></div>
+                  <select id="daily-admin-select" hidden onchange="saveDailyAdmin()"></select>
+                </div>
               </div>
               <div class="duty-slot">
                 <label for="on-call-head-select">כונן ראש</label>
-                <select id="on-call-head-select" onchange="saveOnCallAssignment('head')"></select>
+                <div class="duty-select-shell">
+                  <button
+                    type="button"
+                    class="duty-select-trigger is-placeholder"
+                    id="on-call-head-select-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleDutySelectMenu('on-call-head-select', event)"
+                    onkeydown="handleDutySelectTriggerKeydown('on-call-head-select', event)"
+                  ><span id="on-call-head-select-trigger-text">ללא בחירה</span></button>
+                  <div class="duty-select-popover" id="on-call-head-select-popover" role="menu" hidden></div>
+                  <select id="on-call-head-select" hidden onchange="saveOnCallAssignment('head')"></select>
+                </div>
               </div>
               <div class="duty-slot">
                 <label for="on-call-spine-select">כונן עמ״ש</label>
-                <select id="on-call-spine-select" onchange="saveOnCallAssignment('spine')"></select>
+                <div class="duty-select-shell">
+                  <button
+                    type="button"
+                    class="duty-select-trigger is-placeholder"
+                    id="on-call-spine-select-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleDutySelectMenu('on-call-spine-select', event)"
+                    onkeydown="handleDutySelectTriggerKeydown('on-call-spine-select', event)"
+                  ><span id="on-call-spine-select-trigger-text">ללא בחירה</span></button>
+                  <div class="duty-select-popover" id="on-call-spine-select-popover" role="menu" hidden></div>
+                  <select id="on-call-spine-select" hidden onchange="saveOnCallAssignment('spine')"></select>
+                </div>
               </div>
               <div class="duty-slot">
                 <label for="on-call-angio-select">כונן אנגיו</label>
-                <select id="on-call-angio-select" onchange="saveOnCallAssignment('angio')"></select>
+                <div class="duty-select-shell">
+                  <button
+                    type="button"
+                    class="duty-select-trigger is-placeholder"
+                    id="on-call-angio-select-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleDutySelectMenu('on-call-angio-select', event)"
+                    onkeydown="handleDutySelectTriggerKeydown('on-call-angio-select', event)"
+                  ><span id="on-call-angio-select-trigger-text">ללא בחירה</span></button>
+                  <div class="duty-select-popover" id="on-call-angio-select-popover" role="menu" hidden></div>
+                  <select id="on-call-angio-select" hidden onchange="saveOnCallAssignment('angio')"></select>
+                </div>
               </div>
               <div class="duty-slot">
                 <label for="on-call-children-select">כונן ילדים</label>
-                <select id="on-call-children-select" onchange="saveOnCallAssignment('children')"></select>
+                <div class="duty-select-shell">
+                  <button
+                    type="button"
+                    class="duty-select-trigger is-placeholder"
+                    id="on-call-children-select-trigger"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    onclick="toggleDutySelectMenu('on-call-children-select', event)"
+                    onkeydown="handleDutySelectTriggerKeydown('on-call-children-select', event)"
+                  ><span id="on-call-children-select-trigger-text">ללא בחירה</span></button>
+                  <div class="duty-select-popover" id="on-call-children-select-popover" role="menu" hidden></div>
+                  <select id="on-call-children-select" hidden onchange="saveOnCallAssignment('children')"></select>
+                </div>
               </div>
             </div>
             <div class="duty-strip-notes">
@@ -6197,6 +6364,13 @@
       'er-patient-name': 'er-panel',
       'surgery-prep-patient': 'surgery-prep-panel'
     };
+    const DUTY_SELECT_IDS = [
+      'daily-admin-select',
+      'on-call-head-select',
+      'on-call-spine-select',
+      'on-call-angio-select',
+      'on-call-children-select'
+    ];
     const nativeFetch = window.fetch.bind(window);
     const PHONE_LAYOUT_BREAKPOINT = 760;
     const PHONE_READONLY_PANEL_IDS = ['infected-panel', 'er-panel', 'surgery-prep-panel'];
@@ -6244,6 +6418,7 @@
     let openTaskInlineTimePopoverTaskId = null;
     let taskCategoryMenuOpen = false;
     let taskTalkFreeformMode = false;
+    let activeDutySelectId = null;
     let activeWorkspacePopupPanelId = null;
     const workspacePopupPlaceholders = {};
     let patientSuggestionMenuState = {
@@ -6653,6 +6828,7 @@
 
       closeHeroMenu();
       closeStatusPicker();
+      closeDutySelectMenu();
       closeAllCustomDatePopovers();
       closeAllCustomTimePopovers();
       closeAllPatientSuggestionMenus();
@@ -6670,6 +6846,7 @@
       }
 
       closeStatusPicker();
+      closeDutySelectMenu();
       closeTaskCategoryMenu();
       closeAllCustomDatePopovers();
       closeAllCustomTimePopovers();
@@ -9721,6 +9898,122 @@
       upgradeNativeTooltips(container);
     }
 
+    function getDutySelectElements(selectId) {
+      return {
+        select: document.getElementById(selectId),
+        trigger: document.getElementById(`${selectId}-trigger`),
+        triggerText: document.getElementById(`${selectId}-trigger-text`),
+        popover: document.getElementById(`${selectId}-popover`)
+      };
+    }
+
+    function closeDutySelectMenu() {
+      DUTY_SELECT_IDS.forEach((selectId) => {
+        const { trigger, popover } = getDutySelectElements(selectId);
+        if (popover) {
+          popover.hidden = true;
+        }
+        if (trigger) {
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+      activeDutySelectId = null;
+    }
+
+    function syncDutySelectFromNative(selectId) {
+      const { select, trigger, triggerText, popover } = getDutySelectElements(selectId);
+      if (!select || !trigger || !triggerText || !popover) {
+        return;
+      }
+
+      const selectedOption = select.options[select.selectedIndex] || select.options[0] || null;
+      const selectedValue = select.value;
+      const label = selectedOption?.textContent?.trim() || '';
+
+      triggerText.textContent = label || 'בחר';
+      trigger.classList.toggle('is-placeholder', !selectedValue);
+      trigger.disabled = select.disabled;
+      trigger.setAttribute('aria-expanded', activeDutySelectId === selectId ? 'true' : 'false');
+
+      popover.innerHTML = Array.from(select.options).map((option) => {
+        const optionValue = String(option.value ?? '');
+        const optionLabel = option.textContent || '';
+        const isSelected = optionValue === selectedValue;
+        return `
+          <button
+            type="button"
+            class="duty-select-option ${isSelected ? 'is-selected' : ''}"
+            ${option.disabled ? 'disabled' : ''}
+            onclick="selectDutySelectOption('${escJs(selectId)}', '${escJs(optionValue)}', event)"
+          >${escHtml(optionLabel)}</button>
+        `;
+      }).join('');
+
+      popover.hidden = activeDutySelectId !== selectId;
+    }
+
+    function syncAllDutySelects() {
+      DUTY_SELECT_IDS.forEach(syncDutySelectFromNative);
+    }
+
+    function openDutySelectMenu(selectId) {
+      const { select, trigger } = getDutySelectElements(selectId);
+      if (!select || !trigger || trigger.disabled) {
+        return;
+      }
+
+      if (activeDutySelectId && activeDutySelectId !== selectId) {
+        closeDutySelectMenu();
+      }
+
+      activeDutySelectId = selectId;
+      syncDutySelectFromNative(selectId);
+    }
+
+    function toggleDutySelectMenu(selectId, event) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      if (activeDutySelectId === selectId) {
+        closeDutySelectMenu();
+        return;
+      }
+
+      openDutySelectMenu(selectId);
+    }
+
+    function handleDutySelectTriggerKeydown(selectId, event) {
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        toggleDutySelectMenu(selectId, event);
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeDutySelectMenu();
+      }
+    }
+
+    function selectDutySelectOption(selectId, value, event) {
+      event?.preventDefault();
+      event?.stopPropagation();
+
+      const { select } = getDutySelectElements(selectId);
+      if (!select) {
+        closeDutySelectMenu();
+        return;
+      }
+
+      const previousValue = select.value;
+      select.value = value;
+      closeDutySelectMenu();
+      syncDutySelectFromNative(selectId);
+
+      if (previousValue !== value) {
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+
     async function loadDailyAdmin() {
       const assignmentDate = getEffectiveOnCallDate();
       const res = await fetch(`/api/day-manager?date=${assignmentDate}`);
@@ -9741,6 +10034,7 @@
       `;
       select.value = String(currentDailyAdmin.team_member_id || '');
       select.disabled = teamMembers.length === 0;
+      syncDutySelectFromNative('daily-admin-select');
     }
 
     function getOnCallRoleDisplayLabel(role) {
@@ -9847,6 +10141,7 @@
         `;
         select.value = currentOnCallAssignments?.assignments?.[role.key] || '';
         select.disabled = !Array.isArray(role.options) || role.options.length === 0;
+        syncDutySelectFromNative(`on-call-${role.key}-select`);
       });
 
       renderMobileOnCallPanel();
@@ -14093,6 +14388,9 @@
         if (!event.target.closest('.task-form-category-control')) {
           closeTaskCategoryMenu();
         }
+        if (!event.target.closest('.duty-select-shell')) {
+          closeDutySelectMenu();
+        }
         if (!event.target.closest('.hero-menu')) {
           closeHeroMenu();
         }
@@ -14116,6 +14414,7 @@
         cancelPasswordConfirmationModal();
         closeWorkspacePopup();
         closeStatusPicker();
+        closeDutySelectMenu();
         closeTaskCategoryMenu();
         closeAllCustomDatePopovers();
         closeAllCustomTimePopovers();
@@ -14194,6 +14493,7 @@
       const wasPhoneLayout = document.body.classList.contains('phone-layout');
       isPhoneLayout = phoneLayoutMediaQuery.matches;
       closeWorkspacePopup();
+      closeDutySelectMenu();
       closeAllCustomDatePopovers();
       closeAllCustomTimePopovers();
       document.body.classList.toggle('phone-layout', isPhoneLayout);

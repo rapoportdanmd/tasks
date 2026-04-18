@@ -1454,3 +1454,7 @@
 ## 2026-04-18 21:15 IDT
 
 - Restyled the `ניהול אנשי צוות` duty-assignment dropdowns (`מנהל יום` and the on-call role selectors) so they visually match the newer `משימה חדשה` control style more closely: cooler blue-tinted surface, cleaner border radius, matching chevron treatment, and the same blue focus/hover ring, while keeping the underlying native select behavior unchanged.
+
+## 2026-04-18 21:23 IDT
+
+- Replaced the `ניהול אנשי צוות` duty-assignment controls with app-owned dropdown popovers backed by the same saved values, so the opened menus themselves now match the newer in-app dropdown system instead of falling back to the browser/operating-system menu look.
